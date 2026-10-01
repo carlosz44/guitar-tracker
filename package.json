@@ -16,7 +16,8 @@
     "db:generate": "pnpm --filter @ds/server db:generate",
     "db:migrate": "pnpm --filter @ds/server db:migrate",
     "build": "pnpm --filter @ds/web build && pnpm --filter @ds/server build",
-    "backup:now": "pnpm --filter @ds/server backup:now"
+    "backup:now": "pnpm --filter @ds/server backup:now",
+    "e2e": "pnpm --filter @ds/web build && pnpm --filter @ds/e2e test"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",

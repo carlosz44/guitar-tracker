@@ -16,7 +16,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T12 Web: manual log at `/log`. (covers AC-17)
 - [x] T13 Web: Historial and the session edit page. (covers AC-18, AC-19)
 - [x] T14 Web: topic stats on the topic page.
-- [ ] T15 Playwright e2e smoke tests plus the CI job. (covers AC-1, AC-5, AC-6, AC-8, AC-11, AC-13, AC-18)
+- [x] T15 Playwright e2e smoke tests plus the CI job. (covers AC-1, AC-5, AC-6, AC-8, AC-11, AC-13, AC-18)
 - [ ] T16 Manual checks and docs:
   - iPhone at the stand: lock the screen mid-block, wake lock or tip, airplane mode during a block
   - 390 px and desktop for every new screen

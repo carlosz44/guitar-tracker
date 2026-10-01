@@ -11,3 +11,8 @@ coverage/
 # Copied in by the alphaTab Vite plugin on build.
 apps/web/public/font/
 apps/web/public/soundfont/
+
+# Playwright
+e2e/.auth/
+e2e/test-results/
+e2e/playwright-report/

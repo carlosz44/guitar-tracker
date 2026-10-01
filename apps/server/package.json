@@ -13,7 +13,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file-if-exists=.env --import tsx src/migrate.ts",
-    "backup:now": "node --env-file-if-exists=.env --import tsx src/backup-now.ts"
+    "backup:now": "node --env-file-if-exists=.env --import tsx src/backup-now.ts",
+    "e2e:serve": "node --import tsx src/test/e2e-server.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1143.0",
