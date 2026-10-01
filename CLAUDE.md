@@ -20,6 +20,7 @@ Setup: Node 24 (`nvm use`), pnpm via corepack (`corepack enable`), Docker runnin
 
 - `pnpm dev`: Postgres in Docker (port 5433), then api (3000), worker and Vite (5173) with hot reload
 - `pnpm test`, `pnpm test:watch`. Integration tests need the dev Postgres; they recreate `guitartracker_test`
+- `pnpm e2e`: builds the web app, then runs Playwright against a fresh `guitartracker_e2e` database on port 3100. Needs the dev Postgres; install Chromium once with `pnpm --filter @ds/e2e exec playwright install chromium`
 - `pnpm lint`, `pnpm format` (Biome)
 - `pnpm typecheck`
 - `pnpm build`: web (Vite) and server (tsup)
