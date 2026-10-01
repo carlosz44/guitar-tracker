@@ -41,7 +41,12 @@ describe("GET /api/me", () => {
     const { userId, cookie } = await createSignedInUser(db, auth, { name: "Carlos" });
     expect(await getMe(cookie)).toEqual({
       user: { id: userId, name: "Carlos", image: "https://avatars.example.com/u/1001" },
-      settings: { timezone: "America/Lima", dailyTargetMinutes: 30, lessonWeekday: 4 },
+      settings: {
+        timezone: "America/Lima",
+        dailyTargetMinutes: 30,
+        dayTargets: null,
+        lessonWeekday: 4,
+      },
       lastBackupAt: null,
       llm: { enabled: true },
     });
@@ -70,12 +75,27 @@ describe("GET /api/me", () => {
 });
 
 describe("PATCH /api/settings", () => {
+  it("006 AC-1: sets and clears the daily target per weekday", async () => {
+    const { cookie } = await createSignedInUser(db, auth);
+    const week = [30, 30, 30, 30, 30, 45, 60];
+    expect((await patchSettings(cookie, { dayTargets: week })).status).toBe(200);
+    expect((await getMe(cookie)).settings.dayTargets).toEqual(week);
+    expect((await patchSettings(cookie, { dayTargets: [30, 30] })).status).toBe(400);
+    expect((await patchSettings(cookie, { dayTargets: null })).status).toBe(200);
+    expect((await getMe(cookie)).settings.dayTargets).toBeNull();
+  });
+
   it("AC-8: saves a valid daily target and returns it", async () => {
     const { cookie } = await createSignedInUser(db, auth);
     const response = await patchSettings(cookie, { dailyTargetMinutes: 45 });
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
-      settings: { timezone: "America/Lima", dailyTargetMinutes: 45, lessonWeekday: 4 },
+      settings: {
+        timezone: "America/Lima",
+        dailyTargetMinutes: 45,
+        dayTargets: null,
+        lessonWeekday: 4,
+      },
     });
     expect((await getMe(cookie)).settings.dailyTargetMinutes).toBe(45);
   });

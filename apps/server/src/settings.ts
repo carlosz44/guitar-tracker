@@ -9,6 +9,7 @@ export function toSettings(row: SettingsRow): Settings {
   return {
     timezone: row.timezone,
     dailyTargetMinutes: row.dailyTargetMinutes,
+    dayTargets: row.dayTargets ?? null,
     lessonWeekday: row.lessonWeekday,
   };
 }

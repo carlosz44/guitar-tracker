@@ -2,6 +2,7 @@ import { type ManualSession, sessionErrors } from "@ds/shared";
 import { and, asc, eq, gte, inArray, lte, ne } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
 import { practiceSessions, sessionBlocks, topics } from "../db/schema";
+import { dayTarget } from "../planner/rules";
 import { getOrCreateSettings } from "../settings";
 import { dayTotals } from "./queries";
 import { addDays, cycleStart, isMet, practiceDate, splitManual } from "./rules";
@@ -70,7 +71,7 @@ export function createHistoryService(deps: SessionDeps) {
             cleanBpm: item.cleanBpm ?? null,
           })),
         );
-        await ensureDaySnapshot(tx, userId, input.date, settings.dailyTargetMinutes);
+        await ensureDaySnapshot(tx, userId, input.date, dayTarget(settings, input.date));
         for (const id of wanted) await activateTopic(tx, userId, id);
       });
       const view = await loadSessionView(db, userId, sessionId, now);
@@ -140,7 +141,7 @@ export function createHistoryService(deps: SessionDeps) {
         const dayList = dates.map((date) => {
           const total = days.get(date);
           const targetMinutes =
-            date === today ? settings.dailyTargetMinutes : (total?.targetMinutes ?? null);
+            date === today ? dayTarget(settings, today) : (total?.targetMinutes ?? null);
           const seconds = total?.seconds ?? 0;
           return {
             date,

@@ -15,14 +15,18 @@ export const dailyTargetMinutesSchema = z
   .max(DAILY_TARGET_MAX, { error: settingsErrors.dailyTargetRange })
   .multipleOf(DAILY_TARGET_STEP, { error: settingsErrors.dailyTargetStep });
 
+export const dayTargetsSchema = z.array(dailyTargetMinutesSchema).length(7);
+
 export const updateSettingsSchema = z.strictObject({
-  dailyTargetMinutes: dailyTargetMinutesSchema,
+  dailyTargetMinutes: dailyTargetMinutesSchema.optional(),
+  dayTargets: dayTargetsSchema.nullable().optional(),
 });
 export type UpdateSettings = z.infer<typeof updateSettingsSchema>;
 
 export const settingsSchema = z.object({
   timezone: z.string(),
   dailyTargetMinutes: z.number().int(),
+  dayTargets: z.array(z.number().int()).nullable(),
   lessonWeekday: z.number().int().min(1).max(7),
 });
 export type Settings = z.infer<typeof settingsSchema>;

@@ -1,6 +1,6 @@
 # 006 Weekly planner: tasks
 
-- [ ] T1 Day targets: migration `0004_day_targets`, shared schema, settings PATCH and `toSettings`, `dayTarget()`; today and the session and manual-log snapshots use it. (covers AC-1 server)
+- [x] T1 Day targets: migration `0004_day_targets`, shared schema, settings PATCH and `toSettings`, `dayTarget()`; today and the session and manual-log snapshots use it. (covers AC-1 server)
 - [ ] T2 Migration `0005_weekly_plans` (plans, days, items, session FK); shared plan schemas and error keys.
 - [ ] T3 Planner rules: scorer, slot builder, validator, replan input. (covers AC-3, AC-11 rules, AC-15)
 - [ ] T4 Plan service and API: build, current, put days, regenerate day and week, accept, replan; progress. (covers AC-2, AC-7 to AC-11, AC-13)

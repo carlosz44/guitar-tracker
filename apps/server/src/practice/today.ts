@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { SessionVariables } from "../auth/require-session";
 import type { Clock } from "../clock";
 import type { Database } from "../db/client";
+import { dayTarget } from "../planner/rules";
 import { getOrCreateSettings } from "../settings";
 import {
   activeSessionId,
@@ -26,8 +27,9 @@ export function createTodayRoutes(deps: { db: Database; clock: Clock; defaultTim
       topicsWithStats(db, userId),
     ]);
     const seconds = days.get(today)?.seconds ?? 0;
+    const targetMinutes = dayTarget(settings, today);
     const suggestion = suggestBlocks({
-      targetMinutes: settings.dailyTargetMinutes,
+      targetMinutes,
       latestLesson: lesson ? { date: lesson.date, topicIds: lesson.topicIds } : null,
       topics: allTopics.map((topic) => ({
         ...topic,
@@ -40,9 +42,9 @@ export function createTodayRoutes(deps: { db: Database; clock: Clock; defaultTim
         date: today,
         seconds,
         minutes: Math.floor(seconds / 60),
-        targetMinutes: settings.dailyTargetMinutes,
-        met: isMet(seconds, settings.dailyTargetMinutes),
-        streak: streak(days, today, settings.dailyTargetMinutes),
+        targetMinutes,
+        met: isMet(seconds, targetMinutes),
+        streak: streak(days, today, targetMinutes),
         latestLesson: lesson
           ? { id: lesson.id, title: lesson.title, date: lesson.date, status: lesson.status }
           : null,

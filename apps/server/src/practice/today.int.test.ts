@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { fakeClock } from "../clock";
+import { practiceDays, userSettings } from "../db/schema";
 import { bodyOf, createTestApp, TEST_APP_URL } from "../test/app";
 import { useTestDatabase } from "../test/db";
 import { linkTopic, seedLesson, seedQuestion, seedSession, seedTopic } from "../test/seed";
@@ -20,6 +22,27 @@ const today = () =>
   bodyOf(app.request(`${TEST_APP_URL}/api/today`, { headers: { cookie: carlos.cookie } }));
 
 describe("GET /api/today", () => {
+  it("006 AC-1: today's target and the session snapshot use the target for this weekday", async () => {
+    await db
+      .update(userSettings)
+      .set({ dayTargets: [30, 30, 30, 50, 30, 30, 60] })
+      .where(eq(userSettings.userId, carlos.userId));
+    expect((await today()).targetMinutes).toBe(50);
+    const response = await app.request(`${TEST_APP_URL}/api/sessions`, {
+      method: "POST",
+      headers: { cookie: carlos.cookie, "content-type": "application/json" },
+      body: JSON.stringify({
+        blocks: [{ topicId: null, label: "Calentamiento", plannedSeconds: 300 }],
+      }),
+    });
+    expect(response.status).toBe(201);
+    const [day] = await db
+      .select()
+      .from(practiceDays)
+      .where(eq(practiceDays.userId, carlos.userId));
+    expect(day).toMatchObject({ date: "2026-10-01", targetMinutes: 50 });
+  });
+
   it("AC-1: today's minutes against the target, with the latest lesson and open questions", async () => {
     const lesson = await seedLesson(db, carlos.userId, {
       title: "Modo dórico",

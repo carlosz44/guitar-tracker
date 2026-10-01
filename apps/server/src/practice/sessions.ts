@@ -4,6 +4,7 @@ import { uuidv7 } from "uuidv7";
 import type { Clock } from "../clock";
 import type { Database, Tx } from "../db/client";
 import { practiceDays, practiceSessions, sessionBlocks, topics } from "../db/schema";
+import { dayTarget } from "../planner/rules";
 import { getOrCreateSettings } from "../settings";
 import { topicStats } from "./queries";
 import { practiceDate } from "./rules";
@@ -212,7 +213,7 @@ export function createSessionService(deps: SessionDeps) {
               startedAt: position === 0 ? now : null,
             })),
           );
-          await ensureDaySnapshot(tx, userId, date, settings.dailyTargetMinutes);
+          await ensureDaySnapshot(tx, userId, date, dayTarget(settings, date));
         });
       } catch (error) {
         if ((error as { cause?: { code?: string } }).cause?.code === "23505") {

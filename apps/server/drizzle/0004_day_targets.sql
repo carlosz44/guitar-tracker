@@ -1,0 +1,2 @@
+ALTER TABLE "user_settings" ADD COLUMN "day_targets" smallint[];--> statement-breakpoint
+ALTER TABLE "user_settings" ADD CONSTRAINT "user_settings_day_targets_check" CHECK ("user_settings"."day_targets" IS NULL OR (cardinality("user_settings"."day_targets") = 7 AND 10 <= ALL("user_settings"."day_targets") AND 240 >= ALL("user_settings"."day_targets")));

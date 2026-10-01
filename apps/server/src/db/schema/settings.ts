@@ -17,6 +17,7 @@ export const userSettings = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     timezone: text().notNull().default(DEFAULT_TIMEZONE),
     dailyTargetMinutes: smallint().notNull().default(DEFAULT_DAILY_TARGET_MINUTES),
+    dayTargets: smallint().array(),
     lessonWeekday: smallint().notNull().default(DEFAULT_LESSON_WEEKDAY),
     reminderTimes: text()
       .array()
@@ -31,5 +32,9 @@ export const userSettings = pgTable(
       sql`${table.dailyTargetMinutes} BETWEEN 10 AND 240 AND ${table.dailyTargetMinutes} % 5 = 0`,
     ),
     check("user_settings_lesson_weekday_check", sql`${table.lessonWeekday} BETWEEN 1 AND 7`),
+    check(
+      "user_settings_day_targets_check",
+      sql`${table.dayTargets} IS NULL OR (cardinality(${table.dayTargets}) = 7 AND 10 <= ALL(${table.dayTargets}) AND 240 >= ALL(${table.dayTargets}))`,
+    ),
   ],
 );

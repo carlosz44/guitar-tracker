@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { dailyTargetMinutesSchema, settingsErrors, updateSettingsSchema } from "./settings.ts";
+import {
+  dailyTargetMinutesSchema,
+  dayTargetsSchema,
+  settingsErrors,
+  updateSettingsSchema,
+} from "./settings.ts";
 
 function firstError(value: unknown) {
   const result = dailyTargetMinutesSchema.safeParse(value);
@@ -37,5 +42,14 @@ describe("updateSettingsSchema", () => {
     expect(
       updateSettingsSchema.safeParse({ dailyTargetMinutes: 30, timezone: "UTC" }).success,
     ).toBe(false);
+  });
+});
+
+describe("dayTargetsSchema", () => {
+  it("006 AC-1: needs one target per weekday, each 10–240 in steps of 5", () => {
+    expect(dayTargetsSchema.safeParse([30, 30, 30, 30, 30, 30, 60]).success).toBe(true);
+    expect(dayTargetsSchema.safeParse([30, 30, 30, 30, 30, 30]).success).toBe(false);
+    expect(dayTargetsSchema.safeParse([30, 30, 30, 30, 30, 30, 33]).success).toBe(false);
+    expect(updateSettingsSchema.safeParse({ dayTargets: null }).success).toBe(true);
   });
 });

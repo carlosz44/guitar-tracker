@@ -13,11 +13,11 @@ export function createSettingsRoutes(deps: { db: Database; defaultTimezone: stri
     validate("json", updateSettingsSchema),
     async (c) => {
       const userId = c.get("user").id;
-      const { dailyTargetMinutes } = c.req.valid("json");
+      const changes = c.req.valid("json");
       await getOrCreateSettings(deps.db, userId, deps.defaultTimezone);
       const [row] = await deps.db
         .update(userSettings)
-        .set({ dailyTargetMinutes })
+        .set(changes)
         .where(eq(userSettings.userId, userId))
         .returning();
       if (!row) throw new Error("user_settings row missing on update");
