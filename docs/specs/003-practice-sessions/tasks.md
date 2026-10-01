@@ -13,7 +13,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T9 Web: Hoy, with progress ring, streak, lesson, questions, editable suggestions, Empezar, active-session card and resume on launch. (covers AC-1, AC-3, AC-4)
 - [x] T10 Web: practice screen with countdown, next block, elapsed, pause, +5, Saltar, time-up screen, wake lock and tip. (covers AC-5 to AC-10)
 - [x] T11 Web: block log sheet, Anotar pregunta, summary and Terminar. (covers AC-11 to AC-14)
-- [ ] T12 Web: manual log at `/log`. (covers AC-17)
+- [x] T12 Web: manual log at `/log`. (covers AC-17)
 - [ ] T13 Web: Historial and the session edit page. (covers AC-18, AC-19)
 - [ ] T14 Web: topic stats on the topic page.
 - [ ] T15 Playwright e2e smoke tests plus the CI job. (covers AC-1, AC-5, AC-6, AC-8, AC-11, AC-13, AC-18)
