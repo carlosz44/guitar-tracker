@@ -103,7 +103,7 @@ This is the screen Carlos uses every day, at the music stand, with the iPhone as
 - **Session screen:** designed for a phone on a stand, 60–80 cm away.
   - Countdown about 96 px, topic name about 28 px, target BPM prominent.
   - Controls sit at the bottom within thumb reach: Pausa, +5 min, Saltar, Anotar pregunta.
-  - Uses the dark theme by default regardless of system, to reduce glare. It restores the normal theme on exit.
+  - The app is always dark (D-17), which also keeps glare down at the stand.
 - **Block end:** the colour change must be obvious in peripheral vision.
 - **Start experience:** Hoy is the default route, so opening from the home screen lands on the "Empezar" button.
 - **Historial:** compact on phone. On laptop, a table with columns for date, minutes, topics and average rating.

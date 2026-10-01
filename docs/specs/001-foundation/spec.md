@@ -16,7 +16,7 @@ Everything later needs a working skeleton: monorepo, database, login, the app sh
 - **Auth:** Better Auth with GitHub, the `ALLOWED_GITHUB_IDS` allowlist, 90-day rolling sessions, logout.
 - **Web shell:**
   - routes `/today`, `/lessons`, `/topics`, `/history`, `/settings` (placeholders except Ajustes)
-  - responsive navigation, light and dark theme following the system
+  - responsive navigation, dark theme only (D-17)
   - Spanish strings file
 - **PWA:** manifest, icons, service worker for the app shell, iOS home-screen support.
 - **Ajustes (Settings) page:** account (GitHub name and avatar), timezone (read-only), editable daily target, last successful backup, sign out.
@@ -44,7 +44,7 @@ Everything later needs a working skeleton: monorepo, database, login, the app sh
 
 **App shell and PWA**
 - **AC-6** At widths under 1024 px the app shows a bottom navigation bar (Hoy, Clases, Temas, Historial, Ajustes). At 1024 px and above it shows a sidebar. Every visible string comes from `apps/web/src/i18n/es.ts`.
-- **AC-7** Given Safari on iPhone, when I use Share → Add to Home Screen, then the app opens full-screen with the name "Daily Shed" and its icon, and the status bar matches the theme (light or dark from system).
+- **AC-7** Given Safari on iPhone, when I use Share → Add to Home Screen, then the app opens full-screen with the name "Daily Shed" and its icon, and the status bar is dark to match the app (D-17).
 - **AC-8** In Ajustes I can change the daily target (10–240 minutes, in steps of 5). It persists, and invalid values show a Spanish validation message.
 
 **Deploy and operations**
@@ -68,7 +68,7 @@ Everything later needs a working skeleton: monorepo, database, login, the app sh
 - **Hoy placeholder:** a friendly empty state ("Aquí verás tu práctica de hoy") until 003.
 - **Login page:** the app name, a one-line description in Spanish, and the GitHub button.
 - **Icon:** an original, simple mark generated from one SVG with `@vite-pwa/assets-generator`. No third-party logos.
-- **iOS specifics:** `apple-touch-icon`, theme colour for light and dark, and safe-area insets so the bottom navigation clears the home indicator.
+- **iOS specifics:** `apple-touch-icon`, a dark theme colour, and safe-area insets so the bottom navigation clears the home indicator.
 - **Service worker:** precaches the app shell only. `/api` is always fetched from the network. When a new version is available, show a toast ("Nueva versión disponible · Actualizar").
 
 ## Data

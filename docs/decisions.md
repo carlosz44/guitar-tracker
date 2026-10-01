@@ -138,3 +138,12 @@ Short records of choices already made, so they don't get re-argued. Add a new en
 **Why:** paths are code. They appear in route files, links and tests, which D-08 keeps in English.
 
 **Instead of:** the Spanish paths first written in specs 001–003.
+
+## D-17 Dark theme only
+*2026-09-30*
+
+**Decision:** The app has one theme, dark. There is no light palette and no switch, and it ignores the system setting. The iOS status bar, the PWA splash screen and the Guitar Pro viewer use the same dark palette; the tab is drawn in light colours on a dark card.
+
+**Why:** Carlos never uses light mode. One palette means less to build, test and check on the iPhone, and less glare on the music stand.
+
+**Instead of:** light and dark following the system, as first written in specs 001 and 003.

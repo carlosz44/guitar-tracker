@@ -1,7 +1,7 @@
 import type { VitePWAOptions } from "vite-plugin-pwa";
 import { es } from "./src/i18n/es.ts";
 
-export const THEME_COLORS = { light: "#ffffff", dark: "#0a0a0a" } as const;
+export const THEME_COLOR = "#0a0a0a";
 
 export const pwaOptions: Partial<VitePWAOptions> = {
   registerType: "prompt",
@@ -16,8 +16,8 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: THEME_COLORS.light,
-    theme_color: THEME_COLORS.light,
+    background_color: THEME_COLOR,
+    theme_color: THEME_COLOR,
     icons: [
       { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
       { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },

@@ -14,7 +14,7 @@ function Root() {
   return (
     <>
       <Outlet />
-      <Toaster theme="system" position="top-center" richColors />
+      <Toaster theme="dark" position="top-center" richColors />
       <UpdatePrompt />
     </>
   );

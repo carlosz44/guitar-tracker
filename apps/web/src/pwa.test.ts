@@ -2,7 +2,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { pwaOptions, THEME_COLORS } from "../pwa.config.ts";
+import { pwaOptions, THEME_COLOR } from "../pwa.config.ts";
 
 const webRoot = fileURLToPath(new URL("../", import.meta.url));
 const indexHtml = readFileSync(`${webRoot}index.html`, "utf8");
@@ -66,12 +66,10 @@ describe("iOS home screen", () => {
     expect(meta("apple-mobile-web-app-status-bar-style")).toHaveLength(1);
   });
 
-  it("AC-7: colours the status bar for both light and dark", () => {
-    const themeColors = meta("theme-color");
-    expect(themeColors).toEqual([
-      ` content="${THEME_COLORS.light}" media="(prefers-color-scheme: light)" /`,
-      ` content="${THEME_COLORS.dark}" media="(prefers-color-scheme: dark)" /`,
-    ]);
+  it("AC-7: uses the dark palette for the status bar and splash screen (D-17)", () => {
+    expect(meta("theme-color")).toEqual([` content="${THEME_COLOR}" /`]);
+    expect(meta("apple-mobile-web-app-status-bar-style")[0]).toContain('content="black"');
+    expect(manifest).toMatchObject({ background_color: THEME_COLOR, theme_color: THEME_COLOR });
   });
 
   it("extends under the notch so safe-area insets apply", () => {
