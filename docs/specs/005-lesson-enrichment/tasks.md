@@ -10,7 +10,7 @@
 - [x] T8 Topic improve job and API. (covers AC-12)
 - [x] T9 Web: "Completar con Claude", waiting and failed states, polling, quick capture in the new-lesson form, "Borrador" badges. (covers AC-1, AC-2, AC-4, AC-16)
 - [x] T10 Web: lesson review, with section cards, topic and question lists, "Aceptar todo" and "Regenerar". (covers AC-5 to AC-11)
-- [ ] T11 Web: "Mejorar con Claude" review on the topic page. (covers AC-12)
+- [x] T11 Web: "Mejorar con Claude" review on the topic page. (covers AC-12)
 - [ ] T12 Web: Claude spend in Ajustes, or "no configurado". (covers AC-14, AC-16)
 - [ ] T13 Docs and manual checks:
   - D-17, domain.md (draft statuses and columns), architecture.md env

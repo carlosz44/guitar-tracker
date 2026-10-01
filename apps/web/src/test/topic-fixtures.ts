@@ -73,6 +73,7 @@ export function topicDetail(overrides: Record<string, unknown> = {}) {
     children: [{ id: "child", title: "Inversiones", status: "new" }],
     lessons: [{ id: "l1", date: "2026-10-01", title: "Clase de dórico", relation: "introduced" }],
     openQuestions: [{ id: "q1", text: "¿Qué digitación uso?" }],
+    draft: null,
     stats: {
       lastPracticedAt: null,
       lastPracticedDate: null,

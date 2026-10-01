@@ -3,6 +3,9 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Archive, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { StartDraftButton } from "@/components/llm/start-draft-button";
+import { TopicDraft } from "@/components/llm/topic-draft";
+import { useStartDraft } from "@/components/llm/use-start-draft";
 import { Markdown } from "@/components/markdown";
 import { NativeSelect } from "@/components/native-select";
 import { QuestionDialog } from "@/components/questions/question-dialog";
@@ -34,7 +37,8 @@ function TopicPage() {
   const { topicId } = Route.useParams();
   const { data } = useSuspenseQuery(topicQuery(topicId));
   const queryClient = useQueryClient();
-  const { topic, parent, children, lessons, openQuestions, stats } = data;
+  const { topic, draft, parent, children, lessons, openQuestions, stats } = data;
+  const improve = useStartDraft({ type: "topic", id: topicId });
 
   const setStatus = useMutation({
     mutationFn: async (status: TopicStatus) =>
@@ -92,8 +96,17 @@ function TopicPage() {
             onArchive={() => setStatus.mutate("archived")}
           />
           <QuestionDialog topicId={topicId} />
+          {!draft && (
+            <StartDraftButton
+              label={es.llm.improveTopic}
+              onStart={() => improve.mutate(undefined)}
+              pending={improve.isPending}
+            />
+          )}
         </div>
       </header>
+
+      {draft && <TopicDraft topicId={topicId} draft={draft} />}
 
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {facts.map(([label, value]) => (
