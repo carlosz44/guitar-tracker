@@ -13,6 +13,7 @@ import { createHealthRoutes } from "./routes/health";
 import { createMeRoutes } from "./routes/me";
 import { createSettingsRoutes } from "./routes/settings";
 import type { ObjectStorage } from "./storage/r2";
+import { createTopicRoutes } from "./topics/routes";
 
 export interface AppDeps {
   db: Database;
@@ -34,7 +35,8 @@ export function createApiRoutes(deps: AppDeps) {
     .use("*", requireSession(deps.auth, deps.allowlist))
     .route("/me", createMeRoutes(deps))
     .route("/settings", createSettingsRoutes(deps))
-    .route("/lessons", createLessonRoutes(deps));
+    .route("/lessons", createLessonRoutes(deps))
+    .route("/topics", createTopicRoutes(deps));
 }
 export type AppType = ReturnType<typeof createApiRoutes>;
 

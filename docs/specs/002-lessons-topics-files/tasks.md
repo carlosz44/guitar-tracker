@@ -7,7 +7,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T3 Schema and migration `0001_lessons_topics_files`, plus `truncateAll` updated.
 - [x] T4 App dependencies: `storage` and `queue` in `AppDeps`, send-only pg-boss in the api, `storage.getStream`, CSP for the R2 origin.
 - [x] T5 Lessons API: create, list, detail, patch, delete with R2. (covers AC-1, AC-2, AC-3)
-- [ ] T6 Topics API: create, list with filters, detail, patch with cycle check, delete rule. (covers AC-11 to AC-14)
+- [x] T6 Topics API: create, list with filters, detail, patch with cycle check, delete rule. (covers AC-11 to AC-14)
 - [ ] T7 Lesson-topic links and questions API. (covers AC-15, AC-16, AC-17)
 - [ ] T8 Files API: presign, confirm, url, open, retry, delete. (covers AC-4, AC-5, AC-9, AC-10)
 - [ ] T9 Worker: `file.extract` (SHA-256, thread with limits and timeout, statuses, duplicate data) and `file.cleanup-stale`. (covers AC-6, AC-7)

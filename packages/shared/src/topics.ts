@@ -12,6 +12,7 @@ export const topicErrors = {
   targetBpm: "topic.targetBpm",
   blockMinutes: "topic.blockMinutes",
   cycle: "topic.cycle",
+  parent: "topic.parent",
   hasLessons: "topic.hasLessons",
 } as const;
 
