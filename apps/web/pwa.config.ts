@@ -32,6 +32,8 @@ export const pwaOptions: Partial<VitePWAOptions> = {
   },
   workbox: {
     globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest}"],
+    globIgnores: ["**/font/**", "**/soundfont/**"],
+    maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
     navigateFallback: "/index.html",
     navigateFallbackDenylist: [/^\/api/],
     runtimeCaching: [],

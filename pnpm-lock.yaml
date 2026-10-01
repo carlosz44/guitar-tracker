@@ -263,6 +263,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@coderline/alphatab':
+        specifier: ^1.8.4
+        version: 1.8.4
       '@ds/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -318,6 +321,9 @@ importers:
         specifier: ^4.6.5
         version: 4.6.5
     devDependencies:
+      '@coderline/alphatab-vite':
+        specifier: ^1.8.4
+        version: 1.8.4(vite@8.3.1(@types/node@24.19.0))
       '@ds/server':
         specifier: workspace:*
         version: link:../server
@@ -1147,6 +1153,12 @@ packages:
 
   '@canvas/image-data@1.1.0':
     resolution: {integrity: sha512-QdObRRjRbcXGmM1tmJ+MrHcaz1MftF2+W7YI+MsphnsCrmtyfS0d5qJbk0MeSbUeyM/jCb0hmnkXPsy026L7dA==}
+
+  '@coderline/alphatab-vite@1.8.4':
+    resolution: {integrity: sha512-kUABf0FNMXZrr7TvHLUBTqpQQLrHXs9bIrsQMHHZXE0uIlH70yNSgbiuvm0SK0L5D07On5RD5InteJZIX9dacg==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      vite: ^7 || ^8
 
   '@coderline/alphatab@1.8.4':
     resolution: {integrity: sha512-VN5rfTZZWgA63Ny1aDKCp02k3Qm9CHhg4Q9AnK0kHm7G+fNDNZo36TeToPDFoJ6VpB9+AHcCrHwHFUP1tKqdsw==}
@@ -7907,6 +7919,11 @@ snapshots:
       css-tree: 3.2.1
 
   '@canvas/image-data@1.1.0': {}
+
+  '@coderline/alphatab-vite@1.8.4(vite@8.3.1(@types/node@24.19.0))':
+    dependencies:
+      magic-string: 0.30.21
+      vite: 8.3.1(@types/node@24.19.0)
 
   '@coderline/alphatab@1.8.4': {}
 

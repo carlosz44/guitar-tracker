@@ -204,6 +204,7 @@ export const es = {
     tabOnly: "Solo tablatura",
     zoomIn: "Acercar",
     zoomOut: "Alejar",
+    zoomValue: (percent: number) => `${percent} %`,
     loading: "Cargando tablatura…",
     error: "No se pudo mostrar la tablatura.",
     noImagePreview: "Este navegador no puede mostrar la imagen.",

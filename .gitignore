@@ -7,3 +7,7 @@ coverage/
 .env
 .env.*
 !.env.example
+
+# Copied in by the alphaTab Vite plugin on build.
+apps/web/public/font/
+apps/web/public/soundfont/
