@@ -1,0 +1,140 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/carlosz44/guitar-tracker
+  APP_DIR: /srv/guitar-tracker
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: ${{ vars.IMAGE_PLATFORM || 'linux/amd64' }}
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure SSH (pinned host key)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<CONFIG
+          Host vps
+            HostName $VPS_HOST
+            User deploy
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            UserKnownHostsFile ~/.ssh/known_hosts
+          CONFIG
+
+      - name: Copy compose file
+        run: scp deploy/compose.prod.yml "vps:$APP_DIR/compose.prod.yml"
+
+      - name: Write .env from secrets
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          ALLOWED_GITHUB_IDS: ${{ secrets.ALLOWED_GITHUB_IDS }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          encoded_password=$(node -e 'process.stdout.write(encodeURIComponent(process.env.POSTGRES_PASSWORD))')
+          # shellcheck disable=SC2029
+          {
+            printf 'IMAGE_TAG=%s\n' "$GITHUB_SHA"
+            printf 'NODE_ENV=production\nLOG_LEVEL=info\nPORT=3000\nDEFAULT_TIMEZONE=America/Lima\n'
+            printf 'APP_URL=%s\n' "$APP_URL"
+            printf 'POSTGRES_PASSWORD=%s\n' "$POSTGRES_PASSWORD"
+            printf 'DATABASE_URL=postgres://guitartracker:%s@db:5432/guitartracker\n' "$encoded_password"
+            printf 'BETTER_AUTH_SECRET=%s\n' "$BETTER_AUTH_SECRET"
+            printf 'GITHUB_CLIENT_ID=%s\n' "$GITHUB_CLIENT_ID"
+            printf 'GITHUB_CLIENT_SECRET=%s\n' "$GITHUB_CLIENT_SECRET"
+            printf 'ALLOWED_GITHUB_IDS=%s\n' "$ALLOWED_GITHUB_IDS"
+            printf 'R2_ACCOUNT_ID=%s\n' "$R2_ACCOUNT_ID"
+            printf 'R2_ACCESS_KEY_ID=%s\n' "$R2_ACCESS_KEY_ID"
+            printf 'R2_SECRET_ACCESS_KEY=%s\n' "$R2_SECRET_ACCESS_KEY"
+            printf 'R2_BUCKET=%s\n' "$R2_BUCKET"
+          } | ssh vps "umask 077 && cat > $APP_DIR/.env"
+
+      - name: Pull, migrate and start
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # shellcheck disable=SC2029
+          printf '%s' "$GHCR_TOKEN" | ssh vps "set -euo pipefail
+            cd $APP_DIR
+            docker login ghcr.io -u '$GITHUB_ACTOR' --password-stdin
+            trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+            docker compose -f compose.prod.yml pull
+            docker logout ghcr.io
+            docker compose -f compose.prod.yml up -d --wait db
+            docker compose -f compose.prod.yml run --rm api node apps/server/dist/migrate.js
+            docker compose -f compose.prod.yml up -d --remove-orphans"
+
+      - name: Health check
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          for attempt in $(seq 1 10); do
+            if curl -fsS --max-time 5 "$APP_URL/api/health"; then exit 0; fi
+            echo "health check attempt $attempt failed, retrying"
+            sleep 6
+          done
+          exit 1

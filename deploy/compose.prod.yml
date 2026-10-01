@@ -1,0 +1,70 @@
+name: guitar-tracker
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  api:
+    image: ghcr.io/carlosz44/guitar-tracker:${IMAGE_TAG:-latest}
+    command: ["node", "apps/server/dist/api.js"]
+    env_file: .env
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=192"
+    mem_limit: 256m
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      default: {}
+      edge:
+        aliases: [guitar-tracker-api]
+
+  worker:
+    image: ghcr.io/carlosz44/guitar-tracker:${IMAGE_TAG:-latest}
+    command: ["node", "apps/server/dist/worker.js"]
+    env_file: .env
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=160"
+    mem_limit: 384m
+    restart: unless-stopped
+    stop_grace_period: 40s
+    logging: *logging
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - max_connections=20
+      - -c
+      - work_mem=4MB
+    environment:
+      POSTGRES_DB: guitartracker
+      POSTGRES_USER: guitartracker
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    mem_limit: 256m
+    restart: unless-stopped
+    logging: *logging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U guitartracker"]
+      interval: 10s
+      retries: 5
+
+volumes:
+  db_data:
+
+networks:
+  edge:
+    external: true

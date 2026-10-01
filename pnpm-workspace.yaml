@@ -1,0 +1,13 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  esbuild: true
+  msw: false
+
+# Better Auth's optional peers (vitest, react) would otherwise pull the test toolchain
+# into the server's production dependencies. Peers are declared explicitly instead.
+resolvePeersFromWorkspaceRoot: false
+dedupePeerDependents: false
+autoInstallPeers: false

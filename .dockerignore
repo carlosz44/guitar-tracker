@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/dev-dist
+**/coverage
+**/.env
+**/.env.*
+.git
+.github
+docs
+deploy
+*.md
