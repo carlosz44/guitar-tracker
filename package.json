@@ -7,7 +7,7 @@
     "node": ">=24 <25"
   },
   "scripts": {
-    "dev": "docker compose -f compose.dev.yml up -d --wait && pnpm --parallel --filter './apps/*' run \"/^dev/\"",
+    "dev": "docker compose -f compose.dev.yml up -d --wait && pnpm db:migrate && pnpm --parallel --filter './apps/*' run \"/^dev/\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check .",
