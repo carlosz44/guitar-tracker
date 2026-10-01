@@ -10,6 +10,7 @@ interface Step {
   uses?: string;
   run?: string;
   with?: Record<string, string | boolean>;
+  env?: Record<string, string>;
 }
 interface Job {
   needs?: string | string[];
@@ -123,5 +124,14 @@ describe("workflows", () => {
     const write = runOf(job(deploy, "deploy").steps, "Write .env from secrets");
     expect(write).toContain("umask 077");
     expect(write).toContain("encodeURIComponent(process.env.POSTGRES_PASSWORD)");
+  });
+
+  it("005 AC-16: passes the Claude key from secrets and the monthly budget", () => {
+    const step = job(deploy, "deploy").steps?.find((s) => s.name === "Write .env from secrets");
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: GitHub Actions expressions, not JS templates.
+    expect(step?.env?.ANTHROPIC_API_KEY).toBe("${{ secrets.ANTHROPIC_API_KEY }}");
+    const write = runOf(job(deploy, "deploy").steps, "Write .env from secrets");
+    expect(write).toContain("ANTHROPIC_API_KEY=%s");
+    expect(write).toContain("LLM_MONTHLY_BUDGET_USD=%s");
   });
 });

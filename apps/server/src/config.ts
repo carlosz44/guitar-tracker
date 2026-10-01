@@ -32,10 +32,20 @@ const r2 = {
   R2_ENDPOINT: z.url({ protocol: /^https?$/, error: "must be an http(s) URL" }).optional(),
 };
 
+const llm = {
+  ANTHROPIC_API_KEY: required.optional(),
+  LLM_MODEL_DEFAULT: required.default("claude-sonnet-5-5"),
+  LLM_MONTHLY_BUDGET_USD: z.coerce
+    .number({ error: "must be a number" })
+    .min(0, { error: "must be zero or more" })
+    .default(10),
+};
+
 export const apiConfigSchema = z.object({
   ...base,
   ...database,
   ...r2,
+  ...llm,
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
   APP_URL: z.url({ protocol: /^https?$/, error: "must be an http(s) URL" }),
   BETTER_AUTH_SECRET: z.string().min(32, { error: "must be at least 32 characters" }),
@@ -57,7 +67,7 @@ export const apiConfigSchema = z.object({
 });
 export type ApiConfig = z.infer<typeof apiConfigSchema>;
 
-export const workerConfigSchema = z.object({ ...base, ...database, ...r2 });
+export const workerConfigSchema = z.object({ ...base, ...database, ...r2, ...llm });
 export type WorkerConfig = z.infer<typeof workerConfigSchema>;
 
 export const migrateConfigSchema = z.object({ ...base, ...database });

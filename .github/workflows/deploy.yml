@@ -94,6 +94,8 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MONTHLY_BUDGET_USD: ${{ vars.LLM_MONTHLY_BUDGET_USD || '10' }}
         run: |
           encoded_password=$(node -e 'process.stdout.write(encodeURIComponent(process.env.POSTGRES_PASSWORD))')
           # shellcheck disable=SC2029
@@ -111,6 +113,8 @@ jobs:
             printf 'R2_ACCESS_KEY_ID=%s\n' "$R2_ACCESS_KEY_ID"
             printf 'R2_SECRET_ACCESS_KEY=%s\n' "$R2_SECRET_ACCESS_KEY"
             printf 'R2_BUCKET=%s\n' "$R2_BUCKET"
+            printf 'ANTHROPIC_API_KEY=%s\n' "$ANTHROPIC_API_KEY"
+            printf 'LLM_MONTHLY_BUDGET_USD=%s\n' "$LLM_MONTHLY_BUDGET_USD"
           } | ssh vps "umask 077 && cat > $APP_DIR/.env"
 
       - name: Pull, migrate and start

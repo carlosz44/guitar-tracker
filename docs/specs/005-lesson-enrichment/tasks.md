@@ -1,6 +1,6 @@
 # 005 Lesson enrichment with Claude: tasks
 
-- [ ] T1 Config and deploy: `ANTHROPIC_API_KEY` (optional), `LLM_MODEL_DEFAULT`, `LLM_MONTHLY_BUDGET_USD`; `.env.example`, deploy secrets, compose, workflow tests; add `@anthropic-ai/sdk`. (covers AC-16 config)
+- [x] T1 Config and deploy: `ANTHROPIC_API_KEY` (optional), `LLM_MODEL_DEFAULT`, `LLM_MONTHLY_BUDGET_USD`; `.env.example`, deploy secrets, compose, workflow tests; add `@anthropic-ai/sdk`. (covers AC-16 config)
 - [ ] T2 Migration `0003_llm` (`llm_runs`, `llm_drafts`, one active draft per subject); shared LLM schemas and error keys.
 - [ ] T3 LLM client (real and fake), pricing checked against Anthropic's page, run logging, monthly spend, budget check. (covers AC-13, AC-14, AC-15 server)
 - [ ] T4 Attachments: files to content blocks with limits and skipped reasons. (covers AC-3)

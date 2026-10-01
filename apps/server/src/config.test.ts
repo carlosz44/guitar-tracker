@@ -77,6 +77,33 @@ describe("parseConfig", () => {
   });
 });
 
+describe("Claude settings", () => {
+  it("005 AC-16: the API key is optional, with a default model and a $10 monthly budget", () => {
+    for (const schema of [apiConfigSchema, workerConfigSchema]) {
+      const result = parseConfig(schema, { ...validEnv, ANTHROPIC_API_KEY: "" });
+      expect(result).toMatchObject({
+        ok: true,
+        config: { LLM_MODEL_DEFAULT: "claude-sonnet-5-5", LLM_MONTHLY_BUDGET_USD: 10 },
+      });
+      if (result.ok) expect(result.config.ANTHROPIC_API_KEY).toBeUndefined();
+    }
+  });
+
+  it("reads the key and budget when set, rejecting a negative budget", () => {
+    expect(
+      parseConfig(workerConfigSchema, {
+        ...validEnv,
+        ANTHROPIC_API_KEY: "fake-anthropic-key",
+        LLM_MONTHLY_BUDGET_USD: "2.5",
+      }),
+    ).toMatchObject({ ok: true, config: { LLM_MONTHLY_BUDGET_USD: 2.5 } });
+    expect(parseConfig(apiConfigSchema, { ...validEnv, LLM_MONTHLY_BUDGET_USD: "-1" })).toEqual({
+      ok: false,
+      problems: ["invalid LLM_MONTHLY_BUDGET_USD: must be zero or more"],
+    });
+  });
+});
+
 describe("R2_ENDPOINT", () => {
   it("is optional and must be a URL when set", () => {
     expect(parseConfig(workerConfigSchema, validEnv).ok).toBe(true);
