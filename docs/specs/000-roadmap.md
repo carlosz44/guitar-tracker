@@ -4,8 +4,8 @@
 |---|---|---|---|
 | infra-vps/001 | Shared edge on the VPS (in the `infra-vps` repo) | Approved | — |
 | 001 | Foundation | In progress (T19 manual checks left) | Deploy step needs infra-vps/001 |
-| 002 | Lessons, topics and files | Approved | 001 |
-| 003 | Practice sessions | Approved | 002 |
+| 002 | Lessons, topics and files | In progress (T17 manual checks left) | 001 |
+| 003 | Practice sessions | In progress (T16 iPhone checks left) | 002 |
 | 004 | Telegram: reminders and quick log | Outline | 003 |
 | 005 | Lesson enrichment with Claude | Outline | 002 |
 | 006 | Weekly planner | Outline | 003, 005 |

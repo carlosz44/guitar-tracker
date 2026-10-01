@@ -53,7 +53,7 @@ Dockerfile
 | Runtime | Node 24 LTS, TypeScript (strict) | |
 | Workspace | pnpm workspaces | |
 | Lint and format | Biome | |
-| Tests | Vitest; Playwright smoke tests later | Integration tests hit a real Postgres |
+| Tests | Vitest; Playwright smoke tests | Integration tests hit a real Postgres |
 | Web build | Vite | |
 | UI | React, Tailwind CSS v4 (`@tailwindcss/vite`), shadcn/ui | |
 | Routing and data | TanStack Router (file-based), TanStack Query | |
@@ -184,7 +184,7 @@ docker compose -f /srv/guitar-tracker/compose.prod.yml exec -T db \
 
 - **Unit tests:** pure domain rules such as day boundaries, streaks, block suggestions, reminder decisions and planner scoring. Time is injected, never read directly.
 - **Integration tests:** API routes against a real Postgres (the CI service container locally, or `compose.dev.yml`), with auth stubbed by a test session helper.
-- **End to end:** Playwright smoke tests for login and a practice session, added once 003 is done.
+- **End to end:** Playwright smoke tests in `e2e/` for the sign-in redirects and a full practice session. They run the production api, serving the built web app, against a fresh `guitartracker_e2e` database with a seeded session cookie (GitHub OAuth can't run in CI). `pnpm e2e` locally; a CI job after the unit and integration tests.
 
 ## Moving to the home server later
 

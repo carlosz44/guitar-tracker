@@ -18,6 +18,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T14 Web: topic stats on the topic page.
 - [x] T15 Playwright e2e smoke tests plus the CI job. (covers AC-1, AC-5, AC-6, AC-8, AC-11, AC-13, AC-18)
 - [ ] T16 Manual checks and docs:
-  - iPhone at the stand: lock the screen mid-block, wake lock or tip, airplane mode during a block
-  - 390 px and desktop for every new screen
-  - then spec status and roadmap.
+  - [ ] iPhone at the stand: lock the screen mid-block, wake lock or tip, airplane mode during a block
+  - [x] 390 px and desktop for every new screen (Chromium against the e2e server; fixed the planner, practice controls and session page overflowing at 390 px, and Hoy offering to continue a just-finished session)
+  - [x] `docs/architecture.md` and the roadmap updated
+  - [ ] then spec status Done and roadmap.
