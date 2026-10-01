@@ -7,6 +7,7 @@ import type { Database } from "./db/client";
 import { requestLogger } from "./http/request-logger";
 import { mountStatic } from "./http/static";
 import type { JobQueue } from "./jobs/boss";
+import { createLessonRoutes } from "./lessons/routes";
 import type { Logger } from "./logger";
 import { createHealthRoutes } from "./routes/health";
 import { createMeRoutes } from "./routes/me";
@@ -32,7 +33,8 @@ export function createApiRoutes(deps: AppDeps) {
     .route("/health", createHealthRoutes(deps))
     .use("*", requireSession(deps.auth, deps.allowlist))
     .route("/me", createMeRoutes(deps))
-    .route("/settings", createSettingsRoutes(deps));
+    .route("/settings", createSettingsRoutes(deps))
+    .route("/lessons", createLessonRoutes(deps));
 }
 export type AppType = ReturnType<typeof createApiRoutes>;
 

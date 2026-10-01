@@ -50,3 +50,8 @@ export function createTestApp(deps: {
   });
   return { app, auth, allowlist, storage: memory, jobs };
 }
+
+// biome-ignore lint/suspicious/noExplicitAny: tests assert response bodies structurally.
+export async function bodyOf(response: Response | Promise<Response>): Promise<any> {
+  return (await response).json();
+}
