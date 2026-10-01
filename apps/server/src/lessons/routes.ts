@@ -16,6 +16,9 @@ import { idParam, validate } from "../http/validate";
 import { deleteDrafts, latestDraft, startDraft } from "../llm/drafts";
 import { type LlmRouteDeps, startFailure } from "../llm/routes";
 import { userTimezone } from "../llm/run";
+import { planForCycle } from "../planner/queries";
+import { addDays, cycleStart, practiceDate } from "../practice/rules";
+import { getOrCreateSettings } from "../settings";
 import {
   findLesson,
   latestLessonId,
@@ -76,18 +79,27 @@ export function createLessonRoutes(deps: FileDeps & LlmRouteDeps) {
       const userId = c.get("user").id;
       const lesson = await findLesson(db, userId, c.req.valid("param").id);
       if (!lesson) return c.json({ error: "not_found" as const }, 404);
-      const [files, topics, questions, latestId, draft] = await Promise.all([
+      const settings = await getOrCreateSettings(db, userId, deps.defaultTimezone);
+      const cycle = cycleStart(lesson.date, settings.lessonWeekday);
+      const [files, topics, questions, latestId, draft, plans] = await Promise.all([
         lessonFilesWithDuplicates(db, userId, lesson.id),
         lessonTopicGroups(db, userId, lesson.id),
         openQuestions(db, userId),
         latestLessonId(db, userId),
         latestDraft(db, userId, "lesson", lesson.id),
+        planForCycle(db, userId, cycle),
       ]);
+      const cyclePlanRow = plans.active ?? plans.draft;
       const isLatest = latestId === lesson.id;
       return c.json(
         {
           lesson: toLesson(lesson),
           draft,
+          cyclePlan: {
+            cycleStart: cycle,
+            ended: addDays(cycle, 6) < practiceDate(deps.clock.now(), settings.timezone),
+            plan: cyclePlanRow ? { id: cyclePlanRow.id, status: cyclePlanRow.status } : null,
+          },
           topics,
           files,
           isLatest,

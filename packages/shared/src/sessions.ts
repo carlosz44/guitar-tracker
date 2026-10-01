@@ -55,6 +55,7 @@ export type PlannedBlock = z.infer<typeof plannedBlockSchema>;
 
 export const startSessionSchema = z.strictObject({
   blocks: z.array(plannedBlockSchema).min(1, { error: sessionErrors.blocks }).max(20),
+  planDayId: z.uuid().optional(),
 });
 
 export const pauseSchema = z.strictObject({ at: instant.optional() });

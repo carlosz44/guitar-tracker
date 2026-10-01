@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import type { SessionVariables } from "../auth/require-session";
 import type { Clock } from "../clock";
 import type { Database } from "../db/client";
+import { activePlanDay } from "../planner/queries";
 import { dayTarget } from "../planner/rules";
 import { getOrCreateSettings } from "../settings";
 import {
@@ -27,7 +28,9 @@ export function createTodayRoutes(deps: { db: Database; clock: Clock; defaultTim
       topicsWithStats(db, userId),
     ]);
     const seconds = days.get(today)?.seconds ?? 0;
-    const targetMinutes = dayTarget(settings, today);
+    const planDay = await activePlanDay(db, userId, today);
+    const targetMinutes = planDay?.day.targetMinutes ?? dayTarget(settings, today);
+    const stats = new Map(allTopics.map((topic) => [topic.id, topic.stats]));
     const suggestion = suggestBlocks({
       targetMinutes,
       latestLesson: lesson ? { date: lesson.date, topicIds: lesson.topicIds } : null,
@@ -50,6 +53,23 @@ export function createTodayRoutes(deps: { db: Database; clock: Clock; defaultTim
           : null,
         openQuestionsCount: questions,
         activeSession: activeId ? { id: activeId } : null,
+        plan: planDay
+          ? {
+              id: planDay.plan.id,
+              dayId: planDay.day.id,
+              focusNote: planDay.day.focusNote,
+              blocks: planDay.items.map((item) => ({
+                topicId: item.topicId,
+                label: item.label,
+                title: item.title ?? item.label ?? "",
+                minutes: item.minutes,
+                targetBpm: item.targetBpm ?? null,
+                lastCleanBpm: item.topicId
+                  ? (stats.get(item.topicId)?.latestCleanBpm ?? null)
+                  : null,
+              })),
+            }
+          : null,
         suggestion: {
           warmUpMinutes: suggestion.warmUpMinutes,
           topics: suggestion.topics.map(({ topic, minutes }) => ({

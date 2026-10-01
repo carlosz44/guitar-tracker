@@ -2,7 +2,7 @@ import { type ManualSession, sessionErrors } from "@ds/shared";
 import { and, asc, eq, gte, inArray, lte, ne } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
 import { practiceSessions, sessionBlocks, topics } from "../db/schema";
-import { dayTarget } from "../planner/rules";
+import { targetForDate } from "../planner/queries";
 import { getOrCreateSettings } from "../settings";
 import { dayTotals } from "./queries";
 import { addDays, cycleStart, isMet, practiceDate, splitManual } from "./rules";
@@ -20,6 +20,7 @@ export function createHistoryService(deps: SessionDeps) {
   return {
     async manual(userId: string, input: ManualSession) {
       const settings = await getOrCreateSettings(db, userId, deps.defaultTimezone);
+      const target = await targetForDate(db, userId, settings, input.date);
       const wanted = input.items.flatMap((item) => (item.topicId ? [item.topicId] : []));
       const owned = wanted.length
         ? new Set(
@@ -71,7 +72,7 @@ export function createHistoryService(deps: SessionDeps) {
             cleanBpm: item.cleanBpm ?? null,
           })),
         );
-        await ensureDaySnapshot(tx, userId, input.date, dayTarget(settings, input.date));
+        await ensureDaySnapshot(tx, userId, input.date, target);
         for (const id of wanted) await activateTopic(tx, userId, id);
       });
       const view = await loadSessionView(db, userId, sessionId, now);
@@ -82,6 +83,7 @@ export function createHistoryService(deps: SessionDeps) {
     async history(userId: string, query: { before?: string; cycles: number }) {
       const settings = await getOrCreateSettings(db, userId, deps.defaultTimezone);
       const today = practiceDate(clock.now(), settings.timezone);
+      const todayTarget = await targetForDate(db, userId, settings, today);
       const lastStart = cycleStart(query.before ?? today, settings.lessonWeekday);
       const from = addDays(lastStart, -7 * (query.cycles - 1));
       const to = addDays(lastStart, 6);
@@ -140,8 +142,7 @@ export function createHistoryService(deps: SessionDeps) {
           .reverse();
         const dayList = dates.map((date) => {
           const total = days.get(date);
-          const targetMinutes =
-            date === today ? dayTarget(settings, today) : (total?.targetMinutes ?? null);
+          const targetMinutes = date === today ? todayTarget : (total?.targetMinutes ?? null);
           const seconds = total?.seconds ?? 0;
           return {
             date,

@@ -50,7 +50,13 @@ export function createSessionRoutes(deps: SessionDeps) {
     .post("/", validate("json", startSessionSchema), async (c) => {
       try {
         return c.json(
-          { session: await service.start(c.get("user").id, c.req.valid("json").blocks) },
+          {
+            session: await service.start(
+              c.get("user").id,
+              c.req.valid("json").blocks,
+              c.req.valid("json").planDayId,
+            ),
+          },
           201,
         );
       } catch (error) {

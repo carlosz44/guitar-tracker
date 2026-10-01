@@ -16,6 +16,7 @@ export function lessonDetail(overrides: Record<string, unknown> = {}) {
       updatedAt: "2026-10-01T20:00:00.000Z",
     },
     draft: null,
+    cyclePlan: { cycleStart: "2026-10-01", ended: false, plan: null },
     topics: {
       introduced: [
         { id: "t1", title: "Tríadas de dórico", category: "chords_arpeggios", status: "new" },

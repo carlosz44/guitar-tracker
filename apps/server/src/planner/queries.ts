@@ -11,7 +11,7 @@ import {
   weeklyPlans,
 } from "../db/schema";
 import { dayTotals, topicStats } from "../practice/queries";
-import type { PlannerTopic } from "./rules";
+import { dayTarget, type PlannerTopic } from "./rules";
 
 type Db = Database | Tx;
 
@@ -224,4 +224,36 @@ export async function planView(db: Db, userId: string, plan: PlanRow, today: str
       })),
     })),
   };
+}
+
+export async function targetForDate(
+  db: Db,
+  userId: string,
+  settings: { dailyTargetMinutes: number; dayTargets: readonly number[] | null },
+  date: string,
+) {
+  const [row] = await db
+    .select({ targetMinutes: planDays.targetMinutes })
+    .from(planDays)
+    .innerJoin(weeklyPlans, eq(weeklyPlans.id, planDays.planId))
+    .where(
+      and(eq(planDays.userId, userId), eq(planDays.date, date), eq(weeklyPlans.status, "active")),
+    )
+    .limit(1);
+  return row?.targetMinutes ?? dayTarget(settings, date);
+}
+
+export async function activePlanDayById(db: Db, userId: string, planDayId: string) {
+  const [row] = await db
+    .select({ id: planDays.id, date: planDays.date })
+    .from(planDays)
+    .innerJoin(weeklyPlans, eq(weeklyPlans.id, planDays.planId))
+    .where(
+      and(
+        eq(planDays.userId, userId),
+        eq(planDays.id, planDayId),
+        eq(weeklyPlans.status, "active"),
+      ),
+    );
+  return row ?? null;
 }

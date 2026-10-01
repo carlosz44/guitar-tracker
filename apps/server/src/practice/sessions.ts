@@ -4,7 +4,7 @@ import { uuidv7 } from "uuidv7";
 import type { Clock } from "../clock";
 import type { Database, Tx } from "../db/client";
 import { practiceDays, practiceSessions, sessionBlocks, topics } from "../db/schema";
-import { dayTarget } from "../planner/rules";
+import { activePlanDayById, targetForDate } from "../planner/queries";
 import { getOrCreateSettings } from "../settings";
 import { topicStats } from "./queries";
 import { practiceDate } from "./rules";
@@ -173,11 +173,15 @@ export function createSessionService(deps: SessionDeps) {
   return {
     view,
 
-    async start(userId: string, planned: PlannedBlock[]) {
+    async start(userId: string, planned: PlannedBlock[], planDayId?: string) {
       const settings = await getOrCreateSettings(db, userId, deps.defaultTimezone);
       const now = clock.now();
       const date = practiceDate(now, settings.timezone);
       const sessionId = uuidv7();
+      const [target, planDay] = await Promise.all([
+        targetForDate(db, userId, settings, date),
+        planDayId ? activePlanDayById(db, userId, planDayId) : null,
+      ]);
       try {
         await db.transaction(async (tx) => {
           const [active] = await tx
@@ -200,6 +204,7 @@ export function createSessionService(deps: SessionDeps) {
             startedAt: now,
             lastActivityAt: now,
             practiceDate: date,
+            planDayId: planDay?.date === date ? planDay.id : null,
           });
           await tx.insert(sessionBlocks).values(
             planned.map((block, position) => ({
@@ -213,7 +218,7 @@ export function createSessionService(deps: SessionDeps) {
               startedAt: position === 0 ? now : null,
             })),
           );
-          await ensureDaySnapshot(tx, userId, date, dayTarget(settings, date));
+          await ensureDaySnapshot(tx, userId, date, target);
         });
       } catch (error) {
         if ((error as { cause?: { code?: string } }).cause?.code === "23505") {

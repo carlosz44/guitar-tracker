@@ -27,6 +27,7 @@ export const emptyToday = {
   latestLesson: null,
   openQuestionsCount: 0,
   activeSession: null,
+  plan: null,
   suggestion: { warmUpMinutes: 5, topics: [] },
 };
 
