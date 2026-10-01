@@ -348,6 +348,56 @@ export function createSessionService(deps: SessionDeps) {
       return view(userId, sessionId);
     },
 
+    async update(
+      userId: string,
+      sessionId: string,
+      input: {
+        notes?: string;
+        blocks?: {
+          id: string;
+          actualMinutes?: number;
+          cleanBpm?: number | null;
+          rating?: number | null;
+          notes?: string;
+        }[];
+      },
+    ) {
+      await db.transaction(async (tx) => {
+        const session = await lockSession(tx, userId, sessionId);
+        if (session.status === "in_progress") throw new SessionError(409, sessionErrors.active);
+        const blocks = await blocksOf(tx, sessionId);
+        for (const change of input.blocks ?? []) {
+          if (!blocks.some((block) => block.id === change.id))
+            throw new SessionError(400, sessionErrors.notCurrent);
+          await tx
+            .update(sessionBlocks)
+            .set({
+              ...(change.actualMinutes !== undefined
+                ? { actualSeconds: change.actualMinutes * 60 }
+                : {}),
+              ...(change.cleanBpm !== undefined ? { cleanBpm: change.cleanBpm } : {}),
+              ...(change.rating !== undefined ? { rating: change.rating } : {}),
+              ...(change.notes !== undefined ? { notes: change.notes } : {}),
+            })
+            .where(eq(sessionBlocks.id, change.id));
+        }
+        if (input.notes !== undefined) {
+          await tx
+            .update(practiceSessions)
+            .set({ notes: input.notes })
+            .where(eq(practiceSessions.id, sessionId));
+        }
+      });
+      return view(userId, sessionId);
+    },
+
+    async remove(userId: string, sessionId: string) {
+      await db.transaction(async (tx) => {
+        await lockSession(tx, userId, sessionId);
+        await tx.delete(practiceSessions).where(eq(practiceSessions.id, sessionId));
+      });
+    },
+
     async abandon(userId: string, sessionId: string) {
       await db.transaction(async (tx) => {
         const session = await lockSession(tx, userId, sessionId);
