@@ -8,7 +8,7 @@
 | 003 | Practice sessions | In progress (T16 iPhone checks left) | 002 |
 | 004 | Telegram: reminders and quick log | Outline | 003 |
 | 005 | Lesson enrichment with Claude | Done | 002 |
-| 006 | Weekly planner | Outline | 003, 005 |
+| 006 | Weekly planner | Draft | 003, 005 |
 | 007 | Telegram lesson inbox | Outline | 004, 005 |
 | 008 | Stats and weekly review | Outline | 003 |
 
@@ -43,14 +43,14 @@ Specs 001–003 are written in full. Specs 004–008 are outlined below and get 
 
 ## 006 Weekly planner
 
-- **Cycle:** runs from lesson day to the day before the next lesson. The default is 30 minutes a day, with per-day overrides (for example 60 on Sunday).
+- **Cycle:** the 7-day practice cycle from D-11. The default is 30 minutes a day, with per-weekday targets (for example 60 on Sunday).
 - **How the plan is built:**
   1. A deterministic scorer ranks topics using priority, days since last practiced, a boost for topics from the new lesson, low recent ratings, and a low weight for maintenance topics.
   2. A slot builder fits them into each day: warm-up plus one or two topics.
   3. Claude adjusts the plan and writes a focus note for each day.
   4. The server validates the result: topic ids exist, minutes add up, and each day has no more than 3 topics.
 - **Hoy screen:** uses the plan instead of the suggestion rule from 003.
-- **Editing:** Carlos can drag items between days, regenerate one day or the whole week, and accept the plan.
+- **Editing:** Carlos can move items between days, regenerate one day or the whole week, replan the rest of the week, and accept the plan.
 - **Trigger:** accepting a lesson draft (005) offers to generate the plan.
 
 ## 007 Telegram lesson inbox
