@@ -80,7 +80,12 @@ function assertEditable(plan: PlanRow) {
   if (plan.status === "replaced") throw new PlanError(409, planErrors.pastDay);
 }
 
-async function writeItems(tx: Tx, userId: string, dayId: string, items: readonly PlannedItem[]) {
+export async function writeItems(
+  tx: Tx,
+  userId: string,
+  dayId: string,
+  items: readonly PlannedItem[],
+) {
   await tx.delete(planItems).where(eq(planItems.planDayId, dayId));
   if (items.length === 0) return;
   await tx.insert(planItems).values(

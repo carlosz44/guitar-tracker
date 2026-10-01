@@ -26,8 +26,8 @@ export interface PlannerTopic {
 
 export type ScoreReason = "priority" | "stale" | "lesson" | "lowRating" | "maintenance" | "missed";
 
-export interface ScoredTopic {
-  topic: PlannerTopic;
+export interface ScoredTopic<T extends PlannerTopic = PlannerTopic> {
+  topic: T;
   score: number;
   reasons: ScoreReason[];
 }
@@ -42,7 +42,10 @@ const STALE_CAP_DAYS = 14;
 const daysBetween = (from: string, to: string) =>
   Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 
-export function scoreTopics(topics: readonly PlannerTopic[], context: ScoreContext): ScoredTopic[] {
+export function scoreTopics<T extends PlannerTopic>(
+  topics: readonly T[],
+  context: ScoreContext,
+): ScoredTopic<T>[] {
   return topics
     .filter((topic) => topic.status !== "archived")
     .map((topic) => {
