@@ -6,6 +6,7 @@ export default defineConfig({
     worker: "src/worker.ts",
     migrate: "src/migrate.ts",
     "backup-now": "src/backup-now.ts",
+    "parser-thread": "src/files/parser-thread.ts",
   },
   format: "esm",
   platform: "node",
