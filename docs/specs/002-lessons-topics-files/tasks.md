@@ -9,7 +9,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T5 Lessons API: create, list, detail, patch, delete with R2. (covers AC-1, AC-2, AC-3)
 - [x] T6 Topics API: create, list with filters, detail, patch with cycle check, delete rule. (covers AC-11 to AC-14)
 - [x] T7 Lesson-topic links and questions API. (covers AC-15, AC-16, AC-17)
-- [ ] T8 Files API: presign, confirm, url, open, retry, delete. (covers AC-4, AC-5, AC-9, AC-10)
+- [x] T8 Files API: presign, confirm, url, open, retry, delete. (covers AC-4, AC-5, AC-9, AC-10)
 - [ ] T9 Worker: `file.extract` (SHA-256, thread with limits and timeout, statuses, duplicate data) and `file.cleanup-stale`. (covers AC-6, AC-7)
 - [ ] T10 Web foundations: shadcn components, `Markdown`, `ListEditor`, queries, new strings.
 - [ ] T11 Web lessons: list, new and edit form (two columns on wide screens), read-first page, delete confirmation. (covers AC-1, AC-2, AC-3)

@@ -3,6 +3,8 @@ import { z } from "zod";
 export const FILE_KINDS = ["guitar_pro", "pdf", "docx", "image", "other"] as const;
 export type FileKind = (typeof FILE_KINDS)[number];
 
+export const PARSEABLE_KINDS: readonly FileKind[] = ["guitar_pro", "docx"];
+
 export const UPLOAD_STATUSES = ["uploading", "uploaded"] as const;
 export const EXTRACTION_STATUSES = ["pending", "done", "failed", "not_applicable"] as const;
 export type ExtractionStatus = (typeof EXTRACTION_STATUSES)[number];
@@ -33,6 +35,10 @@ export const fileErrors = {
   size: "file.size",
   empty: "file.empty",
   name: "file.name",
+  notUploaded: "file.notUploaded",
+  sizeMismatch: "file.sizeMismatch",
+  notRetryable: "file.notRetryable",
+  notReady: "file.notReady",
 } as const;
 export type FileErrorKey = (typeof fileErrors)[keyof typeof fileErrors];
 

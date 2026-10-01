@@ -1,5 +1,6 @@
 import {
   createLessonSchema,
+  createUploadSchema,
   lessonErrors,
   lessonTopicLinksSchema,
   updateLessonSchema,
@@ -8,11 +9,9 @@ import { and, eq, inArray } from "drizzle-orm";
 import { Hono } from "hono";
 import { uuidv7 } from "uuidv7";
 import type { SessionVariables } from "../auth/require-session";
-import type { Database } from "../db/client";
 import { lessonFiles, lessons, lessonTopics, topics } from "../db/schema";
+import { createUpload, type FileDeps } from "../files/routes";
 import { idParam, validate } from "../http/validate";
-import type { Logger } from "../logger";
-import type { ObjectStorage } from "../storage/r2";
 import {
   findLesson,
   latestLessonId,
@@ -23,7 +22,7 @@ import {
   toLesson,
 } from "./queries";
 
-export function createLessonRoutes(deps: { db: Database; storage: ObjectStorage; logger: Logger }) {
+export function createLessonRoutes(deps: FileDeps) {
   const { db } = deps;
 
   return new Hono<{ Variables: SessionVariables }>()
@@ -112,6 +111,12 @@ export function createLessonRoutes(deps: { db: Database; storage: ObjectStorage;
         }
       });
       return c.json({ topics: await lessonTopicGroups(db, userId, lesson.id) }, 200);
+    })
+    .post("/:id/files", idParam, validate("json", createUploadSchema), async (c) => {
+      const userId = c.get("user").id;
+      const lesson = await findLesson(db, userId, c.req.valid("param").id);
+      if (!lesson) return c.json({ error: "not_found" as const }, 404);
+      return c.json(await createUpload(deps, userId, lesson.id, c.req.valid("json")), 201);
     })
     .delete("/:id", idParam, async (c) => {
       const userId = c.get("user").id;

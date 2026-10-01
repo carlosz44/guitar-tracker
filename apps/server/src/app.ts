@@ -4,6 +4,7 @@ import type { Allowlist, Auth } from "./auth/auth";
 import { requireSession } from "./auth/require-session";
 import type { Clock } from "./clock";
 import type { Database } from "./db/client";
+import { createFileRoutes } from "./files/routes";
 import { requestLogger } from "./http/request-logger";
 import { mountStatic } from "./http/static";
 import type { JobQueue } from "./jobs/boss";
@@ -38,7 +39,8 @@ export function createApiRoutes(deps: AppDeps) {
     .route("/settings", createSettingsRoutes(deps))
     .route("/lessons", createLessonRoutes(deps))
     .route("/topics", createTopicRoutes(deps))
-    .route("/questions", createQuestionRoutes(deps));
+    .route("/questions", createQuestionRoutes(deps))
+    .route("/files", createFileRoutes(deps));
 }
 export type AppType = ReturnType<typeof createApiRoutes>;
 
