@@ -8,6 +8,7 @@ export const QUEUES = {
   sessionClose: "session.close-stale",
   lessonEnrich: "llm.lesson-enrich",
   topicImprove: "llm.topic-improve",
+  weeklyPlan: "llm.weekly-plan",
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 
@@ -32,6 +33,7 @@ export const QUEUE_OPTIONS: Record<QueueName, Omit<Queue, "name">> = {
   },
   [QUEUES.lessonEnrich]: { retryLimit: 0, expireInSeconds: 10 * 60 },
   [QUEUES.topicImprove]: { retryLimit: 0, expireInSeconds: 5 * 60 },
+  [QUEUES.weeklyPlan]: { retryLimit: 0, expireInSeconds: 5 * 60 },
 };
 
 export function createBoss(connectionString: string, role: "worker" | "api" = "worker") {
@@ -53,6 +55,7 @@ export interface JobData {
   [QUEUES.fileExtract]: { fileId: string };
   [QUEUES.lessonEnrich]: { draftId: string; waits?: number };
   [QUEUES.topicImprove]: { draftId: string };
+  [QUEUES.weeklyPlan]: { planId: string; dates: string[] };
 }
 
 export interface JobQueue {

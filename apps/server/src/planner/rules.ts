@@ -189,6 +189,7 @@ export type PlanProblem =
 export function validatePlanDays(
   days: readonly { date: string; items: readonly PlannedItem[] }[],
   context: { targets: ReadonlyMap<string, number>; topicIds: ReadonlySet<string> },
+  options: { requireTotals?: boolean } = {},
 ): { ok: true } | { ok: false; problem: PlanProblem; date: string } {
   const seen = new Set<string>();
   for (const day of days) {
@@ -208,7 +209,9 @@ export function validatePlanDays(
       }
     }
     const total = day.items.reduce((sum, item) => sum + item.minutes, 0);
-    if (topicIds.length > 0 && total !== target) return fail("wrong_total");
+    if ((options.requireTotals ?? true) && topicIds.length > 0 && total !== target) {
+      return fail("wrong_total");
+    }
   }
   return { ok: true };
 }

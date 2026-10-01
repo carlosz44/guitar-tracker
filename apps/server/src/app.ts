@@ -12,6 +12,7 @@ import { createLessonRoutes } from "./lessons/routes";
 import { createLlmRoutes } from "./llm/routes";
 import type { LlmSettings } from "./llm/usage";
 import type { Logger } from "./logger";
+import { createPlanRoutes } from "./planner/routes";
 import { createSessionRoutes } from "./practice/routes";
 import { createTodayRoutes } from "./practice/today";
 import { createQuestionRoutes } from "./questions/routes";
@@ -48,6 +49,7 @@ export function createApiRoutes(deps: AppDeps) {
     .route("/files", createFileRoutes(deps))
     .route("/today", createTodayRoutes(deps))
     .route("/sessions", createSessionRoutes(deps))
+    .route("/plans", createPlanRoutes(deps))
     .route("/", createLlmRoutes(deps));
 }
 export type AppType = ReturnType<typeof createApiRoutes>;

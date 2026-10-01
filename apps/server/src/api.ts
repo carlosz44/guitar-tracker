@@ -18,6 +18,7 @@ await boss.start();
 await ensureQueue(boss, QUEUES.fileExtract);
 await ensureQueue(boss, QUEUES.lessonEnrich);
 await ensureQueue(boss, QUEUES.topicImprove);
+await ensureQueue(boss, QUEUES.weeklyPlan);
 
 const allowlist = new Set(config.ALLOWED_GITHUB_IDS);
 const auth = createAuth({
