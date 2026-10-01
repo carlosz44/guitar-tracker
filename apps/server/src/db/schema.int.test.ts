@@ -33,7 +33,7 @@ const CHECK_VIOLATION = "23514";
 
 beforeEach(truncateAll);
 
-describe("0000_foundation migration", () => {
+describe("migrations", () => {
   it("creates the foundation tables", async () => {
     const result = await db.execute<{ table_name: string }>(
       sql`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name`,
@@ -41,7 +41,12 @@ describe("0000_foundation migration", () => {
     expect(result.rows.map((row) => row.table_name)).toEqual([
       "account",
       "backup_runs",
+      "lesson_files",
+      "lesson_topics",
+      "lessons",
       "session",
+      "teacher_questions",
+      "topics",
       "user",
       "user_settings",
       "verification",
