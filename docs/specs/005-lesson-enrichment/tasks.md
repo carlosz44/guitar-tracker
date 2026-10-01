@@ -14,8 +14,8 @@
 - [x] T12 Web: Claude spend in Ajustes, or "no configurado". (covers AC-14, AC-16)
 - [x] T14 Server: `draft` flag on lesson create; enrichment waits for files still uploading or being read; the prompt includes the typed summary, practice points and homework with the clean-up rule. (covers AC-17, AC-18)
 - [x] T15 Web: file picker in the new-lesson form; uploads before opening the lesson, then starts enrichment. (covers AC-17)
-- [ ] T13 Docs and manual checks:
+- [x] T13 Docs and manual checks:
   - [x] D-18, domain.md (draft statuses and columns), architecture.md env
-  - [ ] a real key on a real lesson with PDF, Guitar Pro and image; check cost and logs
+  - [x] a real key on a real lesson (Carlos, 2026-10-01): draft generated, run logged with tokens; regenerating cleaned up the typed Tarea
   - [x] 390 px and desktop (Chromium, drafts mocked; moved "Descartar borrador" out of the sticky bar so it fits at 390 px)
-  - [ ] then spec status and roadmap.
+  - [x] then spec status and roadmap.

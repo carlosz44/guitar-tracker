@@ -1,6 +1,6 @@
 # 005 Lesson enrichment with Claude: plan
 
-**Spec:** ./spec.md · **Status:** Approved
+**Spec:** ./spec.md · **Status:** Done
 
 ### Approach
 

@@ -1,6 +1,6 @@
 # 005 Lesson enrichment with Claude
 
-**Status:** Approved
+**Status:** Done
 **Depends on:** 002
 
 ## Why
