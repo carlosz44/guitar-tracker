@@ -52,3 +52,4 @@ export const topicListQuerySchema = z.object({
   status: z.enum(TOPIC_STATUSES).optional(),
   category: z.enum(TOPIC_CATEGORIES).optional(),
 });
+export type TopicErrorKey = (typeof topicErrors)[keyof typeof topicErrors];

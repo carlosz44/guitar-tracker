@@ -1,5 +1,6 @@
 export * from "./constants.ts";
 export * from "./dates.ts";
+export * from "./errors.ts";
 export * from "./files.ts";
 export * from "./health.ts";
 export * from "./lessons.ts";

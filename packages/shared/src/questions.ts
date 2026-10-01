@@ -37,3 +37,4 @@ export const questionListQuerySchema = z.object({
   status: z.enum(QUESTION_STATUSES).optional(),
   topicId: z.uuid().optional(),
 });
+export type QuestionErrorKey = (typeof questionErrors)[keyof typeof questionErrors];

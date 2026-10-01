@@ -50,3 +50,4 @@ export const lessonTopicLinksSchema = z
     }
   });
 export type LessonTopicLinks = z.infer<typeof lessonTopicLinksSchema>;
+export type LessonErrorKey = (typeof lessonErrors)[keyof typeof lessonErrors];

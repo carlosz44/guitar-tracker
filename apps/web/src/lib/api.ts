@@ -8,16 +8,33 @@ export class UnauthorizedError extends Error {
   override name = "UnauthorizedError";
 }
 
+export interface ApiErrorBody {
+  error?: string;
+  issues?: { path: (string | number)[]; message: string }[];
+}
+
 export class ApiError extends Error {
   override name = "ApiError";
-  constructor(readonly status: number) {
+  constructor(
+    readonly status: number,
+    readonly body: ApiErrorBody = {},
+  ) {
     super(`API request failed with ${status}`);
+  }
+
+  get key() {
+    return this.body.issues?.[0]?.message ?? this.body.error;
   }
 }
 
-export function ensureOk<T extends ClientResponse<unknown, number, string>>(response: T): Ok<T> {
+export async function ensureOk<T extends ClientResponse<unknown, number, string>>(
+  response: T,
+): Promise<Ok<T>> {
   if (response.status === 401) throw new UnauthorizedError();
-  if (!response.ok) throw new ApiError(response.status);
+  if (!response.ok) {
+    const body = (await response.json().catch(() => ({}))) as ApiErrorBody;
+    throw new ApiError(response.status, body);
+  }
   return response as Ok<T>;
 }
 
