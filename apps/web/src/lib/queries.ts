@@ -42,3 +42,8 @@ export const fileQuery = (id: string) =>
     queryKey: ["files", id],
     queryFn: async () => (await ensureOk(await api.files[":id"].$get({ param: { id } }))).json(),
   });
+
+export const todayQuery = queryOptions({
+  queryKey: ["today"],
+  queryFn: async () => (await ensureOk(await api.today.$get())).json(),
+});

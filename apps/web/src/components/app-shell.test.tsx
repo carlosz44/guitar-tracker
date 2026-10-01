@@ -35,11 +35,11 @@ describe("app shell", () => {
   });
 
   it.each([
-    ["/today", es.today.title, es.today.empty],
+    ["/today", es.today.title, es.today.progress(0, 30)],
     ["/lessons", es.lessons.title, es.lessonsPage.empty],
     ["/topics", es.topics.title, es.topicsPage.empty],
     ["/history", es.history.title, es.history.placeholder],
-  ])("%s shows its Spanish placeholder", async (path, title, message) => {
+  ])("%s shows its page in Spanish", async (path, title, message) => {
     fakeApi({ me: carlos });
     renderApp(path);
     expect(await screen.findByRole("heading", { name: title })).toBeTruthy();

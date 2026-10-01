@@ -11,6 +11,19 @@ export const carlos: MeResponse = {
   lastBackupAt: null,
 };
 
+export const emptyToday = {
+  date: "2026-10-01",
+  seconds: 0,
+  minutes: 0,
+  targetMinutes: 30,
+  met: false,
+  streak: 0,
+  latestLesson: null,
+  openQuestionsCount: 0,
+  activeSession: null,
+  suggestion: { warmUpMinutes: 5, topics: [] },
+};
+
 export interface RecordedRequest {
   method: string;
   path: string;
@@ -57,6 +70,7 @@ export function fakeApi(options: { me: MeResponse | null; handlers?: Handler[] }
     }
     if (url.pathname === "/api/auth/get-session") return json(null);
     if (url.pathname === "/api/lessons" && request.method === "GET") return json({ lessons: [] });
+    if (url.pathname === "/api/today" && request.method === "GET") return json(emptyToday);
     if (url.pathname === "/api/topics" && request.method === "GET") return json({ topics: [] });
     if (url.pathname === "/api/questions" && request.method === "GET")
       return json({ questions: [] });

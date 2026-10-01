@@ -1,8 +1,13 @@
 import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
+import { resetLaunchForTests } from "@/lib/launch";
+import { practiceStore } from "@/lib/practice";
 
 afterEach(() => {
   cleanup();
+  resetLaunchForTests();
+  practiceStore.clear();
+  if (typeof localStorage !== "undefined") localStorage.clear();
   vi.unstubAllGlobals();
 });
 

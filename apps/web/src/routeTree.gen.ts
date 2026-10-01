@@ -11,16 +11,19 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as FocusRouteImport } from './routes/_focus'
 import { Route as AccessDeniedRouteImport } from './routes/access-denied'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppSplatRouteImport } from './routes/_app/$'
 import { Route as AppHistoryRouteImport } from './routes/_app/history'
+import { Route as AppLogRouteImport } from './routes/_app/log'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTodayRouteImport } from './routes/_app/today'
 import { Route as AppLessonsIndexRouteImport } from './routes/_app/lessons/index'
 import { Route as AppLessonsNewRouteImport } from './routes/_app/lessons/new'
 import { Route as AppTopicsIndexRouteImport } from './routes/_app/topics/index'
 import { Route as AppTopicsNewRouteImport } from './routes/_app/topics/new'
+import { Route as FocusPracticeSessionIdRouteImport } from './routes/_focus/practice/$sessionId'
 import { Route as AppLessonsLessonIdIndexRouteImport } from './routes/_app/lessons/$lessonId/index'
 import { Route as AppLessonsLessonIdEditRouteImport } from './routes/_app/lessons/$lessonId/edit'
 import { Route as AppTopicsTopicIdIndexRouteImport } from './routes/_app/topics/$topicId/index'
@@ -34,6 +37,10 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FocusRoute = FocusRouteImport.update({
+  id: '/_focus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccessDeniedRoute = AccessDeniedRouteImport.update({
@@ -54,6 +61,11 @@ const AppSplatRoute = AppSplatRouteImport.update({
 const AppHistoryRoute = AppHistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLogRoute = AppLogRouteImport.update({
+  id: '/log',
+  path: '/log',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
@@ -85,6 +97,11 @@ const AppTopicsNewRoute = AppTopicsNewRouteImport.update({
   id: '/topics/new',
   path: '/topics/new',
   getParentRoute: () => AppRoute,
+} as any)
+const FocusPracticeSessionIdRoute = FocusPracticeSessionIdRouteImport.update({
+  id: '/practice/$sessionId',
+  path: '/practice/$sessionId',
+  getParentRoute: () => FocusRoute,
 } as any)
 const AppLessonsLessonIdIndexRoute = AppLessonsLessonIdIndexRouteImport.update({
   id: '/lessons/$lessonId/',
@@ -119,10 +136,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
   '/history': typeof AppHistoryRoute
+  '/log': typeof AppLogRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
   '/lessons/new': typeof AppLessonsNewRoute
   '/topics/new': typeof AppTopicsNewRoute
+  '/practice/$sessionId': typeof FocusPracticeSessionIdRoute
   '/lessons/': typeof AppLessonsIndexRoute
   '/topics/': typeof AppTopicsIndexRoute
   '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
@@ -137,10 +156,12 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
   '/history': typeof AppHistoryRoute
+  '/log': typeof AppLogRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
   '/lessons/new': typeof AppLessonsNewRoute
   '/topics/new': typeof AppTopicsNewRoute
+  '/practice/$sessionId': typeof FocusPracticeSessionIdRoute
   '/lessons': typeof AppLessonsIndexRoute
   '/topics': typeof AppTopicsIndexRoute
   '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
@@ -153,14 +174,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_focus': typeof FocusRouteWithChildren
   '/access-denied': typeof AccessDeniedRoute
   '/login': typeof LoginRoute
   '/_app/$': typeof AppSplatRoute
   '/_app/history': typeof AppHistoryRoute
+  '/_app/log': typeof AppLogRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/today': typeof AppTodayRoute
   '/_app/lessons/new': typeof AppLessonsNewRoute
   '/_app/topics/new': typeof AppTopicsNewRoute
+  '/_focus/practice/$sessionId': typeof FocusPracticeSessionIdRoute
   '/_app/lessons/': typeof AppLessonsIndexRoute
   '/_app/topics/': typeof AppTopicsIndexRoute
   '/_app/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
@@ -177,10 +201,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/$'
     | '/history'
+    | '/log'
     | '/settings'
     | '/today'
     | '/lessons/new'
     | '/topics/new'
+    | '/practice/$sessionId'
     | '/lessons/'
     | '/topics/'
     | '/lessons/$lessonId/edit'
@@ -195,10 +221,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/$'
     | '/history'
+    | '/log'
     | '/settings'
     | '/today'
     | '/lessons/new'
     | '/topics/new'
+    | '/practice/$sessionId'
     | '/lessons'
     | '/topics'
     | '/lessons/$lessonId/edit'
@@ -210,14 +238,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_app'
+    | '/_focus'
     | '/access-denied'
     | '/login'
     | '/_app/$'
     | '/_app/history'
+    | '/_app/log'
     | '/_app/settings'
     | '/_app/today'
     | '/_app/lessons/new'
     | '/_app/topics/new'
+    | '/_focus/practice/$sessionId'
     | '/_app/lessons/'
     | '/_app/topics/'
     | '/_app/lessons/$lessonId/edit'
@@ -230,6 +261,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  FocusRoute: typeof FocusRouteWithChildren
   AccessDeniedRoute: typeof AccessDeniedRoute
   LoginRoute: typeof LoginRoute
 }
@@ -248,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_focus': {
+      id: '/_focus'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof FocusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/access-denied': {
@@ -276,6 +315,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/log': {
+      id: '/_app/log'
+      path: '/log'
+      fullPath: '/log'
+      preLoaderRoute: typeof AppLogRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/settings': {
@@ -320,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicsNewRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_focus/practice/$sessionId': {
+      id: '/_focus/practice/$sessionId'
+      path: '/practice/$sessionId'
+      fullPath: '/practice/$sessionId'
+      preLoaderRoute: typeof FocusPracticeSessionIdRouteImport
+      parentRoute: typeof FocusRoute
+    }
     '/_app/lessons/$lessonId/': {
       id: '/_app/lessons/$lessonId/'
       path: '/lessons/$lessonId'
@@ -361,6 +414,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppSplatRoute: typeof AppSplatRoute
   AppHistoryRoute: typeof AppHistoryRoute
+  AppLogRoute: typeof AppLogRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTodayRoute: typeof AppTodayRoute
   AppLessonsNewRoute: typeof AppLessonsNewRoute
@@ -377,6 +431,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppSplatRoute: AppSplatRoute,
   AppHistoryRoute: AppHistoryRoute,
+  AppLogRoute: AppLogRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTodayRoute: AppTodayRoute,
   AppLessonsNewRoute: AppLessonsNewRoute,
@@ -392,9 +447,20 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface FocusRouteChildren {
+  FocusPracticeSessionIdRoute: typeof FocusPracticeSessionIdRoute
+}
+
+const FocusRouteChildren: FocusRouteChildren = {
+  FocusPracticeSessionIdRoute: FocusPracticeSessionIdRoute,
+}
+
+const FocusRouteWithChildren = FocusRoute._addFileChildren(FocusRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  FocusRoute: FocusRouteWithChildren,
   AccessDeniedRoute: AccessDeniedRoute,
   LoginRoute: LoginRoute,
 }
