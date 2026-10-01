@@ -38,8 +38,9 @@ function api(overrides: Record<string, unknown> = {}) {
     }
     if (method === "POST" && path === "/api/sessions")
       return json({ session: sessionView({ id: "new-session" }) }, 201);
-    if (method === "GET" && path.startsWith("/api/sessions/"))
-      return json({ session: sessionView({ id: "new-session" }) });
+    if (method === "GET" && path.startsWith("/api/sessions/")) {
+      return json({ session: sessionView({ id: path.split("/").at(-1) ?? "" }) });
+    }
     return undefined;
   };
 }
@@ -130,6 +131,20 @@ describe("Hoy", () => {
     fakeApi({ me: carlos, handlers: [api({ activeSession: { id: "running" } })] });
     const { router } = renderApp("/today");
     await waitFor(() => expect(router.state.location.pathname).toBe("/practice/running"));
+  });
+
+  it("AC-4: never loops when the session in progress can't be opened", async () => {
+    fakeApi({
+      me: carlos,
+      handlers: [
+        ({ path }) =>
+          path === "/api/sessions/gone" ? json({ error: "not_found" }, 404) : undefined,
+        api({ activeSession: { id: "gone" } }),
+      ],
+    });
+    const { router } = renderApp("/today");
+    expect(await screen.findByRole("heading", { name: es.today.activeTitle })).toBeTruthy();
+    expect(router.state.location.pathname).toBe("/today");
   });
 
   it("asks to continue or discard when another session is already running", async () => {

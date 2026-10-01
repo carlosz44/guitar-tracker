@@ -21,7 +21,7 @@ import { es } from "@/i18n/es";
 import { ApiError, api, ensureOk } from "@/lib/api";
 import { errorMessage } from "@/lib/errors";
 import { formatDate } from "@/lib/format";
-import { isLaunching } from "@/lib/launch";
+import { isLaunching, markLaunched } from "@/lib/launch";
 import { practiceStore } from "@/lib/practice";
 import { syncClock } from "@/lib/practice/clock";
 import { todayQuery } from "@/lib/queries";
@@ -29,7 +29,9 @@ import { todayQuery } from "@/lib/queries";
 export const Route = createFileRoute("/_app/today")({
   loader: async ({ context }) => {
     const data = await context.queryClient.ensureQueryData(todayQuery);
-    if (isLaunching() && data.activeSession) {
+    const launching = isLaunching();
+    markLaunched();
+    if (launching && data.activeSession) {
       throw redirect({ to: "/practice/$sessionId", params: { sessionId: data.activeSession.id } });
     }
   },
