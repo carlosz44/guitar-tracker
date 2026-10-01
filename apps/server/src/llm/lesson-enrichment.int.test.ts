@@ -10,7 +10,7 @@ import { memoryStorage } from "../test/memory-storage";
 import { seedFile, seedLesson, seedQuestion, seedTopic } from "../test/seed";
 import { createSignedInUser } from "../test/session";
 import { LlmCallError } from "./client";
-import { runLessonEnrichment } from "./lesson-enrichment";
+import { MAX_FILE_WAITS, runLessonEnrichment } from "./lesson-enrichment";
 import { recordRun } from "./usage";
 
 const { db, truncateAll } = useTestDatabase();
@@ -205,6 +205,68 @@ describe("lesson enrichment job", () => {
     await runLessonEnrichment(llmDeps(db, client), draft.id);
     expect(requests).toHaveLength(0);
     expect((await draftRow(draft.id))?.status).toBe("discarded");
+  });
+
+  it("AC-17: waits for files still uploading or being read, then runs with what's ready", async () => {
+    const { userId, lesson, draft } = await setup();
+    await seedFile(db, userId, lesson.id, {
+      kind: "docx",
+      originalName: "notas.docx",
+      extractionStatus: "pending",
+    });
+    const requeued: [string, number][] = [];
+    const requeue = async (id: string, waits: number) => {
+      requeued.push([id, waits]);
+    };
+    const { client, requests } = fakeLlm({ output: enrichmentOutput() });
+
+    await runLessonEnrichment(llmDeps(db, client, { requeue }), draft.id, 3);
+    expect(requeued).toEqual([[draft.id, 4]]);
+    expect(requests).toHaveLength(0);
+    expect((await draftRow(draft.id))?.status).toBe("queued");
+
+    await runLessonEnrichment(llmDeps(db, client, { requeue }), draft.id, MAX_FILE_WAITS);
+    expect(requests).toHaveLength(1);
+    expect((await draftRow(draft.id))?.skippedFiles).toEqual([
+      expect.objectContaining({ name: "notas.docx", reason: "not_extracted" }),
+    ]);
+  });
+
+  it("AC-17: doesn't wait when every file is ready", async () => {
+    const { userId, lesson, draft } = await setup();
+    await seedFile(db, userId, lesson.id, {
+      kind: "image",
+      originalName: "x.heic",
+      mime: "image/heic",
+    });
+    const requeued: unknown[] = [];
+    const { client, requests } = fakeLlm({ output: enrichmentOutput() });
+    await runLessonEnrichment(
+      llmDeps(db, client, { requeue: async (...args) => void requeued.push(args) }),
+      draft.id,
+    );
+    expect(requeued).toEqual([]);
+    expect(requests).toHaveLength(1);
+  });
+
+  it("AC-18: sends the typed summary, practice points and homework, asking to keep them and fix typos", async () => {
+    const { draft } = await setup({
+      summary: "vimos triadas en dorico",
+      practicePoints: ["triadas cuerdas 1-3"],
+      homework: "grabar el rif a 90 y traerlo la proxima",
+    });
+    const { client, requests } = fakeLlm({ output: enrichmentOutput() });
+    await runLessonEnrichment(llmDeps(db, client), draft.id);
+    const text = requests[0]?.content
+      .flatMap((block) => (block.type === "text" ? [block.text] : []))
+      .join("\n");
+    expect(text).toContain(
+      "<current_homework>\ngrabar el rif a 90 y traerlo la proxima\n</current_homework>",
+    );
+    expect(text).toContain("vimos triadas en dorico");
+    expect(text).toContain('["triadas cuerdas 1-3"]');
+    expect(requests[0]?.system).toContain("fix spelling, grammar, accents and punctuation");
+    expect(requests[0]?.system).toContain("Never drop something he wrote");
   });
 
   it("AC-13: logs ids, tokens and durations, never notes or output", async () => {

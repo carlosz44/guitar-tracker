@@ -160,6 +160,19 @@ describe("quick capture", () => {
     expect(enabled.jobs.sent).toHaveLength(1);
   });
 
+  it("AC-17: with files, the lesson is saved as a draft first and enrichment starts after the uploads", async () => {
+    const response = await call("POST", "/lessons", {
+      date: "2026-10-01",
+      title: "Clase",
+      draft: true,
+    });
+    const { lesson, draftId } = await bodyOf(response);
+    expect(lesson.status).toBe("draft");
+    expect(draftId).toBeNull();
+    expect(await drafts()).toEqual([]);
+    expect((await call("POST", `/lessons/${lesson.id}/enrich`, {})).status).toBe(202);
+  });
+
   it("AC-2: a plain save stays final with no draft", async () => {
     const response = await call("POST", "/lessons", { date: "2026-10-01", title: "Clase" });
     const body = await bodyOf(response);

@@ -16,6 +16,7 @@ export interface LlmJobDeps {
   llm: LlmClient | null;
   settings: LlmSettings;
   defaultTimezone: string;
+  requeue?: (draftId: string, waits: number) => Promise<void>;
 }
 
 export type Draft = typeof llmDrafts.$inferSelect;

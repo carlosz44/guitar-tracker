@@ -31,6 +31,8 @@ After a lesson Carlos has rough notes and a handful of files from the teacher. T
 - **AC-1** The lesson page has "Completar con Claude". It queues an enrichment job and shows a waiting state ("Claude está leyendo la clase…") that survives a reload. Only one enrichment can be pending per lesson; the button is disabled while one runs.
 - **AC-2** The new-lesson form has "Guardar y completar con Claude" next to "Guardar clase". It saves the lesson with status `draft` (only the date is required, title defaults to "Clase del {fecha}") and starts enrichment. Draft lessons show a "Borrador" badge in lists and on their page.
 - **AC-3** The input to Claude contains: the lesson date, title and raw notes; Guitar Pro and docx files as their extracted text (with Guitar Pro meta); PDFs as documents; JPEG, PNG and WebP images as images; the list of existing non-archived topics (id, title, category, status, parent); and the open teacher questions. Files that can't be sent (HEIC, `other`, failed extraction, still extracting, or over the size limits) are skipped and listed in the draft as "No se incluyó: {nombre}".
+- **AC-17** The new-lesson form has a file picker (drag and drop on the laptop). Saving uploads the chosen files to the new lesson with progress, then opens it. With "Guardar y completar con Claude", enrichment starts after the uploads, and the job waits (up to 2 minutes) for files still uploading or being read, so Guitar Pro and Word files are included.
+- **AC-18** When the lesson already has a summary, practice points or homework typed by Carlos, Claude starts from them: it keeps every fact and item and fixes spelling, grammar, accents and punctuation from fast typing.
 - **AC-4** Claude's output is parsed with a shared Zod schema. Output that fails validation is retried once; if it fails again the draft ends as `failed` with "No se pudo generar el borrador. Inténtalo de nuevo." and a "Reintentar" button.
 
 **Review**
@@ -93,6 +95,8 @@ See `docs/domain.md` → LLM run and draft.
 - Month boundary: spend resets on the 1st in America/Lima.
 
 ## Decisions (Carlos, 2026-10-01)
+
+- **Files in quick capture (AC-17)** and **cleaning up typed text (AC-18)** were added after the first build, at Carlos's request.
 
 - **Draft lessons from the web:** keep the quick-capture path (AC-2).
 - **Monthly budget:** `LLM_MONTHLY_BUDGET_USD` defaults to 10, on top of the spend limit on the Anthropic API key.

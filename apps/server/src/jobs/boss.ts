@@ -51,7 +51,7 @@ export type Boss = PgBoss;
 
 export interface JobData {
   [QUEUES.fileExtract]: { fileId: string };
-  [QUEUES.lessonEnrich]: { draftId: string };
+  [QUEUES.lessonEnrich]: { draftId: string; waits?: number };
   [QUEUES.topicImprove]: { draftId: string };
 }
 

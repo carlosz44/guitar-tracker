@@ -26,7 +26,10 @@ import {
   toLesson,
 } from "./queries";
 
-const createLessonRequestSchema = createLessonSchema.extend({ enrich: z.boolean().default(false) });
+const createLessonRequestSchema = createLessonSchema.extend({
+  enrich: z.boolean().default(false),
+  draft: z.boolean().default(false),
+});
 
 export function createLessonRoutes(deps: FileDeps & LlmRouteDeps) {
   const { db } = deps;
@@ -35,12 +38,17 @@ export function createLessonRoutes(deps: FileDeps & LlmRouteDeps) {
     .get("/", async (c) => c.json({ lessons: await listLessons(db, c.get("user").id) }, 200))
     .post("/", validate("json", createLessonRequestSchema), async (c) => {
       const userId = c.get("user").id;
-      const { enrich, ...values } = c.req.valid("json");
+      const { enrich, draft: asDraft, ...values } = c.req.valid("json");
       try {
         const created = await db.transaction(async (tx) => {
           const [row] = await tx
             .insert(lessons)
-            .values({ id: uuidv7(), userId, ...values, status: enrich ? "draft" : "final" })
+            .values({
+              id: uuidv7(),
+              userId,
+              ...values,
+              status: enrich || asDraft ? "draft" : "final",
+            })
             .returning();
           if (!row) throw new Error("lesson insert returned nothing");
           const draft = enrich

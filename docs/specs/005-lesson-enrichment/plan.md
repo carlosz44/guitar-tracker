@@ -97,6 +97,12 @@
 - **Topic page:** "Mejorar con Claude" and the review.
 - **Ajustes:** "Claude este mes: $X.XX de $Y · N llamadas", or "Claude no está configurado".
 
+**Added after the first build (AC-17, AC-18)**
+- `POST /api/lessons` takes `draft: boolean` to save a `draft` lesson without starting enrichment yet. The web uploads the files, then calls `POST /api/lessons/:id/enrich`.
+- The enrichment job checks the lesson's files before claiming the draft. While any is `uploading`, or a Guitar Pro or Word file is still `pending` extraction, it re-queues itself 5 seconds later, up to 24 times (2 minutes), then runs with what's ready.
+- The prompt includes the lesson's current summary, practice points and homework, with the rule to keep every fact and fix typing errors.
+- `useUploads` takes the lesson id per call, and its upload list becomes a shared component used by the lesson page and the new-lesson form.
+
 ### Schema changes (migration `0003_llm`)
 
 Every table has `user_id`, timestamps and UUIDv7 ids.

@@ -1,4 +1,4 @@
-import { runLessonEnrichment } from "../llm/lesson-enrichment";
+import { FILE_WAIT_SECONDS, runLessonEnrichment } from "../llm/lesson-enrichment";
 import { finishDraft, type LlmJobDeps } from "../llm/run";
 import { runTopicImprove } from "../llm/topic-improve";
 import { type Boss, ensureQueue, QUEUES } from "./boss";
@@ -12,7 +12,13 @@ async function guarded(deps: LlmJobDeps, draftId: string, run: () => Promise<voi
   }
 }
 
-export async function registerLlmJobs(boss: Boss, deps: LlmJobDeps) {
+export async function registerLlmJobs(boss: Boss, baseDeps: LlmJobDeps) {
+  const deps: LlmJobDeps = {
+    ...baseDeps,
+    requeue: async (draftId, waits) => {
+      await boss.send(QUEUES.lessonEnrich, { draftId, waits }, { startAfter: FILE_WAIT_SECONDS });
+    },
+  };
   await ensureQueue(boss, QUEUES.lessonEnrich);
   await ensureQueue(boss, QUEUES.topicImprove);
   await boss.work<{ draftId: string }>(
