@@ -1,8 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, History, Layers, type LucideIcon, Settings, Sun } from "lucide-react";
+import {
+  BookOpen,
+  History,
+  Layers,
+  type LucideIcon,
+  MessageCirclePlus,
+  Settings,
+  Sun,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { es } from "@/i18n/es";
 import { AppMark } from "./app-mark";
+import { QuestionDialog } from "./questions/question-dialog";
+import { Button } from "./ui/button";
 
 type NavPath = "/today" | "/lessons" | "/topics" | "/history" | "/settings";
 
@@ -21,6 +31,19 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="flex-1 px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[calc(6rem+env(safe-area-inset-bottom))] lg:px-10 lg:pt-10 lg:pb-10">
         <div className="mx-auto w-full max-w-3xl">{children}</div>
       </main>
+      <div className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-40 lg:hidden">
+        <QuestionDialog
+          trigger={
+            <Button
+              size="icon-lg"
+              className="rounded-full shadow-lg"
+              aria-label={es.questions.addLabel}
+            >
+              <MessageCirclePlus aria-hidden />
+            </Button>
+          }
+        />
+      </div>
       <BottomNav />
     </div>
   );
@@ -51,6 +74,9 @@ export function Sidebar() {
           ))}
         </ul>
       </nav>
+      <div className="mt-auto">
+        <QuestionDialog />
+      </div>
     </aside>
   );
 }

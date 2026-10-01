@@ -1,9 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createTestApp, TEST_APP_URL } from "../test/app";
 import { useTestDatabase } from "../test/db";
 import { createSignedInUser } from "../test/session";
 
-const { db } = useTestDatabase();
+const { db, truncateAll } = useTestDatabase();
+beforeEach(truncateAll);
 const { app, auth } = createTestApp({ db });
 
 const PUBLIC_PATHS = [/^\/api\/health$/, /^\/api\/auth\//];

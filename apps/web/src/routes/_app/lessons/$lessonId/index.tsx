@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { LessonFiles } from "@/components/files/lesson-files";
 import { LessonTopics } from "@/components/lessons/lesson-topics";
 import { Markdown } from "@/components/markdown";
+import { OpenQuestions } from "@/components/questions/open-questions";
+import { QuestionDialog } from "@/components/questions/question-dialog";
 import { Section } from "@/components/section";
 import {
   AlertDialog,
@@ -37,7 +39,7 @@ function LessonPage() {
   const { lessonId } = Route.useParams();
   const { data } = useSuspenseQuery(lessonQuery(lessonId));
   const { data: list } = useSuspenseQuery(lessonsQuery);
-  const { lesson, files, topics, openQuestionsCount, isLatest } = data;
+  const { lesson, files, topics, openQuestionsCount, isLatest, openQuestions } = data;
   const latestId = list.lessons[0]?.id;
 
   return (
@@ -55,6 +57,7 @@ function LessonPage() {
             </Link>
           </Button>
           <DeleteLessonButton lessonId={lessonId} fileCount={files.length} />
+          <QuestionDialog />
           {openQuestionsCount > 0 && latestId && (
             <Button asChild variant="ghost">
               <Link to="/lessons/$lessonId" params={{ lessonId: latestId }} hash="next-class">
@@ -102,7 +105,11 @@ function LessonPage() {
         </Section>
       )}
 
-      {isLatest && <span id="next-class" />}
+      {isLatest && (
+        <Section title={es.lessonPage.nextClass} id="next-class">
+          <OpenQuestions questions={openQuestions} lessonId={lessonId} />
+        </Section>
+      )}
     </article>
   );
 }

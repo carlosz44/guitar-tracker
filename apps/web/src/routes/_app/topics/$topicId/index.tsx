@@ -5,6 +5,7 @@ import { Archive, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Markdown } from "@/components/markdown";
 import { NativeSelect } from "@/components/native-select";
+import { QuestionDialog } from "@/components/questions/question-dialog";
 import { Section } from "@/components/section";
 import {
   AlertDialog,
@@ -83,6 +84,7 @@ function TopicPage() {
             linked={lessons.length > 0}
             onArchive={() => setStatus.mutate("archived")}
           />
+          <QuestionDialog topicId={topicId} />
         </div>
       </header>
 
