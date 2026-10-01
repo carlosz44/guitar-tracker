@@ -6,6 +6,8 @@ export const QUEUES = {
   fileExtract: "file.extract",
   fileCleanup: "file.cleanup-stale",
   sessionClose: "session.close-stale",
+  lessonEnrich: "llm.lesson-enrich",
+  topicImprove: "llm.topic-improve",
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 
@@ -28,6 +30,8 @@ export const QUEUE_OPTIONS: Record<QueueName, Omit<Queue, "name">> = {
     expireInSeconds: 5 * 60,
     deleteAfterSeconds: 24 * 60 * 60,
   },
+  [QUEUES.lessonEnrich]: { retryLimit: 0, expireInSeconds: 10 * 60 },
+  [QUEUES.topicImprove]: { retryLimit: 0, expireInSeconds: 5 * 60 },
 };
 
 export function createBoss(connectionString: string, role: "worker" | "api" = "worker") {
@@ -47,6 +51,8 @@ export type Boss = PgBoss;
 
 export interface JobData {
   [QUEUES.fileExtract]: { fileId: string };
+  [QUEUES.lessonEnrich]: { draftId: string };
+  [QUEUES.topicImprove]: { draftId: string };
 }
 
 export interface JobQueue {

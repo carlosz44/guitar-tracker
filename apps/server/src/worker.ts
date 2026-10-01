@@ -1,3 +1,4 @@
+import { DEFAULT_TIMEZONE } from "@ds/shared";
 import { systemClock } from "./clock";
 import { loadConfig, workerConfigSchema } from "./config";
 import { createDatabase } from "./db/client";
@@ -5,7 +6,9 @@ import { pgDumpSpawner, registerBackup } from "./jobs/backup";
 import { createBoss } from "./jobs/boss";
 import { registerFileJobs } from "./jobs/file-jobs";
 import { recordHeartbeat, registerHeartbeat } from "./jobs/heartbeat";
+import { registerLlmJobs } from "./jobs/llm-jobs";
 import { registerSessionClose } from "./jobs/session-close";
+import { createAnthropicClient } from "./llm/client";
 import { createLogger } from "./logger";
 import { createR2Storage } from "./storage/r2";
 
@@ -35,6 +38,19 @@ await registerBackup(boss, {
 });
 await registerFileJobs(boss, { db, clock, logger, storage });
 await registerSessionClose(boss, { db, clock, logger });
+await registerLlmJobs(boss, {
+  db,
+  clock,
+  logger,
+  storage,
+  llm: config.ANTHROPIC_API_KEY ? createAnthropicClient(config.ANTHROPIC_API_KEY) : null,
+  settings: {
+    enabled: Boolean(config.ANTHROPIC_API_KEY),
+    model: config.LLM_MODEL_DEFAULT,
+    budgetUsd: config.LLM_MONTHLY_BUDGET_USD,
+  },
+  defaultTimezone: DEFAULT_TIMEZONE,
+});
 await recordHeartbeat(db, clock);
 logger.info("worker started");
 

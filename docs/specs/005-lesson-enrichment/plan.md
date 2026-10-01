@@ -34,7 +34,7 @@
     - drops suggested questions that duplicate an open one.
   - **Failures:**
     - A validation failure is retried once in-process; the second failure marks the draft `failed` (AC-4).
-    - Anthropic 429, 5xx and overloaded errors are rethrown, so pg-boss retries them (retryLimit 2, backoff). On the last attempt the draft is marked `failed`.
+    - Anthropic 429, 5xx, overloaded and connection errors are retried by the SDK (`maxRetries: 3`, honoring `retry-after`). The pg-boss job doesn't retry; when the SDK gives up the draft is marked `failed` with the error code. `messages.create` is used instead of `messages.parse`, so tokens are logged even when the output is invalid.
     - A deleted lesson marks the draft `discarded`.
 - **`topic-improve.ts`:**
   - **Input:** the topic, its parent and children, its linked lessons' summary and practice points, and the last 10 blocks (clean BPM, rating, notes).
