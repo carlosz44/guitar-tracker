@@ -12,6 +12,7 @@ import { z } from "zod";
 import type { SessionVariables } from "../auth/require-session";
 import { idParam, validate } from "../http/validate";
 import { findLesson } from "../lessons/queries";
+import { findTopic } from "../topics/queries";
 import { DraftConflict, type DraftDeps, draftView, findDraft, startDraft } from "./drafts";
 import { acceptAll, discardDraft, InvalidSection, ReviewError, reviewSection } from "./review";
 import { userTimezone } from "./run";
@@ -84,6 +85,30 @@ export function createLlmRoutes(deps: LlmRouteDeps) {
               kind: "lesson_enrichment",
               subject: { type: "lesson", id: lesson.id },
               instruction: c.req.valid("json").instruction,
+            },
+            tx,
+          ),
+        );
+        await draft.send();
+        return c.json({ draftId: draft.id }, 202);
+      } catch (error) {
+        const failure = startFailure(error);
+        return c.json(failure.body, failure.status);
+      }
+    })
+    .post("/topics/:id/improve", idParam, async (c) => {
+      const userId = c.get("user").id;
+      const topic = await findTopic(db, userId, c.req.valid("param").id);
+      if (!topic) return c.json({ error: "not_found" as const }, 404);
+      try {
+        const draft = await db.transaction(async (tx) =>
+          startDraft(
+            deps,
+            {
+              userId,
+              timeZone: await timeZone(userId),
+              kind: "topic_improve",
+              subject: { type: "topic", id: topic.id },
             },
             tx,
           ),

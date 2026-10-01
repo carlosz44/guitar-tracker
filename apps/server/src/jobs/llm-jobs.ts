@@ -1,5 +1,6 @@
 import { runLessonEnrichment } from "../llm/lesson-enrichment";
 import { finishDraft, type LlmJobDeps } from "../llm/run";
+import { runTopicImprove } from "../llm/topic-improve";
 import { type Boss, ensureQueue, QUEUES } from "./boss";
 
 async function guarded(deps: LlmJobDeps, draftId: string, run: () => Promise<void>) {
@@ -13,12 +14,20 @@ async function guarded(deps: LlmJobDeps, draftId: string, run: () => Promise<voi
 
 export async function registerLlmJobs(boss: Boss, deps: LlmJobDeps) {
   await ensureQueue(boss, QUEUES.lessonEnrich);
+  await ensureQueue(boss, QUEUES.topicImprove);
   await boss.work<{ draftId: string }>(
     QUEUES.lessonEnrich,
     { pollingIntervalSeconds: 2 },
     async ([job]) => {
       if (job)
         await guarded(deps, job.data.draftId, () => runLessonEnrichment(deps, job.data.draftId));
+    },
+  );
+  await boss.work<{ draftId: string }>(
+    QUEUES.topicImprove,
+    { pollingIntervalSeconds: 2 },
+    async ([job]) => {
+      if (job) await guarded(deps, job.data.draftId, () => runTopicImprove(deps, job.data.draftId));
     },
   );
 }

@@ -7,7 +7,7 @@
 - [x] T5 Lesson enrichment job: prompt, structured call, validation retry, post-processing, failure and retry states. (covers AC-3, AC-4, AC-6 to AC-8 filtering)
 - [x] T6 API: start enrichment (plus regenerate), `POST /api/lessons` with `enrich`, `GET /api/drafts/:id`, `me.llm`, `/api/llm/usage`; drafts deleted with their lesson or topic. (covers AC-1, AC-2, AC-10, AC-14 to AC-16)
 - [x] T7 Review API: per-section accept and discard with edits, accept-all, discard, completion, draft lesson to final. (covers AC-5 to AC-11)
-- [ ] T8 Topic improve job and API. (covers AC-12)
+- [x] T8 Topic improve job and API. (covers AC-12)
 - [ ] T9 Web: "Completar con Claude", waiting and failed states, polling, quick capture in the new-lesson form, "Borrador" badges. (covers AC-1, AC-2, AC-4, AC-16)
 - [ ] T10 Web: lesson review, with section cards, topic and question lists, "Aceptar todo" and "Regenerar". (covers AC-5 to AC-11)
 - [ ] T11 Web: "Mejorar con Claude" review on the topic page. (covers AC-12)
