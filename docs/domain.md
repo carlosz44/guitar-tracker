@@ -125,7 +125,7 @@ Derived rather than stored: last practiced at, latest clean BPM, best clean BPM,
 ### LLM run and draft (005)
 
 - `llm_runs`: `feature` (`lesson_enrichment` | `weekly_plan` | `weekly_review` | `topic_improve` | `log_parse`), `model`, `input_tokens`, `output_tokens`, `cache_read_tokens`, `cost_usd`, `latency_ms`, `status`, `error`, `subject_type`, `subject_id`
-- `llm_drafts`: `kind`, `subject_type`, `subject_id`, `payload` (jsonb, validated with a Zod schema from `packages/shared`), `status`: `pending` | `accepted` | `discarded` | `failed`, `llm_run_id`
+- `llm_drafts`: `kind` (`lesson_enrichment` | `topic_improve`), `subject_type` (`lesson` | `topic`), `subject_id`, `payload` (jsonb, validated with a Zod schema from `packages/shared`), `review` (jsonb, each section's state and accepted value), `instruction`, `skipped_files`, `status`: `queued` | `running` | `pending` | `accepted` | `discarded` | `failed`, `error`, `llm_run_id` (D-18)
 
 ### Telegram inbox (007)
 
@@ -148,7 +148,7 @@ Carlos can move a topic between any two states.
 - `in_progress` → `completed` when he ends it.
 - `in_progress` → `abandoned` when there's been no activity for 3 hours. The blocks logged so far are kept, and `ended_at` is set to the last activity.
 
-**LLM draft:** `pending` → `accepted` | `discarded`. A draft can be accepted in parts, for example keeping the summary but not the suggested topics.
+**LLM draft:** `queued` → `running` → `pending` → `accepted` | `discarded`, or `failed`. A draft can be accepted in parts, for example keeping the summary but not the suggested topics; it settles when no section is pending.
 
 **Teacher question:** `open` → `answered` (with an answer and lesson) | `dismissed`.
 

@@ -390,21 +390,23 @@ export function LessonReview({
 
   return (
     <section className="flex flex-col gap-4" aria-labelledby="draft-heading">
-      <h2 id="draft-heading" className="text-lg font-semibold">
-        {es.review.heading}
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="draft-heading" className="text-lg font-semibold">
+          {es.review.heading}
+        </h2>
+        <Button variant="ghost" onClick={() => actions.discard.mutate()} disabled={busy}>
+          {es.llm.discardDraft}
+        </Button>
+      </div>
       <SkippedFiles draft={draft} />
       {visible.map((section) => editors[section]())}
-      <div className="sticky bottom-20 z-10 flex flex-wrap gap-2 rounded-xl border bg-background/95 p-3 backdrop-blur lg:bottom-4">
+      <div className="sticky bottom-20 z-10 flex gap-2 rounded-xl border bg-background/95 p-3 pr-20 backdrop-blur lg:bottom-4 lg:pr-3">
         <Button onClick={() => actions.acceptAll.mutate(pendingValues())} disabled={busy}>
           {es.review.acceptAll}
         </Button>
         <Button variant="outline" onClick={() => setRegenerateOpen(true)} disabled={busy}>
           <RefreshCw aria-hidden />
           {es.review.regenerate}
-        </Button>
-        <Button variant="ghost" onClick={() => actions.discard.mutate()} disabled={busy}>
-          {es.llm.discardDraft}
         </Button>
       </div>
       <Dialog open={regenerateOpen} onOpenChange={setRegenerateOpen}>

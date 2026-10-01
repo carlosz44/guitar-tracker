@@ -88,9 +88,14 @@ export function TopicReview({
 
   return (
     <section className="flex flex-col gap-4" aria-labelledby="topic-draft-heading">
-      <h2 id="topic-draft-heading" className="text-lg font-semibold">
-        {es.review.heading}
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="topic-draft-heading" className="text-lg font-semibold">
+          {es.review.heading}
+        </h2>
+        <Button variant="ghost" onClick={() => actions.discard.mutate()} disabled={busy}>
+          {es.llm.discardDraft}
+        </Button>
+      </div>
       {visible.map((section) => (
         <SectionCard
           key={section}
@@ -106,7 +111,7 @@ export function TopicReview({
           {editors[section].editor}
         </SectionCard>
       ))}
-      <div className="sticky bottom-20 z-10 flex flex-wrap gap-2 rounded-xl border bg-background/95 p-3 backdrop-blur lg:bottom-4">
+      <div className="sticky bottom-20 z-10 flex gap-2 rounded-xl border bg-background/95 p-3 pr-20 backdrop-blur lg:bottom-4 lg:pr-3">
         <Button
           onClick={() =>
             actions.acceptAll.mutate(
@@ -124,9 +129,6 @@ export function TopicReview({
         <Button variant="outline" onClick={onRegenerate} disabled={busy}>
           <RefreshCw aria-hidden />
           {es.review.regenerate}
-        </Button>
-        <Button variant="ghost" onClick={() => actions.discard.mutate()} disabled={busy}>
-          {es.llm.discardDraft}
         </Button>
       </div>
     </section>

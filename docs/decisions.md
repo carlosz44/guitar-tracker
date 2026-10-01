@@ -147,3 +147,17 @@ Short records of choices already made, so they don't get re-argued. Add a new en
 **Why:** Carlos never uses light mode. One palette means less to build, test and check on the iPhone, and less glare on the music stand.
 
 **Instead of:** light and dark following the system, as first written in specs 001 and 003.
+
+## D-18 Claude drafts are reviewed section by section
+*2026-10-01*
+
+**Decision:**
+- An `llm_drafts` row moves `queued` → `running` → `pending` → `accepted` | `discarded`, or ends `failed`. One draft per lesson or topic can be active at a time; one stuck in `queued` or `running` for 15 minutes is marked failed.
+- The draft keeps Claude's validated payload plus a `review` map with each section's state and the value Carlos accepted. Accepting a section writes only that section, in one transaction.
+- Calls use `messages.create` with a Zod-derived JSON schema, then parse and re-validate the output with the shared schema, retrying once when it's invalid. The SDK retries rate limits, overload and 5xx; the job itself doesn't retry.
+- Cost is computed from a price table in `apps/server/src/llm/pricing.ts`. An unknown model is priced at the most expensive known rate. New calls stop once the month's spend (calendar month in the user's timezone) reaches `LLM_MONTHLY_BUDGET_USD`, on top of the spend limit on the API key.
+
+**Why:** partial acceptance is in the domain (a draft can be accepted in parts), and keeping the accepted values with the draft shows what changed. Parsing ourselves keeps token usage logged even when the output is invalid.
+
+**Instead of:** a plain `pending` | `accepted` | `discarded` | `failed` status, and pg-boss retries for API errors.
+

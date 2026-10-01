@@ -161,7 +161,7 @@ No e2e for 005: the production api would need a fake Claude, and test hooks don'
 
 ### Deviations from the spec and domain
 
-1. `llm_drafts.status` gains `queued` and `running`, plus `review`, `instruction`, `skipped_files` and `error` columns (to be recorded as D-17 and in domain.md).
+1. `llm_drafts.status` gains `queued` and `running`, plus `review`, `instruction`, `skipped_files` and `error` columns (recorded as D-18 and in domain.md).
 2. `LLM_MODEL_FAST` is deferred to 004.
 3. No Playwright coverage for 005.
 

@@ -112,7 +112,10 @@ Config is validated with a Zod schema at startup; missing or invalid variables s
 | `R2_ENDPOINT` | api, worker | Optional. Only for an EU-jurisdiction bucket or a local S3-compatible server |
 | `DEFAULT_TIMEZONE` | api | `America/Lima`, used when creating `user_settings` |
 | `TELEGRAM_BOT_TOKEN` | worker | from 004 |
-| `ANTHROPIC_API_KEY`, `LLM_MODEL_DEFAULT`, `LLM_MODEL_FAST` | worker | from 005. Defaults: `claude-sonnet-5-5` and `claude-haiku-4-5-20251001` |
+| `ANTHROPIC_API_KEY` | api, worker | from 005. Optional: without it the app runs and the Claude buttons are hidden |
+| `LLM_MODEL_DEFAULT` | api, worker | from 005. Default `claude-sonnet-5-5` |
+| `LLM_MONTHLY_BUDGET_USD` | api, worker | from 005. Default 10. Set as a GitHub repository variable |
+| `LLM_MODEL_FAST` | worker | from 004. Default `claude-haiku-4-5-20251001` |
 
 ## R2 layout
 

@@ -13,7 +13,7 @@
 - [x] T11 Web: "Mejorar con Claude" review on the topic page. (covers AC-12)
 - [x] T12 Web: Claude spend in Ajustes, or "no configurado". (covers AC-14, AC-16)
 - [ ] T13 Docs and manual checks:
-  - D-17, domain.md (draft statuses and columns), architecture.md env
-  - a real key on a real lesson with PDF, Guitar Pro and image; check cost and logs
-  - 390 px and desktop
-  - then spec status and roadmap.
+  - [x] D-18, domain.md (draft statuses and columns), architecture.md env
+  - [ ] a real key on a real lesson with PDF, Guitar Pro and image; check cost and logs
+  - [x] 390 px and desktop (Chromium, drafts mocked; moved "Descartar borrador" out of the sticky bar so it fits at 390 px)
+  - [ ] then spec status and roadmap.
