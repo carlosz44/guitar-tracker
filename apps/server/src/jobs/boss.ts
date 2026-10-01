@@ -5,6 +5,7 @@ export const QUEUES = {
   backup: "system.backup",
   fileExtract: "file.extract",
   fileCleanup: "file.cleanup-stale",
+  sessionClose: "session.close-stale",
 } as const;
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES];
 
@@ -20,6 +21,11 @@ export const QUEUE_OPTIONS: Record<QueueName, Omit<Queue, "name">> = {
   [QUEUES.fileCleanup]: {
     retryLimit: 0,
     expireInSeconds: 10 * 60,
+    deleteAfterSeconds: 24 * 60 * 60,
+  },
+  [QUEUES.sessionClose]: {
+    retryLimit: 0,
+    expireInSeconds: 5 * 60,
     deleteAfterSeconds: 24 * 60 * 60,
   },
 };

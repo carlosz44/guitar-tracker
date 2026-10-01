@@ -5,6 +5,7 @@ import { pgDumpSpawner, registerBackup } from "./jobs/backup";
 import { createBoss } from "./jobs/boss";
 import { registerFileJobs } from "./jobs/file-jobs";
 import { recordHeartbeat, registerHeartbeat } from "./jobs/heartbeat";
+import { registerSessionClose } from "./jobs/session-close";
 import { createLogger } from "./logger";
 import { createR2Storage } from "./storage/r2";
 
@@ -33,6 +34,7 @@ await registerBackup(boss, {
   dump: pgDumpSpawner(config.DATABASE_URL),
 });
 await registerFileJobs(boss, { db, clock, logger, storage });
+await registerSessionClose(boss, { db, clock, logger });
 await recordHeartbeat(db, clock);
 logger.info("worker started");
 
