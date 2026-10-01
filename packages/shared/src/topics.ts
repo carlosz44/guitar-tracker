@@ -14,6 +14,7 @@ export const topicErrors = {
   cycle: "topic.cycle",
   parent: "topic.parent",
   hasLessons: "topic.hasLessons",
+  hasPractice: "topic.hasPractice",
 } as const;
 
 export const createTopicSchema = z.strictObject({

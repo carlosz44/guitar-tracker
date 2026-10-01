@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, type SQL } from "drizzle-orm";
 import type { Database } from "../db/client";
 import { lessons, lessonTopics, teacherQuestions, topics } from "../db/schema";
+import { EMPTY_STATS, topicStats } from "../practice/queries";
 
 type TopicRow = typeof topics.$inferSelect;
 
@@ -43,6 +44,7 @@ export async function listTopics(
     .from(topics)
     .where(and(...conditions))
     .orderBy(desc(topics.priority), asc(topics.title));
+  const stats = await topicStats(db, userId);
   const titles = new Map(
     (
       await db
@@ -54,6 +56,7 @@ export async function listTopics(
   return rows.map((row) => ({
     ...toTopic(row),
     parent: row.parentId ? { id: row.parentId, title: titles.get(row.parentId) ?? "" } : null,
+    stats: stats.get(row.id) ?? EMPTY_STATS,
   }));
 }
 
@@ -66,7 +69,7 @@ export async function parentMap(db: Database, userId: string) {
 }
 
 export async function topicRelations(db: Database, userId: string, topic: TopicRow) {
-  const [parent, children, linkedLessons, questions] = await Promise.all([
+  const [parent, children, linkedLessons, questions, stats] = await Promise.all([
     topic.parentId ? findTopic(db, userId, topic.parentId) : undefined,
     db
       .select({ id: topics.id, title: topics.title, status: topics.status })
@@ -95,11 +98,13 @@ export async function topicRelations(db: Database, userId: string, topic: TopicR
         ),
       )
       .orderBy(asc(teacherQuestions.createdAt)),
+    topicStats(db, userId),
   ]);
   return {
     parent: parent ? { id: parent.id, title: parent.title } : null,
     children,
     lessons: linkedLessons,
     openQuestions: questions,
+    stats: stats.get(topic.id) ?? EMPTY_STATS,
   };
 }

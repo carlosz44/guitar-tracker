@@ -103,6 +103,7 @@ export const es = {
     [topicErrors.cycle]: "Un tema no puede depender de sí mismo ni de uno de sus subtemas.",
     [topicErrors.parent]: "Ese tema padre ya no existe.",
     [topicErrors.hasLessons]: "Este tema está vinculado a clases. Archívalo en su lugar.",
+    [topicErrors.hasPractice]: "Este tema tiene práctica registrada. Archívalo en su lugar.",
     [questionErrors.text]: "Escribe la pregunta.",
     [questionErrors.answer]: "Escribe la respuesta.",
     [questionErrors.topic]: "Ese tema ya no existe.",

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { teacherQuestions, topics } from "../db/schema";
 import { bodyOf, createTestApp, TEST_APP_URL } from "../test/app";
 import { useTestDatabase } from "../test/db";
-import { linkTopic, seedLesson, seedQuestion, seedTopic } from "../test/seed";
+import { linkTopic, seedLesson, seedQuestion, seedSession, seedTopic } from "../test/seed";
 import { createSignedInUser } from "../test/session";
 
 const { db, truncateAll } = useTestDatabase();
@@ -172,5 +172,48 @@ describe("topics API", () => {
     expect((await call("GET", `/topics/${theirs.id}`)).status).toBe(404);
     expect((await call("PATCH", `/topics/${mine.id}`, { parentId: theirs.id })).status).toBe(400);
     expect((await bodyOf(call("GET", "/topics"))).topics).toHaveLength(1);
+  });
+
+  it("shows practice stats: last practiced, current and best clean BPM, total minutes", async () => {
+    const topic = await seedTopic(db, carlos.userId);
+    await seedSession(db, carlos.userId, {
+      practiceDate: "2026-09-28",
+      blocks: [
+        {
+          topicId: topic.id,
+          actualSeconds: 600,
+          cleanBpm: 95,
+          endedAt: new Date("2026-09-28T16:10:00Z"),
+        },
+      ],
+    });
+    await seedSession(db, carlos.userId, {
+      practiceDate: "2026-10-01",
+      blocks: [
+        {
+          topicId: topic.id,
+          actualSeconds: 900,
+          cleanBpm: 88,
+          endedAt: new Date("2026-10-01T16:15:00Z"),
+        },
+      ],
+    });
+    const expected = {
+      lastPracticedAt: "2026-10-01T16:15:00.000Z",
+      lastPracticedDate: "2026-10-01",
+      latestCleanBpm: 88,
+      bestCleanBpm: 95,
+      totalSeconds: 1500,
+    };
+    expect((await bodyOf(call("GET", `/topics/${topic.id}`))).stats).toEqual(expected);
+    expect((await bodyOf(call("GET", "/topics"))).topics[0].stats).toEqual(expected);
+  });
+
+  it("refuses to delete a topic with practice logged, suggesting archive", async () => {
+    const topic = await seedTopic(db, carlos.userId);
+    await seedSession(db, carlos.userId, { blocks: [{ topicId: topic.id }] });
+    const response = await call("DELETE", `/topics/${topic.id}`);
+    expect(response.status).toBe(409);
+    expect(await bodyOf(response)).toEqual({ error: topicErrors.hasPractice });
   });
 });

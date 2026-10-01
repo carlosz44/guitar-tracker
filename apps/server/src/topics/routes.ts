@@ -9,7 +9,7 @@ import { Hono } from "hono";
 import { uuidv7 } from "uuidv7";
 import type { SessionVariables } from "../auth/require-session";
 import type { Database } from "../db/client";
-import { lessonTopics, topics } from "../db/schema";
+import { lessonTopics, sessionBlocks, topics } from "../db/schema";
 import { idParam, validate } from "../http/validate";
 import { wouldCreateCycle } from "./cycle";
 import { findTopic, listTopics, parentMap, topicRelations, toTopic } from "./queries";
@@ -74,6 +74,11 @@ export function createTopicRoutes(deps: { db: Database }) {
         .from(lessonTopics)
         .where(and(eq(lessonTopics.userId, userId), eq(lessonTopics.topicId, id)));
       if ((links?.n ?? 0) > 0) return c.json({ error: topicErrors.hasLessons }, 409);
+      const [practice] = await db
+        .select({ n: count() })
+        .from(sessionBlocks)
+        .where(and(eq(sessionBlocks.userId, userId), eq(sessionBlocks.topicId, id)));
+      if ((practice?.n ?? 0) > 0) return c.json({ error: topicErrors.hasPractice }, 409);
       await db.delete(topics).where(and(eq(topics.userId, userId), eq(topics.id, id)));
       return c.body(null, 204);
     });
