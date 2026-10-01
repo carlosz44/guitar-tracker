@@ -87,7 +87,7 @@ function LessonPage() {
       )}
 
       <Section title={es.lessonPage.topics}>
-        <LessonTopics topics={topics} />
+        <LessonTopics lessonId={lessonId} topics={topics} />
       </Section>
 
       {lesson.homework && (

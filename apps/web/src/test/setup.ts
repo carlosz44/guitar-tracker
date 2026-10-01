@@ -11,6 +11,12 @@ if (typeof window !== "undefined") {
   Element.prototype.setPointerCapture ??= () => undefined;
   Element.prototype.releasePointerCapture ??= () => undefined;
   Element.prototype.hasPointerCapture ??= () => false;
+  Element.prototype.scrollIntoView ??= () => undefined;
+  globalThis.ResizeObserver ??= class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
 
   Object.defineProperty(window, "matchMedia", {
     writable: true,
