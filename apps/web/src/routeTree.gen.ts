@@ -15,10 +15,11 @@ import { Route as FocusRouteImport } from './routes/_focus'
 import { Route as AccessDeniedRouteImport } from './routes/access-denied'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppSplatRouteImport } from './routes/_app/$'
-import { Route as AppHistoryRouteImport } from './routes/_app/history'
 import { Route as AppLogRouteImport } from './routes/_app/log'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTodayRouteImport } from './routes/_app/today'
+import { Route as AppHistoryIndexRouteImport } from './routes/_app/history/index'
+import { Route as AppHistorySessionIdRouteImport } from './routes/_app/history/$sessionId'
 import { Route as AppLessonsIndexRouteImport } from './routes/_app/lessons/index'
 import { Route as AppLessonsNewRouteImport } from './routes/_app/lessons/new'
 import { Route as AppTopicsIndexRouteImport } from './routes/_app/topics/index'
@@ -58,11 +59,6 @@ const AppSplatRoute = AppSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => AppRoute,
 } as any)
-const AppHistoryRoute = AppHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppLogRoute = AppLogRouteImport.update({
   id: '/log',
   path: '/log',
@@ -76,6 +72,16 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
 const AppTodayRoute = AppTodayRouteImport.update({
   id: '/today',
   path: '/today',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryIndexRoute = AppHistoryIndexRouteImport.update({
+  id: '/history/',
+  path: '/history/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistorySessionIdRoute = AppHistorySessionIdRouteImport.update({
+  id: '/history/$sessionId',
+  path: '/history/$sessionId',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLessonsIndexRoute = AppLessonsIndexRouteImport.update({
@@ -135,13 +141,14 @@ export interface FileRoutesByFullPath {
   '/access-denied': typeof AccessDeniedRoute
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
-  '/history': typeof AppHistoryRoute
   '/log': typeof AppLogRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
+  '/history/$sessionId': typeof AppHistorySessionIdRoute
   '/lessons/new': typeof AppLessonsNewRoute
   '/topics/new': typeof AppTopicsNewRoute
   '/practice/$sessionId': typeof FocusPracticeSessionIdRoute
+  '/history/': typeof AppHistoryIndexRoute
   '/lessons/': typeof AppLessonsIndexRoute
   '/topics/': typeof AppTopicsIndexRoute
   '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
@@ -155,13 +162,14 @@ export interface FileRoutesByTo {
   '/access-denied': typeof AccessDeniedRoute
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
-  '/history': typeof AppHistoryRoute
   '/log': typeof AppLogRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
+  '/history/$sessionId': typeof AppHistorySessionIdRoute
   '/lessons/new': typeof AppLessonsNewRoute
   '/topics/new': typeof AppTopicsNewRoute
   '/practice/$sessionId': typeof FocusPracticeSessionIdRoute
+  '/history': typeof AppHistoryIndexRoute
   '/lessons': typeof AppLessonsIndexRoute
   '/topics': typeof AppTopicsIndexRoute
   '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
@@ -178,13 +186,14 @@ export interface FileRoutesById {
   '/access-denied': typeof AccessDeniedRoute
   '/login': typeof LoginRoute
   '/_app/$': typeof AppSplatRoute
-  '/_app/history': typeof AppHistoryRoute
   '/_app/log': typeof AppLogRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/today': typeof AppTodayRoute
+  '/_app/history/$sessionId': typeof AppHistorySessionIdRoute
   '/_app/lessons/new': typeof AppLessonsNewRoute
   '/_app/topics/new': typeof AppTopicsNewRoute
   '/_focus/practice/$sessionId': typeof FocusPracticeSessionIdRoute
+  '/_app/history/': typeof AppHistoryIndexRoute
   '/_app/lessons/': typeof AppLessonsIndexRoute
   '/_app/topics/': typeof AppTopicsIndexRoute
   '/_app/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
@@ -200,13 +209,14 @@ export interface FileRouteTypes {
     | '/access-denied'
     | '/login'
     | '/$'
-    | '/history'
     | '/log'
     | '/settings'
     | '/today'
+    | '/history/$sessionId'
     | '/lessons/new'
     | '/topics/new'
     | '/practice/$sessionId'
+    | '/history/'
     | '/lessons/'
     | '/topics/'
     | '/lessons/$lessonId/edit'
@@ -220,13 +230,14 @@ export interface FileRouteTypes {
     | '/access-denied'
     | '/login'
     | '/$'
-    | '/history'
     | '/log'
     | '/settings'
     | '/today'
+    | '/history/$sessionId'
     | '/lessons/new'
     | '/topics/new'
     | '/practice/$sessionId'
+    | '/history'
     | '/lessons'
     | '/topics'
     | '/lessons/$lessonId/edit'
@@ -242,13 +253,14 @@ export interface FileRouteTypes {
     | '/access-denied'
     | '/login'
     | '/_app/$'
-    | '/_app/history'
     | '/_app/log'
     | '/_app/settings'
     | '/_app/today'
+    | '/_app/history/$sessionId'
     | '/_app/lessons/new'
     | '/_app/topics/new'
     | '/_focus/practice/$sessionId'
+    | '/_app/history/'
     | '/_app/lessons/'
     | '/_app/topics/'
     | '/_app/lessons/$lessonId/edit'
@@ -310,13 +322,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSplatRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/history': {
-      id: '/_app/history'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof AppHistoryRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/log': {
       id: '/_app/log'
       path: '/log'
@@ -336,6 +341,20 @@ declare module '@tanstack/react-router' {
       path: '/today'
       fullPath: '/today'
       preLoaderRoute: typeof AppTodayRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/history/': {
+      id: '/_app/history/'
+      path: '/history'
+      fullPath: '/history/'
+      preLoaderRoute: typeof AppHistoryIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/history/$sessionId': {
+      id: '/_app/history/$sessionId'
+      path: '/history/$sessionId'
+      fullPath: '/history/$sessionId'
+      preLoaderRoute: typeof AppHistorySessionIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/lessons/': {
@@ -413,12 +432,13 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppSplatRoute: typeof AppSplatRoute
-  AppHistoryRoute: typeof AppHistoryRoute
   AppLogRoute: typeof AppLogRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTodayRoute: typeof AppTodayRoute
+  AppHistorySessionIdRoute: typeof AppHistorySessionIdRoute
   AppLessonsNewRoute: typeof AppLessonsNewRoute
   AppTopicsNewRoute: typeof AppTopicsNewRoute
+  AppHistoryIndexRoute: typeof AppHistoryIndexRoute
   AppLessonsIndexRoute: typeof AppLessonsIndexRoute
   AppTopicsIndexRoute: typeof AppTopicsIndexRoute
   AppLessonsLessonIdEditRoute: typeof AppLessonsLessonIdEditRoute
@@ -430,12 +450,13 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppSplatRoute: AppSplatRoute,
-  AppHistoryRoute: AppHistoryRoute,
   AppLogRoute: AppLogRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTodayRoute: AppTodayRoute,
+  AppHistorySessionIdRoute: AppHistorySessionIdRoute,
   AppLessonsNewRoute: AppLessonsNewRoute,
   AppTopicsNewRoute: AppTopicsNewRoute,
+  AppHistoryIndexRoute: AppHistoryIndexRoute,
   AppLessonsIndexRoute: AppLessonsIndexRoute,
   AppTopicsIndexRoute: AppTopicsIndexRoute,
   AppLessonsLessonIdEditRoute: AppLessonsLessonIdEditRoute,

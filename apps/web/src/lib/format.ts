@@ -25,3 +25,15 @@ export function formatClock(totalSeconds: number) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(rest)}` : `${pad(minutes)}:${pad(rest)}`;
 }
+
+export function formatTime(iso: string, timeZone: string) {
+  return new Intl.DateTimeFormat("es-PE", { timeStyle: "short", timeZone }).format(new Date(iso));
+}
+
+export function formatDayRange(start: string, end: string) {
+  const format = (date: string, options: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat("es-PE", { ...options, timeZone: "UTC" }).format(
+      new Date(`${date}T00:00:00Z`),
+    );
+  return `${format(start, { day: "numeric", month: "short" })} – ${format(end, { day: "numeric", month: "short" })}`;
+}

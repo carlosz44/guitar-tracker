@@ -71,6 +71,14 @@ export function fakeApi(options: { me: MeResponse | null; handlers?: Handler[] }
     if (url.pathname === "/api/auth/get-session") return json(null);
     if (url.pathname === "/api/lessons" && request.method === "GET") return json({ lessons: [] });
     if (url.pathname === "/api/today" && request.method === "GET") return json(emptyToday);
+    if (url.pathname === "/api/sessions" && request.method === "GET") {
+      return json({
+        cycles: [
+          { start: "2026-10-01", end: "2026-10-07", seconds: 0, daysPracticed: 0, days: [] },
+        ],
+        nextBefore: "2026-09-30",
+      });
+    }
     if (url.pathname === "/api/topics" && request.method === "GET") return json({ topics: [] });
     if (url.pathname === "/api/questions" && request.method === "GET")
       return json({ questions: [] });

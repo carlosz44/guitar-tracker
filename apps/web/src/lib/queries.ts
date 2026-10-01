@@ -1,5 +1,5 @@
 import type { TopicCategory, TopicStatus } from "@ds/shared";
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { api, ensureOk } from "./api";
 
 export const lessonsQuery = queryOptions({
@@ -47,3 +47,23 @@ export const todayQuery = queryOptions({
   queryKey: ["today"],
   queryFn: async () => (await ensureOk(await api.today.$get())).json(),
 });
+
+export const historyQuery = infiniteQueryOptions({
+  queryKey: ["sessions", "history"],
+  initialPageParam: undefined as string | undefined,
+  queryFn: async ({ pageParam }) =>
+    (
+      await ensureOk(
+        await api.sessions.$get({
+          query: pageParam ? { cycles: "4", before: pageParam } : { cycles: "4" },
+        }),
+      )
+    ).json(),
+  getNextPageParam: (page) => page.nextBefore,
+});
+
+export const sessionQuery = (id: string) =>
+  queryOptions({
+    queryKey: ["sessions", "detail", id],
+    queryFn: async () => (await ensureOk(await api.sessions[":id"].$get({ param: { id } }))).json(),
+  });
