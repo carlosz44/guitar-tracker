@@ -56,6 +56,10 @@ export function fakeApi(options: { me: MeResponse | null; handlers?: Handler[] }
       return json({ success: true });
     }
     if (url.pathname === "/api/auth/get-session") return json(null);
+    if (url.pathname === "/api/lessons" && request.method === "GET") return json({ lessons: [] });
+    if (url.pathname === "/api/topics" && request.method === "GET") return json({ topics: [] });
+    if (url.pathname === "/api/questions" && request.method === "GET")
+      return json({ questions: [] });
     return json({ error: "not_found" }, 404);
   });
 

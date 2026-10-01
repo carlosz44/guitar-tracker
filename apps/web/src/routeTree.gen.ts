@@ -15,10 +15,15 @@ import { Route as AccessDeniedRouteImport } from './routes/access-denied'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppSplatRouteImport } from './routes/_app/$'
 import { Route as AppHistoryRouteImport } from './routes/_app/history'
-import { Route as AppLessonsRouteImport } from './routes/_app/lessons'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTodayRouteImport } from './routes/_app/today'
-import { Route as AppTopicsRouteImport } from './routes/_app/topics'
+import { Route as AppLessonsIndexRouteImport } from './routes/_app/lessons/index'
+import { Route as AppLessonsNewRouteImport } from './routes/_app/lessons/new'
+import { Route as AppTopicsIndexRouteImport } from './routes/_app/topics/index'
+import { Route as AppLessonsLessonIdIndexRouteImport } from './routes/_app/lessons/$lessonId/index'
+import { Route as AppLessonsLessonIdEditRouteImport } from './routes/_app/lessons/$lessonId/edit'
+import { Route as AppTopicsTopicIdIndexRouteImport } from './routes/_app/topics/$topicId/index'
+import { Route as AppLessonsLessonIdFilesFileIdRouteImport } from './routes/_app/lessons/$lessonId/files/$fileId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -49,11 +54,6 @@ const AppHistoryRoute = AppHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AppRoute,
 } as any)
-const AppLessonsRoute = AppLessonsRouteImport.update({
-  id: '/lessons',
-  path: '/lessons',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -64,11 +64,42 @@ const AppTodayRoute = AppTodayRouteImport.update({
   path: '/today',
   getParentRoute: () => AppRoute,
 } as any)
-const AppTopicsRoute = AppTopicsRouteImport.update({
-  id: '/topics',
-  path: '/topics',
+const AppLessonsIndexRoute = AppLessonsIndexRouteImport.update({
+  id: '/lessons/',
+  path: '/lessons/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLessonsNewRoute = AppLessonsNewRouteImport.update({
+  id: '/lessons/new',
+  path: '/lessons/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTopicsIndexRoute = AppTopicsIndexRouteImport.update({
+  id: '/topics/',
+  path: '/topics/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLessonsLessonIdIndexRoute = AppLessonsLessonIdIndexRouteImport.update({
+  id: '/lessons/$lessonId/',
+  path: '/lessons/$lessonId/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLessonsLessonIdEditRoute = AppLessonsLessonIdEditRouteImport.update({
+  id: '/lessons/$lessonId/edit',
+  path: '/lessons/$lessonId/edit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTopicsTopicIdIndexRoute = AppTopicsTopicIdIndexRouteImport.update({
+  id: '/topics/$topicId/',
+  path: '/topics/$topicId/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLessonsLessonIdFilesFileIdRoute =
+  AppLessonsLessonIdFilesFileIdRouteImport.update({
+    id: '/lessons/$lessonId/files/$fileId',
+    path: '/lessons/$lessonId/files/$fileId',
+    getParentRoute: () => AppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -76,10 +107,15 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
   '/history': typeof AppHistoryRoute
-  '/lessons': typeof AppLessonsRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
-  '/topics': typeof AppTopicsRoute
+  '/lessons/new': typeof AppLessonsNewRoute
+  '/lessons/': typeof AppLessonsIndexRoute
+  '/topics/': typeof AppTopicsIndexRoute
+  '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
+  '/lessons/$lessonId/': typeof AppLessonsLessonIdIndexRoute
+  '/topics/$topicId/': typeof AppTopicsTopicIdIndexRoute
+  '/lessons/$lessonId/files/$fileId': typeof AppLessonsLessonIdFilesFileIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -87,10 +123,15 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
   '/history': typeof AppHistoryRoute
-  '/lessons': typeof AppLessonsRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
-  '/topics': typeof AppTopicsRoute
+  '/lessons/new': typeof AppLessonsNewRoute
+  '/lessons': typeof AppLessonsIndexRoute
+  '/topics': typeof AppTopicsIndexRoute
+  '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
+  '/lessons/$lessonId': typeof AppLessonsLessonIdIndexRoute
+  '/topics/$topicId': typeof AppTopicsTopicIdIndexRoute
+  '/lessons/$lessonId/files/$fileId': typeof AppLessonsLessonIdFilesFileIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -100,10 +141,15 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/$': typeof AppSplatRoute
   '/_app/history': typeof AppHistoryRoute
-  '/_app/lessons': typeof AppLessonsRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/today': typeof AppTodayRoute
-  '/_app/topics': typeof AppTopicsRoute
+  '/_app/lessons/new': typeof AppLessonsNewRoute
+  '/_app/lessons/': typeof AppLessonsIndexRoute
+  '/_app/topics/': typeof AppTopicsIndexRoute
+  '/_app/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
+  '/_app/lessons/$lessonId/': typeof AppLessonsLessonIdIndexRoute
+  '/_app/topics/$topicId/': typeof AppTopicsTopicIdIndexRoute
+  '/_app/lessons/$lessonId/files/$fileId': typeof AppLessonsLessonIdFilesFileIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -113,10 +159,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/$'
     | '/history'
-    | '/lessons'
     | '/settings'
     | '/today'
-    | '/topics'
+    | '/lessons/new'
+    | '/lessons/'
+    | '/topics/'
+    | '/lessons/$lessonId/edit'
+    | '/lessons/$lessonId/'
+    | '/topics/$topicId/'
+    | '/lessons/$lessonId/files/$fileId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -124,10 +175,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/$'
     | '/history'
-    | '/lessons'
     | '/settings'
     | '/today'
+    | '/lessons/new'
+    | '/lessons'
     | '/topics'
+    | '/lessons/$lessonId/edit'
+    | '/lessons/$lessonId'
+    | '/topics/$topicId'
+    | '/lessons/$lessonId/files/$fileId'
   id:
     | '__root__'
     | '/'
@@ -136,10 +192,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/$'
     | '/_app/history'
-    | '/_app/lessons'
     | '/_app/settings'
     | '/_app/today'
-    | '/_app/topics'
+    | '/_app/lessons/new'
+    | '/_app/lessons/'
+    | '/_app/topics/'
+    | '/_app/lessons/$lessonId/edit'
+    | '/_app/lessons/$lessonId/'
+    | '/_app/topics/$topicId/'
+    | '/_app/lessons/$lessonId/files/$fileId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,13 +254,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHistoryRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/lessons': {
-      id: '/_app/lessons'
-      path: '/lessons'
-      fullPath: '/lessons'
-      preLoaderRoute: typeof AppLessonsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/settings': {
       id: '/_app/settings'
       path: '/settings'
@@ -214,11 +268,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTodayRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/topics': {
-      id: '/_app/topics'
+    '/_app/lessons/': {
+      id: '/_app/lessons/'
+      path: '/lessons'
+      fullPath: '/lessons/'
+      preLoaderRoute: typeof AppLessonsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lessons/new': {
+      id: '/_app/lessons/new'
+      path: '/lessons/new'
+      fullPath: '/lessons/new'
+      preLoaderRoute: typeof AppLessonsNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/topics/': {
+      id: '/_app/topics/'
       path: '/topics'
-      fullPath: '/topics'
-      preLoaderRoute: typeof AppTopicsRouteImport
+      fullPath: '/topics/'
+      preLoaderRoute: typeof AppTopicsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lessons/$lessonId/': {
+      id: '/_app/lessons/$lessonId/'
+      path: '/lessons/$lessonId'
+      fullPath: '/lessons/$lessonId/'
+      preLoaderRoute: typeof AppLessonsLessonIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lessons/$lessonId/edit': {
+      id: '/_app/lessons/$lessonId/edit'
+      path: '/lessons/$lessonId/edit'
+      fullPath: '/lessons/$lessonId/edit'
+      preLoaderRoute: typeof AppLessonsLessonIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/topics/$topicId/': {
+      id: '/_app/topics/$topicId/'
+      path: '/topics/$topicId'
+      fullPath: '/topics/$topicId/'
+      preLoaderRoute: typeof AppTopicsTopicIdIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/lessons/$lessonId/files/$fileId': {
+      id: '/_app/lessons/$lessonId/files/$fileId'
+      path: '/lessons/$lessonId/files/$fileId'
+      fullPath: '/lessons/$lessonId/files/$fileId'
+      preLoaderRoute: typeof AppLessonsLessonIdFilesFileIdRouteImport
       parentRoute: typeof AppRoute
     }
   }
@@ -227,19 +323,29 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppSplatRoute: typeof AppSplatRoute
   AppHistoryRoute: typeof AppHistoryRoute
-  AppLessonsRoute: typeof AppLessonsRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTodayRoute: typeof AppTodayRoute
-  AppTopicsRoute: typeof AppTopicsRoute
+  AppLessonsNewRoute: typeof AppLessonsNewRoute
+  AppLessonsIndexRoute: typeof AppLessonsIndexRoute
+  AppTopicsIndexRoute: typeof AppTopicsIndexRoute
+  AppLessonsLessonIdEditRoute: typeof AppLessonsLessonIdEditRoute
+  AppLessonsLessonIdIndexRoute: typeof AppLessonsLessonIdIndexRoute
+  AppTopicsTopicIdIndexRoute: typeof AppTopicsTopicIdIndexRoute
+  AppLessonsLessonIdFilesFileIdRoute: typeof AppLessonsLessonIdFilesFileIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSplatRoute: AppSplatRoute,
   AppHistoryRoute: AppHistoryRoute,
-  AppLessonsRoute: AppLessonsRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTodayRoute: AppTodayRoute,
-  AppTopicsRoute: AppTopicsRoute,
+  AppLessonsNewRoute: AppLessonsNewRoute,
+  AppLessonsIndexRoute: AppLessonsIndexRoute,
+  AppTopicsIndexRoute: AppTopicsIndexRoute,
+  AppLessonsLessonIdEditRoute: AppLessonsLessonIdEditRoute,
+  AppLessonsLessonIdIndexRoute: AppLessonsLessonIdIndexRoute,
+  AppTopicsTopicIdIndexRoute: AppTopicsTopicIdIndexRoute,
+  AppLessonsLessonIdFilesFileIdRoute: AppLessonsLessonIdFilesFileIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

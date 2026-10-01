@@ -36,7 +36,7 @@ describe("app shell", () => {
 
   it.each([
     ["/today", es.today.title, es.today.empty],
-    ["/lessons", es.lessons.title, es.lessons.placeholder],
+    ["/lessons", es.lessons.title, es.lessonsPage.empty],
     ["/topics", es.topics.title, es.topics.placeholder],
     ["/history", es.history.title, es.history.placeholder],
   ])("%s shows its Spanish placeholder", async (path, title, message) => {
