@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookOpen, Plus } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { es } from "@/i18n/es";
 import { formatDate } from "@/lib/format";
@@ -39,7 +40,12 @@ function LessonsPage() {
                 <span className="text-sm text-muted-foreground first-letter:uppercase">
                   {formatDate(lesson.date)}
                 </span>
-                <span className="text-lg font-medium">{lesson.title}</span>
+                <span className="flex items-center gap-2 text-lg font-medium">
+                  {lesson.title}
+                  {lesson.status === "draft" && (
+                    <Badge variant="secondary">{es.llm.draftBadge}</Badge>
+                  )}
+                </span>
                 <span className="text-sm text-muted-foreground">
                   {es.lessonsPage.counts(lesson.fileCount, lesson.topicCount)}
                 </span>

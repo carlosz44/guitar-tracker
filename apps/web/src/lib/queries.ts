@@ -19,6 +19,22 @@ export const lessonQuery = (id: string) =>
         : false,
   });
 
+export const draftQuery = (id: string) =>
+  queryOptions({
+    queryKey: ["drafts", id],
+    queryFn: async () =>
+      (await (await ensureOk(await api.drafts[":id"].$get({ param: { id } }))).json()).draft,
+    refetchInterval: (query) =>
+      query.state.data?.status === "queued" || query.state.data?.status === "running"
+        ? 2_000
+        : false,
+  });
+
+export const llmUsageQuery = queryOptions({
+  queryKey: ["llm", "usage"],
+  queryFn: async () => (await ensureOk(await api.llm.usage.$get())).json(),
+});
+
 export const topicsQuery = (filters: { status?: TopicStatus; category?: TopicCategory } = {}) =>
   queryOptions({
     queryKey: ["topics", filters],

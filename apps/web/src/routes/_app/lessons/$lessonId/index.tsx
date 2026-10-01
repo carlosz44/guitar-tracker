@@ -4,6 +4,9 @@ import { MessageCircleQuestion, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { LessonFiles } from "@/components/files/lesson-files";
 import { LessonTopics } from "@/components/lessons/lesson-topics";
+import { LessonDraft } from "@/components/llm/lesson-draft";
+import { StartDraftButton } from "@/components/llm/start-draft-button";
+import { useStartDraft } from "@/components/llm/use-start-draft";
 import { Markdown } from "@/components/markdown";
 import { OpenQuestions } from "@/components/questions/open-questions";
 import { QuestionDialog } from "@/components/questions/question-dialog";
@@ -19,6 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { es } from "@/i18n/es";
 import { api, ensureOk } from "@/lib/api";
@@ -39,7 +43,8 @@ function LessonPage() {
   const { lessonId } = Route.useParams();
   const { data } = useSuspenseQuery(lessonQuery(lessonId));
   const { data: list } = useSuspenseQuery(lessonsQuery);
-  const { lesson, files, topics, openQuestionsCount, isLatest, openQuestions } = data;
+  const { lesson, draft, files, topics, openQuestionsCount, isLatest, openQuestions } = data;
+  const start = useStartDraft({ type: "lesson", id: lessonId });
   const latestId = list.lessons[0]?.id;
 
   return (
@@ -48,7 +53,10 @@ function LessonPage() {
         <p className="text-sm text-muted-foreground first-letter:uppercase">
           {formatDate(lesson.date)}
         </p>
-        <h1 className="text-2xl font-semibold tracking-tight lg:text-3xl">{lesson.title}</h1>
+        <h1 className="flex flex-wrap items-center gap-2 text-2xl font-semibold tracking-tight lg:text-3xl">
+          {lesson.title}
+          {lesson.status === "draft" && <Badge variant="secondary">{es.llm.draftBadge}</Badge>}
+        </h1>
         <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link to="/lessons/$lessonId/edit" params={{ lessonId }}>
@@ -56,6 +64,13 @@ function LessonPage() {
               {es.lessonPage.edit}
             </Link>
           </Button>
+          {!draft && (
+            <StartDraftButton
+              label={es.llm.enrichLesson}
+              onStart={() => start.mutate(undefined)}
+              pending={start.isPending}
+            />
+          )}
           <DeleteLessonButton lessonId={lessonId} fileCount={files.length} />
           <QuestionDialog />
           {openQuestionsCount > 0 && latestId && (
@@ -68,6 +83,8 @@ function LessonPage() {
           )}
         </div>
       </header>
+
+      {draft && <LessonDraft lessonId={lessonId} draft={draft} />}
 
       {lesson.summary && (
         <Section title={es.lessonPage.summary}>

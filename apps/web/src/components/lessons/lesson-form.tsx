@@ -1,5 +1,6 @@
 import { type CreateLesson, createLessonSchema } from "@ds/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Sparkles } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { ListEditor } from "@/components/list-editor";
 import { Button } from "@/components/ui/button";
@@ -7,15 +8,18 @@ import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { es, validationMessage } from "@/i18n/es";
+import { formatDayMonth } from "@/lib/format";
 
 export function LessonForm({
   defaultValues,
   onSubmit,
+  onSubmitAndEnrich,
   onCancel,
   pending,
 }: {
   defaultValues: CreateLesson;
   onSubmit: (values: CreateLesson) => void;
+  onSubmitAndEnrich?: (values: CreateLesson) => void;
   onCancel: () => void;
   pending: boolean;
 }) {
@@ -75,10 +79,26 @@ export function LessonForm({
         <Textarea id="lesson-homework" {...form.register("homework")} />
       </Field>
 
-      <div className="flex gap-3 lg:col-start-2">
+      <div className="flex flex-wrap gap-3 lg:col-start-2">
         <Button type="submit" disabled={pending}>
           {pending ? es.lessonForm.saving : es.lessonForm.save}
         </Button>
+        {onSubmitAndEnrich && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={() => {
+              if (!form.getValues("title").trim()) {
+                form.setValue("title", es.llm.defaultTitle(formatDayMonth(form.getValues("date"))));
+              }
+              void form.handleSubmit(onSubmitAndEnrich)();
+            }}
+          >
+            <Sparkles aria-hidden />
+            {es.llm.saveAndEnrich}
+          </Button>
+        )}
         <Button type="button" variant="outline" onClick={onCancel}>
           {es.lessonForm.cancel}
         </Button>

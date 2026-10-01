@@ -43,7 +43,9 @@ export function createTodayRoutes(deps: { db: Database; clock: Clock; defaultTim
         targetMinutes: settings.dailyTargetMinutes,
         met: isMet(seconds, settings.dailyTargetMinutes),
         streak: streak(days, today, settings.dailyTargetMinutes),
-        latestLesson: lesson ? { id: lesson.id, title: lesson.title, date: lesson.date } : null,
+        latestLesson: lesson
+          ? { id: lesson.id, title: lesson.title, date: lesson.date, status: lesson.status }
+          : null,
         openQuestionsCount: questions,
         activeSession: activeId ? { id: activeId } : null,
         suggestion: {

@@ -15,8 +15,8 @@ function NewLessonPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const create = useMutation({
-    mutationFn: async (values: CreateLesson) =>
-      (await ensureOk(await api.lessons.$post({ json: values }))).json(),
+    mutationFn: async ({ values, enrich }: { values: CreateLesson; enrich: boolean }) =>
+      (await ensureOk(await api.lessons.$post({ json: { ...values, enrich } }))).json(),
     onSuccess: async ({ lesson }) => {
       await queryClient.invalidateQueries({ queryKey: ["lessons"] });
       await navigate({ to: "/lessons/$lessonId", params: { lessonId: lesson.id } });
@@ -36,7 +36,10 @@ function NewLessonPage() {
           practicePoints: [],
           homework: "",
         }}
-        onSubmit={(values) => create.mutate(values)}
+        onSubmit={(values) => create.mutate({ values, enrich: false })}
+        onSubmitAndEnrich={
+          me.llm.enabled ? (values) => create.mutate({ values, enrich: true }) : undefined
+        }
         onCancel={() => navigate({ to: "/lessons" })}
         pending={create.isPending}
       />

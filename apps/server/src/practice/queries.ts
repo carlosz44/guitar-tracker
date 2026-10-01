@@ -89,7 +89,7 @@ export const EMPTY_STATS: TopicStats = {
 
 export async function latestLessonWithTopics(db: Database, userId: string) {
   const [lesson] = await db
-    .select({ id: lessons.id, title: lessons.title, date: lessons.date })
+    .select({ id: lessons.id, title: lessons.title, date: lessons.date, status: lessons.status })
     .from(lessons)
     .where(eq(lessons.userId, userId))
     .orderBy(desc(lessons.date), desc(lessons.createdAt))

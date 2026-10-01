@@ -17,7 +17,7 @@ const today = {
   seconds: 900,
   minutes: 15,
   streak: 3,
-  latestLesson: { id: "l1", title: "Modo dórico", date: "2026-10-01" },
+  latestLesson: { id: "l1", title: "Modo dórico", date: "2026-10-01", status: "final" },
   openQuestionsCount: 2,
   suggestion: {
     warmUpMinutes: 5,

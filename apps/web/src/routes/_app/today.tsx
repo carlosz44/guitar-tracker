@@ -16,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { es } from "@/i18n/es";
 import { ApiError, api, ensureOk } from "@/lib/api";
@@ -96,6 +97,9 @@ function TodayPage() {
               >
                 <BookOpen aria-hidden className="size-5 text-muted-foreground" />
                 {`${es.today.latestLesson}: ${data.latestLesson.title} · ${formatDate(data.latestLesson.date)}`}
+                {data.latestLesson.status === "draft" && (
+                  <Badge variant="secondary">{es.llm.draftBadge}</Badge>
+                )}
               </Link>
             )}
             {data.latestLesson && data.openQuestionsCount > 0 && (

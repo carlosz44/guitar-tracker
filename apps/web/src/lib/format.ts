@@ -37,3 +37,11 @@ export function formatDayRange(start: string, end: string) {
     );
   return `${format(start, { day: "numeric", month: "short" })} – ${format(end, { day: "numeric", month: "short" })}`;
 }
+
+export function formatDayMonth(date: string) {
+  return new Intl.DateTimeFormat("es-PE", {
+    day: "numeric",
+    month: "long",
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
+}

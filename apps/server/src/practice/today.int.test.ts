@@ -41,7 +41,7 @@ describe("GET /api/today", () => {
       minutes: 15,
       targetMinutes: 30,
       met: false,
-      latestLesson: { id: lesson.id, title: "Modo dórico", date: "2026-10-01" },
+      latestLesson: { id: lesson.id, title: "Modo dórico", date: "2026-10-01", status: "final" },
       openQuestionsCount: 1,
       activeSession: null,
     });
