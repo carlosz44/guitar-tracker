@@ -9,6 +9,7 @@ export const carlos: MeResponse = {
   user: { id: "0190f0e0-0000-7000-8000-000000000001", name: "Carlos Amorós", image: null },
   settings: { timezone: "America/Lima", dailyTargetMinutes: 30, lessonWeekday: 4 },
   lastBackupAt: null,
+  llm: { enabled: true },
 };
 
 export const emptyToday = {

@@ -3,6 +3,7 @@ import { createApp } from "../app";
 import { createAuth } from "../auth/auth";
 import { type Clock, systemClock } from "../clock";
 import type { Database } from "../db/client";
+import type { LlmSettings } from "../llm/usage";
 import type { Logger } from "../logger";
 import type { ObjectStorage } from "../storage/r2";
 import { validEnv } from "./env";
@@ -22,6 +23,7 @@ export function createTestApp(deps: {
   staticRoot?: string;
   allowedGithubIds?: string[];
   storage?: ObjectStorage;
+  llm?: Partial<LlmSettings>;
 }) {
   const memory = memoryStorage();
   const jobs = memoryQueue();
@@ -45,6 +47,7 @@ export function createTestApp(deps: {
     defaultTimezone: DEFAULT_TIMEZONE,
     storage: deps.storage ?? memory.storage,
     queue: jobs.queue,
+    llm: { enabled: true, model: "claude-sonnet-5-5", budgetUsd: 10, ...deps.llm },
     storageOrigin: TEST_STORAGE_ORIGIN,
     staticRoot: deps.staticRoot,
   });

@@ -9,5 +9,6 @@ export const meResponseSchema = z.object({
   }),
   settings: settingsSchema,
   lastBackupAt: z.iso.datetime().nullable(),
+  llm: z.object({ enabled: z.boolean() }),
 });
 export type MeResponse = z.infer<typeof meResponseSchema>;

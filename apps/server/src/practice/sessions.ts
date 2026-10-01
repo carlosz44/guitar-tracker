@@ -2,13 +2,12 @@ import { BLOCK_STEP_SECONDS, type BlockAction, type PlannedBlock, sessionErrors 
 import { and, asc, eq, inArray, ne } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
 import type { Clock } from "../clock";
-import type { Database } from "../db/client";
+import type { Database, Tx } from "../db/client";
 import { practiceDays, practiceSessions, sessionBlocks, topics } from "../db/schema";
 import { getOrCreateSettings } from "../settings";
 import { topicStats } from "./queries";
 import { practiceDate } from "./rules";
 
-type Tx = Parameters<Parameters<Database["transaction"]>[0]>[0];
 type SessionRow = typeof practiceSessions.$inferSelect;
 type BlockRow = typeof sessionBlocks.$inferSelect;
 

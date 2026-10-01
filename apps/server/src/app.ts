@@ -9,6 +9,8 @@ import { requestLogger } from "./http/request-logger";
 import { mountStatic } from "./http/static";
 import type { JobQueue } from "./jobs/boss";
 import { createLessonRoutes } from "./lessons/routes";
+import { createLlmRoutes } from "./llm/routes";
+import type { LlmSettings } from "./llm/usage";
 import type { Logger } from "./logger";
 import { createSessionRoutes } from "./practice/routes";
 import { createTodayRoutes } from "./practice/today";
@@ -28,6 +30,7 @@ export interface AppDeps {
   defaultTimezone: string;
   storage: ObjectStorage;
   queue: JobQueue;
+  llm: LlmSettings;
   storageOrigin: string;
   staticRoot?: string;
 }
@@ -44,7 +47,8 @@ export function createApiRoutes(deps: AppDeps) {
     .route("/questions", createQuestionRoutes(deps))
     .route("/files", createFileRoutes(deps))
     .route("/today", createTodayRoutes(deps))
-    .route("/sessions", createSessionRoutes(deps));
+    .route("/sessions", createSessionRoutes(deps))
+    .route("/", createLlmRoutes(deps));
 }
 export type AppType = ReturnType<typeof createApiRoutes>;
 

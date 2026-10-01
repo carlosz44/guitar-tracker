@@ -1,7 +1,7 @@
 import type { DraftReview, DraftSubject, LlmFeature, SkippedFile } from "@ds/shared";
 import { and, eq } from "drizzle-orm";
 import type { Clock } from "../clock";
-import type { Database } from "../db/client";
+import type { Database, Tx } from "../db/client";
 import { llmDrafts, userSettings } from "../db/schema";
 import type { Logger } from "../logger";
 import type { ObjectStorage } from "../storage/r2";
@@ -49,7 +49,7 @@ export async function finishDraft(
     .where(and(eq(llmDrafts.id, draftId), eq(llmDrafts.status, "running")));
 }
 
-export async function userTimezone(db: Database, userId: string, fallback: string) {
+export async function userTimezone(db: Database | Tx, userId: string, fallback: string) {
   const [row] = await db
     .select({ timezone: userSettings.timezone })
     .from(userSettings)

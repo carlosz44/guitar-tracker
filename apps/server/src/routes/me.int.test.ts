@@ -43,6 +43,7 @@ describe("GET /api/me", () => {
       user: { id: userId, name: "Carlos", image: "https://avatars.example.com/u/1001" },
       settings: { timezone: "America/Lima", dailyTargetMinutes: 30, lessonWeekday: 4 },
       lastBackupAt: null,
+      llm: { enabled: true },
     });
   });
 

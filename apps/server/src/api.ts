@@ -16,6 +16,8 @@ const boss = createBoss(config.DATABASE_URL, "api");
 boss.on("error", (error) => logger.error({ err: error }, "pg-boss error"));
 await boss.start();
 await ensureQueue(boss, QUEUES.fileExtract);
+await ensureQueue(boss, QUEUES.lessonEnrich);
+await ensureQueue(boss, QUEUES.topicImprove);
 
 const allowlist = new Set(config.ALLOWED_GITHUB_IDS);
 const auth = createAuth({
@@ -43,6 +45,11 @@ const app = createApp({
     endpoint: config.R2_ENDPOINT,
   }),
   queue: bossQueue(boss),
+  llm: {
+    enabled: Boolean(config.ANTHROPIC_API_KEY),
+    model: config.LLM_MODEL_DEFAULT,
+    budgetUsd: config.LLM_MONTHLY_BUDGET_USD,
+  },
   storageOrigin: r2Origin(config.R2_ACCOUNT_ID, config.R2_ENDPOINT),
   staticRoot:
     config.NODE_ENV === "production"

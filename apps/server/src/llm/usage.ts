@@ -1,7 +1,7 @@
 import { type DraftSubject, type LlmFeature, llmErrors } from "@ds/shared";
 import { and, eq, sql } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
-import type { Database } from "../db/client";
+import type { Database, Tx } from "../db/client";
 import { llmRuns } from "../db/schema";
 import { costUsd, type TokenUsage } from "./pricing";
 
@@ -48,7 +48,7 @@ export async function recordRun(
   return id;
 }
 
-export async function monthUsage(db: Database, userId: string, timeZone: string, now: Date) {
+export async function monthUsage(db: Database | Tx, userId: string, timeZone: string, now: Date) {
   const [row] = await db
     .select({
       spend: sql<string>`coalesce(sum(${llmRuns.costUsd}), 0)`,
@@ -65,7 +65,7 @@ export async function monthUsage(db: Database, userId: string, timeZone: string,
 }
 
 export async function assertCanCall(
-  db: Database,
+  db: Database | Tx,
   settings: LlmSettings,
   context: { userId: string; timeZone: string; now: Date },
 ) {

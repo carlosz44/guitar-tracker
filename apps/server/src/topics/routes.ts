@@ -11,6 +11,7 @@ import type { SessionVariables } from "../auth/require-session";
 import type { Database } from "../db/client";
 import { lessonTopics, sessionBlocks, topics } from "../db/schema";
 import { idParam, validate } from "../http/validate";
+import { deleteDrafts, latestDraft } from "../llm/drafts";
 import { wouldCreateCycle } from "./cycle";
 import { findTopic, listTopics, parentMap, topicRelations, toTopic } from "./queries";
 
@@ -42,7 +43,11 @@ export function createTopicRoutes(deps: { db: Database }) {
       const userId = c.get("user").id;
       const topic = await findTopic(db, userId, c.req.valid("param").id);
       if (!topic) return c.json({ error: "not_found" as const }, 404);
-      return c.json({ topic: toTopic(topic), ...(await topicRelations(db, userId, topic)) }, 200);
+      const [relations, draft] = await Promise.all([
+        topicRelations(db, userId, topic),
+        latestDraft(db, userId, "topic", topic.id),
+      ]);
+      return c.json({ topic: toTopic(topic), draft, ...relations }, 200);
     })
     .patch("/:id", idParam, validate("json", updateTopicSchema), async (c) => {
       const userId = c.get("user").id;
@@ -79,6 +84,7 @@ export function createTopicRoutes(deps: { db: Database }) {
         .from(sessionBlocks)
         .where(and(eq(sessionBlocks.userId, userId), eq(sessionBlocks.topicId, id)));
       if ((practice?.n ?? 0) > 0) return c.json({ error: topicErrors.hasPractice }, 409);
+      await deleteDrafts(db, userId, "topic", id);
       await db.delete(topics).where(and(eq(topics.userId, userId), eq(topics.id, id)));
       return c.body(null, 204);
     });
