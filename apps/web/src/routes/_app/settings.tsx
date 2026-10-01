@@ -2,7 +2,8 @@ import { type MeResponse, type UpdateSettings, updateSettingsSchema } from "@ds/
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, Minus, Plus } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
@@ -128,8 +129,89 @@ function PracticeCard({ me }: { me: MeResponse }) {
             )}
           </Field>
         </form>
+        <DayTargets me={me} />
       </CardContent>
     </Card>
+  );
+}
+
+function DayTargets({ me }: { me: MeResponse }) {
+  const queryClient = useQueryClient();
+  const initial = me.settings.dayTargets ?? Array(7).fill(me.settings.dailyTargetMinutes);
+  const [targets, setTargets] = useState<number[]>(initial);
+  const save = useMutation({
+    mutationFn: async (dayTargets: number[] | null) =>
+      (await ensureOk(await api.settings.$patch({ json: { dayTargets } }))).json(),
+    onSuccess: ({ settings }) => {
+      queryClient.setQueryData(meQuery.queryKey, (current) =>
+        current ? { ...current, settings } : current,
+      );
+      setTargets(settings.dayTargets ?? Array(7).fill(settings.dailyTargetMinutes));
+      queryClient.invalidateQueries({ queryKey: ["today"] });
+      toast.success(es.settings.dayTargetsSaved);
+    },
+    onError: () => toast.error(es.settings.saveError),
+  });
+  const change = (index: number, delta: number) =>
+    setTargets((current) =>
+      current.map((value, i) => (i === index ? Math.min(240, Math.max(10, value + delta)) : value)),
+    );
+
+  return (
+    <details open={me.settings.dayTargets !== null} className="flex flex-col gap-3">
+      <summary className="cursor-pointer py-2 font-medium">{es.settings.dayTargets}</summary>
+      <p className="text-sm text-muted-foreground">{es.settings.dayTargetsHelp}</p>
+      <ul className="mt-3 flex flex-col gap-1">
+        {es.settings.weekdays.map((day, index) => (
+          <li key={day} className="flex items-center justify-between gap-3">
+            <span>{day}</span>
+            <span className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={es.settings.lessMinutes(day)}
+                disabled={(targets[index] ?? 0) <= 10}
+                onClick={() => change(index, -5)}
+              >
+                <Minus aria-hidden />
+              </Button>
+              <span
+                className="w-16 text-center tabular-nums"
+                data-testid={`day-target-${index + 1}`}
+              >
+                {es.settings.dayMinutes(targets[index] ?? 0)}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label={es.settings.moreMinutes(day)}
+                disabled={(targets[index] ?? 0) >= 240}
+                onClick={() => change(index, 5)}
+              >
+                <Plus aria-hidden />
+              </Button>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button type="button" onClick={() => save.mutate(targets)} disabled={save.isPending}>
+          {es.settings.saveDayTargets}
+        </Button>
+        {me.settings.dayTargets !== null && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => save.mutate(null)}
+            disabled={save.isPending}
+          >
+            {es.settings.sameEveryDay}
+          </Button>
+        )}
+      </div>
+    </details>
   );
 }
 

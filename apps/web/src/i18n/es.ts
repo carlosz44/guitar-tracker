@@ -213,6 +213,15 @@ export const es = {
     claudeSpend: (spend: string, budget: string, calls: number) =>
       `${spend} de ${budget} · ${calls} ${calls === 1 ? "llamada" : "llamadas"}`,
     signOut: "Cerrar sesión",
+    dayTargets: "Meta por día",
+    dayTargetsHelp: "Por ejemplo, más minutos el domingo. Se usa en Hoy y al planificar la semana.",
+    weekdays: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+    lessMinutes: (day: string) => `Menos minutos el ${day.toLowerCase()}`,
+    moreMinutes: (day: string) => `Más minutos el ${day.toLowerCase()}`,
+    dayMinutes: (minutes: number) => `${minutes} min`,
+    saveDayTargets: "Guardar metas por día",
+    sameEveryDay: "Usar la misma meta todos los días",
+    dayTargetsSaved: "Metas por día guardadas",
   },
   validation: {
     [settingsErrors.dailyTargetInvalid]: "Ingresa la meta en minutos.",

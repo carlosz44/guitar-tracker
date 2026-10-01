@@ -88,6 +88,28 @@ describe("Ajustes", () => {
     expect(await screen.findByText(es.validation["llm.disabled"])).toBeTruthy();
   });
 
+  it("006 AC-1: sets a different target per weekday, and back to the same every day", async () => {
+    const { requests } = fakeApi({ me: carlos, handlers: [patchHandler()] });
+    renderApp("/settings");
+    await userEvent.click(await screen.findByText(es.settings.dayTargets));
+    const sunday = es.settings.weekdays[6] ?? "";
+    await userEvent.click(screen.getByRole("button", { name: es.settings.moreMinutes(sunday) }));
+    await userEvent.click(screen.getByRole("button", { name: es.settings.moreMinutes(sunday) }));
+    expect(screen.getByTestId("day-target-7").textContent).toBe(es.settings.dayMinutes(40));
+    await userEvent.click(screen.getByRole("button", { name: es.settings.saveDayTargets }));
+    await waitFor(() =>
+      expect(requests.find((r) => r.method === "PATCH")?.body).toEqual({
+        dayTargets: [30, 30, 30, 30, 30, 30, 40],
+      }),
+    );
+    await userEvent.click(await screen.findByRole("button", { name: es.settings.sameEveryDay }));
+    await waitFor(() =>
+      expect(requests.filter((r) => r.method === "PATCH").at(-1)?.body).toEqual({
+        dayTargets: null,
+      }),
+    );
+  });
+
   it("AC-4: “Cerrar sesión” signs me out and returns to the login page", async () => {
     const { requests } = fakeApi({ me: carlos });
     const { router } = renderApp("/settings");
