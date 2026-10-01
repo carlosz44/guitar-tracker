@@ -10,7 +10,7 @@
 - [x] T8 Web `/plan`: day cards and grid, editing with "Mover a…", regenerate, accept, replan, Claude waiting state, progress. (covers AC-6 to AC-11, AC-13)
 - [x] T9 Web Hoy and lesson page: plan blocks and focus note, "Semana" card, "Planificar la semana" card. (covers AC-12, AC-14)
 - [ ] T10 Docs and manual checks:
-  - D-19 and domain.md
-  - a real plan with Claude after a real lesson
-  - 390 px and desktop
-  - then spec status and roadmap.
+  - [x] D-19 and domain.md
+  - [ ] a real plan with Claude after a real lesson
+  - [x] 390 px and desktop (Chromium on the e2e server: fixed day cards overflowing at 390 px and the empty state's cycle range)
+  - [ ] then spec status and roadmap.

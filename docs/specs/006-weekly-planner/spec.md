@@ -39,7 +39,7 @@
 - **AC-5** Without Claude, or over budget, the deterministic plan is used without notes and the page says why.
 
 **Review and editing**
-- **AC-6** `/plan` shows the cycle day by day: date, target, blocks with minutes, focus note. On the iPhone each day is a card; on the laptop the week is a 7-column grid.
+- **AC-6** `/plan` shows the cycle day by day: date, target, blocks with minutes, focus note. On the iPhone each day is a card; on the laptop the days show in a grid of 2 to 4 columns (D-19).
 - **AC-7** While the plan is a draft I can change a block's minutes (±5), move a block to another day, remove a block and add a topic to a day. Totals update live; a day over or under its target is highlighted.
 - **AC-8** "Regenerar este día" rebuilds one day's blocks with the scorer (and Claude's note when configured); "Regenerar la semana" rebuilds all days. Edits to other days are kept.
 - **AC-9** "Aceptar plan" makes the plan active. Only one plan is active per cycle; accepting a new one for the same cycle replaces the old one, and the old one keeps its sessions' links.
@@ -58,7 +58,7 @@
 
 - **Where:** `/plan`, reached from a "Semana" card on Hoy and from the lesson page after accepting a draft. No new item in the bottom nav.
 - **iPhone:** a vertical list of day cards, today first and expanded, past days collapsed. Moving a block is a "Mover a…" menu with the cycle's days, not drag and drop. Big ±5 buttons as in Hoy.
-- **Laptop:** a 7-column grid; the same "Mover a…" menu (drag and drop is out for v1).
+- **Laptop:** a grid of 2 to 4 columns so each day keeps usable controls (D-19); the same "Mover a…" menu (drag and drop is out for v1).
 - **Building:** a waiting state like 005 while Claude works ("Claude está armando la semana…").
 - **States:** no plan (button "Planificar la semana"), draft (editing, "Aceptar plan"), active, cycle ended (read-only).
 - All copy in Spanish.

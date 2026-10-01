@@ -21,6 +21,12 @@ export const Route = createFileRoute("/_app/plan")({
   component: PlanPage,
 });
 
+function cycleEnd(cycleStart: string) {
+  const end = new Date(`${cycleStart}T00:00:00Z`);
+  end.setUTCDate(end.getUTCDate() + 6);
+  return end.toISOString().slice(0, 10);
+}
+
 type PlanAction =
   | { kind: "accept" | "regenerate" | "replan" }
   | { kind: "day"; date: string }
@@ -85,7 +91,7 @@ function PlanPage() {
 
   if (!data) return <PageHeader title={es.plan.title} />;
   const { plan } = data;
-  const range = formatDayRange(data.cycleStart, plan?.cycleEnd ?? data.cycleStart);
+  const range = formatDayRange(data.cycleStart, plan?.cycleEnd ?? cycleEnd(data.cycleStart));
 
   if (!plan) {
     return (
@@ -191,7 +197,7 @@ function PlanPage() {
         )}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-4">
         {plan.days.map((day) => (
           <PlanDayCard
             key={day.id}

@@ -43,6 +43,7 @@ Better Auth owns `user`, `session`, `account` and `verification`. App data hangs
 `user_settings`, one row per user:
 - `timezone`, default `America/Lima`
 - `daily_target_minutes`, default 30
+- `day_targets`: optional per-weekday targets (Monday first); when set, Hoy, streaks and plans use the weekday's value (006)
 - `lesson_weekday`, ISO day number, default 4 (Thursday). The cycle starts on this day.
 - `reminder_times`, default `["11:00", "16:00", "18:00"]` (used from 004)
 - `telegram_chat_id`, nullable (004)
@@ -111,9 +112,9 @@ Derived rather than stored: last practiced at, latest clean BPM, best clean BPM,
 
 ### Weekly plan (006)
 
-- `weekly_plans`: `cycle_start` (date, the lesson day), `cycle_end`, `status`: `draft` | `active` | `done`, `focus_note`, `rationale`
+- `weekly_plans`: `cycle_start` (date, the lesson day), `cycle_end`, `status`: `draft` | `active` | `replaced` (ended plans are derived from `cycle_end`), `week_note`, `rationale`, `source` (`rules` | `claude`), `llm_status`, `llm_error`, `llm_run_id` (D-19)
 - `plan_days`: `plan_id`, `date`, `target_minutes`, `focus_note`
-- `plan_items`: `plan_day_id`, `topic_id`, `minutes`, `position`
+- `plan_items`: `plan_day_id`, `topic_id` (nullable, for the warm-up), `label`, `minutes`, `position`
 
 ### Notification (004)
 

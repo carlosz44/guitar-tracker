@@ -50,7 +50,7 @@ export function PlanDayCard({
     <section
       aria-label={es.plan.dayLabel(label)}
       className={cn(
-        "flex flex-col gap-3 rounded-xl border p-4",
+        "flex min-w-0 flex-col gap-3 rounded-xl border p-4",
         day.today && "border-brand",
         day.past && "opacity-80",
       )}
@@ -120,7 +120,7 @@ export function PlanDayCard({
               <div className="flex items-center gap-2">
                 <NativeSelect
                   aria-label={es.plan.moveTo(item.title)}
-                  className="flex-1"
+                  className="min-w-0 flex-1"
                   value=""
                   disabled={busy}
                   onChange={(event) => event.target.value && onMove(index, event.target.value)}

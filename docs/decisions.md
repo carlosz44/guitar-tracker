@@ -161,3 +161,16 @@ Short records of choices already made, so they don't get re-argued. Add a new en
 
 **Instead of:** a plain `pending` | `accepted` | `discarded` | `failed` status, and pg-boss retries for API errors.
 
+## D-19 Weekly plans are drafts that Claude adjusts
+*2026-10-01*
+
+**Decision:**
+- A `weekly_plans` row is the draft itself: `draft` → `active` when Carlos accepts it, and `replaced` when another plan for the same cycle is accepted. "Done" isn't stored; a plan whose `cycle_end` has passed is read-only.
+- The plan is first built by rules (scorer and slot builder, D-11 cycle, per-weekday targets). Claude then adjusts it and writes the notes in a background job, tracked in `llm_status` (`queued` | `running` | `done` | `rejected` | `failed` | `skipped`). Its version is applied only if every topic exists, each day adds up to its target and no day has more than 3 topics; otherwise the rule-based plan stays and the page says so. Editing is locked while Claude works.
+- Moving a block to another day is a "Mover a…" menu, not drag and drop. On a laptop the week shows as 2 to 4 columns rather than 7, so each day keeps usable controls.
+- Hoy uses the active plan's day (blocks, note and target) and falls back to the 003 suggestion when there is none.
+
+**Why:** the plan already has a review step (draft, then accept), so a separate `llm_drafts` row would duplicate it. Rules first means a plan always exists, even without Claude or over budget.
+
+**Instead of:** `weekly_plans.status` `draft` | `active` | `done`, a 7-column grid with drag and drop, and a plan that runs until the next lesson.
+

@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { es } from "@/i18n/es";
-import { formatPlanDay } from "@/lib/format";
+import { formatDayRange, formatPlanDay } from "@/lib/format";
 import { PLAN_ID, planView, TOPICS } from "@/test/plan-fixtures";
 import { carlos, fakeApi, json, type RecordedRequest, renderApp } from "@/test/render-app";
 
@@ -46,6 +46,9 @@ const bodyOf = (requests: RecordedRequest[], suffix: string, method = "POST") =>
 describe("weekly plan page", () => {
   it("AC-2: without a plan, 'Planificar la semana' builds one", async () => {
     const { requests } = await open(null);
+    expect(
+      await screen.findByText(es.plan.range(formatDayRange("2026-10-01", "2026-10-07"))),
+    ).toBeTruthy();
     await userEvent.click(await screen.findByRole("button", { name: es.plan.build }));
     expect(await screen.findByText("Semana para asentar las tríadas.")).toBeTruthy();
     expect(bodyOf(requests, "/api/plans")).toEqual({});
