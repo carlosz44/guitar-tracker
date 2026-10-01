@@ -5,6 +5,8 @@ export const QUESTION_STATUSES = ["open", "answered", "dismissed"] as const;
 export const questionErrors = {
   text: "question.text",
   answer: "question.answer",
+  topic: "question.topic",
+  lesson: "question.lesson",
 } as const;
 
 const text = z

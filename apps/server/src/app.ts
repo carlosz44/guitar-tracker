@@ -9,6 +9,7 @@ import { mountStatic } from "./http/static";
 import type { JobQueue } from "./jobs/boss";
 import { createLessonRoutes } from "./lessons/routes";
 import type { Logger } from "./logger";
+import { createQuestionRoutes } from "./questions/routes";
 import { createHealthRoutes } from "./routes/health";
 import { createMeRoutes } from "./routes/me";
 import { createSettingsRoutes } from "./routes/settings";
@@ -36,7 +37,8 @@ export function createApiRoutes(deps: AppDeps) {
     .route("/me", createMeRoutes(deps))
     .route("/settings", createSettingsRoutes(deps))
     .route("/lessons", createLessonRoutes(deps))
-    .route("/topics", createTopicRoutes(deps));
+    .route("/topics", createTopicRoutes(deps))
+    .route("/questions", createQuestionRoutes(deps));
 }
 export type AppType = ReturnType<typeof createApiRoutes>;
 

@@ -11,6 +11,7 @@ export const lessonErrors = {
   tooLong: "lesson.tooLong",
   practicePoint: "lesson.practicePoint",
   duplicateTopic: "lesson.duplicateTopic",
+  unknownTopic: "lesson.unknownTopic",
 } as const;
 
 const longText = z.string().max(50_000, { error: lessonErrors.tooLong });
