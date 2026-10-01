@@ -15,7 +15,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T11 Web lessons: list, new and edit form (two columns on wide screens), read-first page, delete confirmation. (covers AC-1, AC-2, AC-3)
 - [x] T12 Web uploads: dropzone, validation, parallel XHR progress, confirm, status badges, retry, duplicate warning. (covers AC-4, AC-5, AC-7)
 - [x] T13 Web viewers: alphaTab Guitar Pro viewer, PDF, docx, image. (covers AC-8, AC-9, AC-10)
-- [ ] T14 Web topics: grouped list with filter, form, page with parent, children and lessons, status change, delete or archive. (covers AC-11 to AC-14)
+- [x] T14 Web topics: grouped list with filter, form, page with parent, children and lessons, status change, delete or archive. (covers AC-11 to AC-14)
 - [ ] T15 Web topic linking from a lesson: combobox with inline create and relation. (covers AC-15)
 - [ ] T16 Web questions: "+ Pregunta" dialog, open list on the latest lesson, answer and dismiss. (covers AC-16, AC-17)
 - [ ] T17 Manual checks and docs:

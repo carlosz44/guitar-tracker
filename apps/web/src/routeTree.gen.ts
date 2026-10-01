@@ -20,9 +20,11 @@ import { Route as AppTodayRouteImport } from './routes/_app/today'
 import { Route as AppLessonsIndexRouteImport } from './routes/_app/lessons/index'
 import { Route as AppLessonsNewRouteImport } from './routes/_app/lessons/new'
 import { Route as AppTopicsIndexRouteImport } from './routes/_app/topics/index'
+import { Route as AppTopicsNewRouteImport } from './routes/_app/topics/new'
 import { Route as AppLessonsLessonIdIndexRouteImport } from './routes/_app/lessons/$lessonId/index'
 import { Route as AppLessonsLessonIdEditRouteImport } from './routes/_app/lessons/$lessonId/edit'
 import { Route as AppTopicsTopicIdIndexRouteImport } from './routes/_app/topics/$topicId/index'
+import { Route as AppTopicsTopicIdEditRouteImport } from './routes/_app/topics/$topicId/edit'
 import { Route as AppLessonsLessonIdFilesFileIdRouteImport } from './routes/_app/lessons/$lessonId/files/$fileId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -79,6 +81,11 @@ const AppTopicsIndexRoute = AppTopicsIndexRouteImport.update({
   path: '/topics/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTopicsNewRoute = AppTopicsNewRouteImport.update({
+  id: '/topics/new',
+  path: '/topics/new',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLessonsLessonIdIndexRoute = AppLessonsLessonIdIndexRouteImport.update({
   id: '/lessons/$lessonId/',
   path: '/lessons/$lessonId/',
@@ -92,6 +99,11 @@ const AppLessonsLessonIdEditRoute = AppLessonsLessonIdEditRouteImport.update({
 const AppTopicsTopicIdIndexRoute = AppTopicsTopicIdIndexRouteImport.update({
   id: '/topics/$topicId/',
   path: '/topics/$topicId/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTopicsTopicIdEditRoute = AppTopicsTopicIdEditRouteImport.update({
+  id: '/topics/$topicId/edit',
+  path: '/topics/$topicId/edit',
   getParentRoute: () => AppRoute,
 } as any)
 const AppLessonsLessonIdFilesFileIdRoute =
@@ -110,9 +122,11 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
   '/lessons/new': typeof AppLessonsNewRoute
+  '/topics/new': typeof AppTopicsNewRoute
   '/lessons/': typeof AppLessonsIndexRoute
   '/topics/': typeof AppTopicsIndexRoute
   '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
+  '/topics/$topicId/edit': typeof AppTopicsTopicIdEditRoute
   '/lessons/$lessonId/': typeof AppLessonsLessonIdIndexRoute
   '/topics/$topicId/': typeof AppTopicsTopicIdIndexRoute
   '/lessons/$lessonId/files/$fileId': typeof AppLessonsLessonIdFilesFileIdRoute
@@ -126,9 +140,11 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
   '/lessons/new': typeof AppLessonsNewRoute
+  '/topics/new': typeof AppTopicsNewRoute
   '/lessons': typeof AppLessonsIndexRoute
   '/topics': typeof AppTopicsIndexRoute
   '/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
+  '/topics/$topicId/edit': typeof AppTopicsTopicIdEditRoute
   '/lessons/$lessonId': typeof AppLessonsLessonIdIndexRoute
   '/topics/$topicId': typeof AppTopicsTopicIdIndexRoute
   '/lessons/$lessonId/files/$fileId': typeof AppLessonsLessonIdFilesFileIdRoute
@@ -144,9 +160,11 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsRoute
   '/_app/today': typeof AppTodayRoute
   '/_app/lessons/new': typeof AppLessonsNewRoute
+  '/_app/topics/new': typeof AppTopicsNewRoute
   '/_app/lessons/': typeof AppLessonsIndexRoute
   '/_app/topics/': typeof AppTopicsIndexRoute
   '/_app/lessons/$lessonId/edit': typeof AppLessonsLessonIdEditRoute
+  '/_app/topics/$topicId/edit': typeof AppTopicsTopicIdEditRoute
   '/_app/lessons/$lessonId/': typeof AppLessonsLessonIdIndexRoute
   '/_app/topics/$topicId/': typeof AppTopicsTopicIdIndexRoute
   '/_app/lessons/$lessonId/files/$fileId': typeof AppLessonsLessonIdFilesFileIdRoute
@@ -162,9 +180,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/today'
     | '/lessons/new'
+    | '/topics/new'
     | '/lessons/'
     | '/topics/'
     | '/lessons/$lessonId/edit'
+    | '/topics/$topicId/edit'
     | '/lessons/$lessonId/'
     | '/topics/$topicId/'
     | '/lessons/$lessonId/files/$fileId'
@@ -178,9 +198,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/today'
     | '/lessons/new'
+    | '/topics/new'
     | '/lessons'
     | '/topics'
     | '/lessons/$lessonId/edit'
+    | '/topics/$topicId/edit'
     | '/lessons/$lessonId'
     | '/topics/$topicId'
     | '/lessons/$lessonId/files/$fileId'
@@ -195,9 +217,11 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/_app/today'
     | '/_app/lessons/new'
+    | '/_app/topics/new'
     | '/_app/lessons/'
     | '/_app/topics/'
     | '/_app/lessons/$lessonId/edit'
+    | '/_app/topics/$topicId/edit'
     | '/_app/lessons/$lessonId/'
     | '/_app/topics/$topicId/'
     | '/_app/lessons/$lessonId/files/$fileId'
@@ -289,6 +313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/topics/new': {
+      id: '/_app/topics/new'
+      path: '/topics/new'
+      fullPath: '/topics/new'
+      preLoaderRoute: typeof AppTopicsNewRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/lessons/$lessonId/': {
       id: '/_app/lessons/$lessonId/'
       path: '/lessons/$lessonId'
@@ -310,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTopicsTopicIdIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/topics/$topicId/edit': {
+      id: '/_app/topics/$topicId/edit'
+      path: '/topics/$topicId/edit'
+      fullPath: '/topics/$topicId/edit'
+      preLoaderRoute: typeof AppTopicsTopicIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/lessons/$lessonId/files/$fileId': {
       id: '/_app/lessons/$lessonId/files/$fileId'
       path: '/lessons/$lessonId/files/$fileId'
@@ -326,9 +364,11 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppTodayRoute: typeof AppTodayRoute
   AppLessonsNewRoute: typeof AppLessonsNewRoute
+  AppTopicsNewRoute: typeof AppTopicsNewRoute
   AppLessonsIndexRoute: typeof AppLessonsIndexRoute
   AppTopicsIndexRoute: typeof AppTopicsIndexRoute
   AppLessonsLessonIdEditRoute: typeof AppLessonsLessonIdEditRoute
+  AppTopicsTopicIdEditRoute: typeof AppTopicsTopicIdEditRoute
   AppLessonsLessonIdIndexRoute: typeof AppLessonsLessonIdIndexRoute
   AppTopicsTopicIdIndexRoute: typeof AppTopicsTopicIdIndexRoute
   AppLessonsLessonIdFilesFileIdRoute: typeof AppLessonsLessonIdFilesFileIdRoute
@@ -340,9 +380,11 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppTodayRoute: AppTodayRoute,
   AppLessonsNewRoute: AppLessonsNewRoute,
+  AppTopicsNewRoute: AppTopicsNewRoute,
   AppLessonsIndexRoute: AppLessonsIndexRoute,
   AppTopicsIndexRoute: AppTopicsIndexRoute,
   AppLessonsLessonIdEditRoute: AppLessonsLessonIdEditRoute,
+  AppTopicsTopicIdEditRoute: AppTopicsTopicIdEditRoute,
   AppLessonsLessonIdIndexRoute: AppLessonsLessonIdIndexRoute,
   AppTopicsTopicIdIndexRoute: AppTopicsTopicIdIndexRoute,
   AppLessonsLessonIdFilesFileIdRoute: AppLessonsLessonIdFilesFileIdRoute,

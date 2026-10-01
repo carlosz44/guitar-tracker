@@ -37,12 +37,12 @@ describe("app shell", () => {
   it.each([
     ["/today", es.today.title, es.today.empty],
     ["/lessons", es.lessons.title, es.lessonsPage.empty],
-    ["/topics", es.topics.title, es.topics.placeholder],
+    ["/topics", es.topics.title, es.topicsPage.empty],
     ["/history", es.history.title, es.history.placeholder],
   ])("%s shows its Spanish placeholder", async (path, title, message) => {
     fakeApi({ me: carlos });
     renderApp(path);
     expect(await screen.findByRole("heading", { name: title })).toBeTruthy();
-    expect(screen.getByText(message)).toBeTruthy();
+    expect(await screen.findByText(message)).toBeTruthy();
   });
 });
