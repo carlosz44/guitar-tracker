@@ -15,7 +15,7 @@ export interface Upload {
 
 let counter = 0;
 
-export function useUploads(lessonId: string) {
+export function useUploads(defaultLessonId?: string) {
   const queryClient = useQueryClient();
   const [uploads, setUploads] = useState<Upload[]>([]);
   const [rejected, setRejected] = useState<string[]>([]);
@@ -29,7 +29,7 @@ export function useUploads(lessonId: string) {
   );
 
   const uploadOne = useCallback(
-    async (file: File, key: string) => {
+    async (file: File, key: string, lessonId: string) => {
       try {
         const created = await (
           await ensureOk(
@@ -46,15 +46,18 @@ export function useUploads(lessonId: string) {
         await ensureOk(await api.files[":id"].confirm.$post({ param: { id: created.fileId } }));
         setUploads((current) => current.filter((upload) => upload.key !== key));
         await queryClient.invalidateQueries({ queryKey: ["lessons"] });
+        return true;
       } catch (error) {
         patch(key, { error: errorMessage(error, es.files.uploadFailed) });
+        return false;
       }
     },
-    [lessonId, patch, queryClient],
+    [patch, queryClient],
   );
 
   const add = useCallback(
-    (files: File[]) => {
+    (files: File[], lessonId = defaultLessonId) => {
+      if (!lessonId) throw new Error("useUploads: no lesson to upload to");
       const accepted: { file: File; key: string }[] = [];
       const reasons: string[] = [];
       for (const file of files) {
@@ -67,9 +70,9 @@ export function useUploads(lessonId: string) {
         ...current,
         ...accepted.map(({ file, key }) => ({ key, name: file.name, progress: 0, error: null })),
       ]);
-      return Promise.all(accepted.map(({ file, key }) => uploadOne(file, key)));
+      return Promise.all(accepted.map(({ file, key }) => uploadOne(file, key, lessonId)));
     },
-    [uploadOne],
+    [uploadOne, defaultLessonId],
   );
 
   const dismiss = useCallback(

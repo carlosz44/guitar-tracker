@@ -13,7 +13,7 @@
 - [x] T11 Web: "Mejorar con Claude" review on the topic page. (covers AC-12)
 - [x] T12 Web: Claude spend in Ajustes, or "no configurado". (covers AC-14, AC-16)
 - [x] T14 Server: `draft` flag on lesson create; enrichment waits for files still uploading or being read; the prompt includes the typed summary, practice points and homework with the clean-up rule. (covers AC-17, AC-18)
-- [ ] T15 Web: file picker in the new-lesson form; uploads before opening the lesson, then starts enrichment. (covers AC-17)
+- [x] T15 Web: file picker in the new-lesson form; uploads before opening the lesson, then starts enrichment. (covers AC-17)
 - [ ] T13 Docs and manual checks:
   - [x] D-18, domain.md (draft statuses and columns), architecture.md env
   - [ ] a real key on a real lesson with PDF, Guitar Pro and image; check cost and logs

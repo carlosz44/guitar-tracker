@@ -1,6 +1,6 @@
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { es } from "@/i18n/es";
 import { LESSON_ID, lessonDetail, lessonList } from "@/test/lesson-fixtures";
 import { DRAFT_ID, draftView } from "@/test/llm-fixtures";
@@ -73,6 +73,112 @@ describe("Completar con Claude", () => {
     fakeApi({ me: carlos, handlers: [lessonApi(state)] });
     renderApp(`/lessons/${LESSON_ID}`);
     expect(await screen.findByText(es.validation["llm.budget"])).toBeTruthy();
+  });
+});
+
+class InstantXHR {
+  upload = { onprogress: null };
+  status = 0;
+  onload: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+  open() {}
+  setRequestHeader() {}
+  send() {
+    this.status = 200;
+    setTimeout(() => this.onload?.(), 0);
+  }
+}
+
+function newLessonApi() {
+  return ({ method, path, body }: RecordedRequest) => {
+    if (method === "POST" && path === "/api/lessons") {
+      const values = body as { draft: boolean };
+      return json(
+        {
+          lesson: { ...lessonDetail().lesson, status: values.draft ? "draft" : "final" },
+          draftId: null,
+        },
+        201,
+      );
+    }
+    if (method === "POST" && path === `/api/lessons/${LESSON_ID}/files`) {
+      return json(
+        {
+          fileId: "file-1",
+          uploadUrl: "https://storage.test/put/1",
+          contentType: "application/pdf",
+        },
+        201,
+      );
+    }
+    if (method === "POST" && path === "/api/files/file-1/confirm") return json({ file: {} });
+    return undefined;
+  };
+}
+
+describe("files in the new-lesson form", () => {
+  beforeEach(() => {
+    vi.stubGlobal("XMLHttpRequest", InstantXHR);
+  });
+
+  const pdf = () => new File(["%PDF"], "ejercicios.pdf", { type: "application/pdf" });
+
+  it("AC-17: 'Guardar y completar con Claude' uploads the chosen files, then starts Claude", async () => {
+    const { requests } = fakeApi({
+      me: carlos,
+      handlers: [
+        newLessonApi(),
+        lessonApi({
+          draft: { id: DRAFT_ID, status: "queued" },
+          view: draftView({ status: "queued" }),
+        }),
+      ],
+    });
+    const { router } = renderApp("/lessons/new");
+    await screen.findByLabelText(es.lessonForm.date);
+    fireEvent.change(screen.getByTestId("file-input"), { target: { files: [pdf()] } });
+    expect(screen.getByText("ejercicios.pdf")).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: es.llm.saveAndEnrich }));
+
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/lessons/${LESSON_ID}`));
+    const posts = requests.filter((r) => r.method === "POST").map((r) => r.path);
+    expect(posts).toEqual([
+      "/api/lessons",
+      `/api/lessons/${LESSON_ID}/files`,
+      "/api/files/file-1/confirm",
+      `/api/lessons/${LESSON_ID}/enrich`,
+    ]);
+    expect(
+      requests[requests.findIndex((r) => r.path === "/api/lessons" && r.method === "POST")]?.body,
+    ).toMatchObject({
+      enrich: false,
+      draft: true,
+    });
+  });
+
+  it("AC-17: a plain save uploads the files without starting Claude, and files can be removed first", async () => {
+    const { requests } = fakeApi({
+      me: carlos,
+      handlers: [newLessonApi(), lessonApi({ draft: null })],
+    });
+    const { router } = renderApp("/lessons/new");
+    await userEvent.type(await screen.findByLabelText(es.lessonForm.title), "Clase");
+    fireEvent.change(screen.getByTestId("file-input"), {
+      target: { files: [pdf(), new File(["x"], "foto.jpg", { type: "image/jpeg" })] },
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: es.lessonForm.removeFile("foto.jpg") }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: es.lessonForm.save }));
+
+    await waitFor(() => expect(router.state.location.pathname).toBe(`/lessons/${LESSON_ID}`));
+    const posts = requests.filter((r) => r.method === "POST");
+    expect(posts.map((r) => r.path)).toEqual([
+      "/api/lessons",
+      `/api/lessons/${LESSON_ID}/files`,
+      "/api/files/file-1/confirm",
+    ]);
+    expect(posts[0]?.body).toMatchObject({ enrich: false, draft: false });
   });
 });
 

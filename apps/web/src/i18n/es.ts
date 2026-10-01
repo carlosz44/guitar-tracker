@@ -311,6 +311,9 @@ export const es = {
     saving: "Guardando…",
     saveError: "No se pudo guardar la clase. Inténtalo de nuevo.",
     cancel: "Cancelar",
+    files: "Archivos",
+    removeFile: (name: string) => `Quitar ${name}`,
+    uploadsFailed: "Algunos archivos no se subieron. Súbelos de nuevo desde la clase.",
   },
   lessonPage: {
     edit: "Editar",

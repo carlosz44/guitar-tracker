@@ -8,7 +8,6 @@ import {
   type LucideIcon,
   RotateCcw,
   Trash2,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -23,12 +22,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { es } from "@/i18n/es";
 import { api, ensureOk } from "@/lib/api";
 import { errorMessage } from "@/lib/errors";
 import { formatBytes } from "@/lib/format";
 import { FileDropzone } from "./file-dropzone";
+import { UploadList } from "./upload-list";
 import { useUploads } from "./use-uploads";
 
 export interface LessonFile {
@@ -57,36 +56,7 @@ export function LessonFiles({ lessonId, files }: { lessonId: string; files: Less
           ))}
         </ul>
       )}
-      {uploads.length > 0 && (
-        <ul className="flex flex-col gap-2" aria-live="polite">
-          {uploads.map((upload) => (
-            <li key={upload.key} className="flex flex-col gap-2 rounded-xl border px-4 py-3">
-              <div className="flex items-center gap-3">
-                <span className="flex-1 truncate font-medium">{upload.name}</span>
-                {upload.error ? (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={es.common.close}
-                    onClick={() => dismiss(upload.key)}
-                  >
-                    <X aria-hidden />
-                  </Button>
-                ) : (
-                  <span className="text-sm text-muted-foreground">{es.files.uploading}</span>
-                )}
-              </div>
-              {upload.error ? (
-                <p role="alert" className="text-sm text-destructive">
-                  {upload.error}
-                </p>
-              ) : (
-                <Progress value={upload.progress} aria-label={upload.name} />
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      <UploadList uploads={uploads} onDismiss={dismiss} />
       {rejected.length > 0 && (
         <ul role="alert" className="flex flex-col gap-1 text-sm text-destructive">
           {rejected.map((reason) => (
