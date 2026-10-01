@@ -2,6 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { es } from "@/i18n/es";
+import { formatDate } from "@/lib/format";
 import { carlos, fakeApi, json, type RecordedRequest, renderApp } from "@/test/render-app";
 import { PARENT_ID, TOPIC_ID, topicDetail, topicList } from "@/test/topic-fixtures";
 
@@ -182,6 +183,61 @@ describe("topic page", () => {
     await waitFor(() =>
       expect(requests.find((r) => r.method === "PATCH")?.body).toEqual({ status: "archived" }),
     );
+    expect(requests.some((r) => r.method === "DELETE")).toBe(false);
+  });
+
+  it("shows last practiced, current and best clean BPM, and total minutes", async () => {
+    fakeApi({
+      me: carlos,
+      handlers: [
+        topicsApi(
+          topicDetail({
+            stats: {
+              lastPracticedAt: "2026-10-02T23:30:00.000Z",
+              lastPracticedDate: "2026-10-02",
+              latestCleanBpm: 85,
+              bestCleanBpm: 95,
+              totalSeconds: 95 * 60,
+            },
+          }),
+        ),
+      ],
+    });
+    renderApp(`/topics/${TOPIC_ID}`);
+    const stats = await screen.findByTestId("topic-stats");
+    expect(within(stats).getByText(es.topicPage.lastPracticed).nextSibling?.textContent).toBe(
+      formatDate("2026-10-02"),
+    );
+    expect(within(stats).getByText(es.topicPage.currentBpm).nextSibling?.textContent).toBe("85");
+    expect(within(stats).getByText(es.topicPage.bestBpm).nextSibling?.textContent).toBe("95");
+    expect(within(stats).getByText(es.topicPage.totalMinutes).nextSibling?.textContent).toBe(
+      es.topicPage.minutes(95),
+    );
+  });
+
+  it("says when a topic was never practiced", async () => {
+    fakeApi({ me: carlos, handlers: [topicsApi()] });
+    renderApp(`/topics/${TOPIC_ID}`);
+    expect(await screen.findByText(es.topicPage.neverPracticed)).toBeTruthy();
+  });
+
+  it("offers archiving instead of deleting a practiced topic", async () => {
+    const { requests } = fakeApi({
+      me: carlos,
+      handlers: [
+        topicsApi(
+          topicDetail({
+            lessons: [],
+            stats: { ...topicDetail().stats, lastPracticedDate: "2026-10-02" },
+          }),
+        ),
+      ],
+    });
+    renderApp(`/topics/${TOPIC_ID}`);
+    await userEvent.click(await screen.findByRole("button", { name: es.topicPage.delete }));
+    const dialog = await screen.findByRole("alertdialog");
+    expect(within(dialog).getByText(es.validation["topic.hasPractice"])).toBeTruthy();
+    expect(within(dialog).queryByRole("button", { name: es.topicPage.deleteConfirm })).toBeNull();
     expect(requests.some((r) => r.method === "DELETE")).toBe(false);
   });
 

@@ -332,6 +332,13 @@ export const es = {
     deleteConfirm: "Eliminar tema",
     archiveInstead: "Archivar",
     cancel: "Cancelar",
+    practice: "Práctica",
+    neverPracticed: "Aún no lo has practicado.",
+    lastPracticed: "Última práctica",
+    currentBpm: "BPM limpio actual",
+    bestBpm: "Mejor BPM limpio",
+    totalMinutes: "Minutos en total",
+    minutes: (n: number) => `${n} min`,
   },
   linking: {
     title: "Vincular tema",

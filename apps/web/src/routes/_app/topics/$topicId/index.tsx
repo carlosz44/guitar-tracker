@@ -34,7 +34,7 @@ function TopicPage() {
   const { topicId } = Route.useParams();
   const { data } = useSuspenseQuery(topicQuery(topicId));
   const queryClient = useQueryClient();
-  const { topic, parent, children, lessons, openQuestions } = data;
+  const { topic, parent, children, lessons, openQuestions, stats } = data;
 
   const setStatus = useMutation({
     mutationFn: async (status: TopicStatus) =>
@@ -82,7 +82,13 @@ function TopicPage() {
           </Button>
           <DeleteTopic
             topicId={topicId}
-            linked={lessons.length > 0}
+            blockedBy={
+              lessons.length > 0
+                ? "topic.hasLessons"
+                : stats.lastPracticedDate !== null
+                  ? "topic.hasPractice"
+                  : null
+            }
             onArchive={() => setStatus.mutate("archived")}
           />
           <QuestionDialog topicId={topicId} />
@@ -97,6 +103,29 @@ function TopicPage() {
           </div>
         ))}
       </dl>
+
+      <Section title={es.topicPage.practice}>
+        {stats.lastPracticedDate === null ? (
+          <p className="text-muted-foreground">{es.topicPage.neverPracticed}</p>
+        ) : (
+          <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4" data-testid="topic-stats">
+            {[
+              [es.topicPage.lastPracticed, formatDate(stats.lastPracticedDate)],
+              [es.topicPage.currentBpm, stats.latestCleanBpm?.toString() ?? "—"],
+              [es.topicPage.bestBpm, stats.bestCleanBpm?.toString() ?? "—"],
+              [
+                es.topicPage.totalMinutes,
+                es.topicPage.minutes(Math.round(stats.totalSeconds / 60)),
+              ],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <dt className="text-sm text-muted-foreground">{label}</dt>
+                <dd className="font-medium first-letter:uppercase">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </Section>
 
       {topic.description && <Markdown>{topic.description}</Markdown>}
 
@@ -184,11 +213,11 @@ function TopicPage() {
 
 function DeleteTopic({
   topicId,
-  linked,
+  blockedBy,
   onArchive,
 }: {
   topicId: string;
-  linked: boolean;
+  blockedBy: "topic.hasLessons" | "topic.hasPractice" | null;
   onArchive: () => void;
 }) {
   const queryClient = useQueryClient();
@@ -215,12 +244,12 @@ function DeleteTopic({
         <AlertDialogHeader>
           <AlertDialogTitle>{es.topicPage.deleteTitle}</AlertDialogTitle>
           <AlertDialogDescription>
-            {linked ? es.validation["topic.hasLessons"] : es.topicPage.deleteBody}
+            {blockedBy ? es.validation[blockedBy] : es.topicPage.deleteBody}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{es.topicPage.cancel}</AlertDialogCancel>
-          {linked ? (
+          {blockedBy ? (
             <AlertDialogAction onClick={onArchive}>
               <Archive aria-hidden />
               {es.topicPage.archiveInstead}
