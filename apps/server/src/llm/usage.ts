@@ -1,4 +1,4 @@
-import { type DraftSubject, type LlmFeature, llmErrors } from "@ds/shared";
+import { type LlmFeature, type LlmSubject, llmErrors } from "@ds/shared";
 import { and, eq, sql } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
 import type { Database, Tx } from "../db/client";
@@ -26,7 +26,7 @@ export async function recordRun(
     usage?: TokenUsage;
     latencyMs: number;
     error?: string;
-    subject?: { type: DraftSubject; id: string };
+    subject?: { type: LlmSubject; id: string };
   },
 ) {
   const id = uuidv7();

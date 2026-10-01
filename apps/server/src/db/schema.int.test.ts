@@ -46,6 +46,8 @@ describe("migrations", () => {
       "lessons",
       "llm_drafts",
       "llm_runs",
+      "plan_days",
+      "plan_items",
       "practice_days",
       "practice_sessions",
       "session",
@@ -55,6 +57,7 @@ describe("migrations", () => {
       "user",
       "user_settings",
       "verification",
+      "weekly_plans",
       "worker_heartbeat",
     ]);
   });

@@ -14,6 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { instant, timestamps } from "./columns";
+import { planDays } from "./planner";
 import { topics } from "./topics";
 
 const inList = (values: readonly string[]) =>
@@ -34,7 +35,7 @@ export const practiceSessions = pgTable(
     status: text().$type<(typeof SESSION_STATUSES)[number]>().notNull().default("in_progress"),
     source: text().$type<(typeof SESSION_SOURCES)[number]>().notNull().default("timer"),
     notes: text().notNull().default(""),
-    planDayId: uuid(),
+    planDayId: uuid().references(() => planDays.id, { onDelete: "set null" }),
     practiceDate: date({ mode: "string" }).notNull(),
     ...timestamps,
   },

@@ -18,6 +18,7 @@ export const DRAFT_KINDS = ["lesson_enrichment", "topic_improve"] as const;
 export type DraftKind = (typeof DRAFT_KINDS)[number];
 export const DRAFT_SUBJECTS = ["lesson", "topic"] as const;
 export type DraftSubject = (typeof DRAFT_SUBJECTS)[number];
+export type LlmSubject = DraftSubject | "plan";
 export const DRAFT_STATUSES = [
   "queued",
   "running",

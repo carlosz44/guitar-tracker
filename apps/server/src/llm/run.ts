@@ -1,4 +1,4 @@
-import type { DraftReview, DraftSubject, LlmFeature, SkippedFile } from "@ds/shared";
+import type { DraftReview, LlmFeature, LlmSubject, SkippedFile } from "@ds/shared";
 import { and, eq } from "drizzle-orm";
 import type { Clock } from "../clock";
 import type { Database, Tx } from "../db/client";
@@ -64,7 +64,7 @@ export type GenerateResult<T> =
 
 export async function generate<T>(
   deps: LlmJobDeps,
-  context: { userId: string; feature: LlmFeature; subject: { type: DraftSubject; id: string } },
+  context: { userId: string; feature: LlmFeature; subject: { type: LlmSubject; id: string } },
   request: Omit<LlmRequest, "model">,
   toPayload: (output: unknown) => T | null,
 ): Promise<GenerateResult<T>> {

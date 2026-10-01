@@ -5,6 +5,7 @@ import {
   type DraftReview,
   LLM_FEATURES,
   LLM_RUN_STATUSES,
+  type LlmSubject,
   type SkippedFile,
 } from "@ds/shared";
 import { sql } from "drizzle-orm";
@@ -41,7 +42,7 @@ export const llmRuns = pgTable(
     latencyMs: integer().notNull().default(0),
     status: text().$type<(typeof LLM_RUN_STATUSES)[number]>().notNull(),
     error: text(),
-    subjectType: text().$type<(typeof DRAFT_SUBJECTS)[number]>(),
+    subjectType: text().$type<LlmSubject>(),
     subjectId: uuid(),
     ...timestamps,
   },
