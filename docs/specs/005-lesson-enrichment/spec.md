@@ -1,6 +1,6 @@
 # 005 Lesson enrichment with Claude
 
-**Status:** Draft
+**Status:** Approved
 **Depends on:** 002
 
 ## Why
@@ -10,7 +10,7 @@ After a lesson Carlos has rough notes and a handful of files from the teacher. T
 ## Scope
 
 **In:**
-- **Lesson enrichment:** from a lesson's notes, files and the existing topics, Claude drafts the title, summary, practice points, homework, suggested topics (new or existing, with a relation) and answers to open teacher questions.
+- **Lesson enrichment:** from a lesson's notes, files and the existing topics, Claude drafts the title, summary, practice points, homework, suggested topics (new or existing, with a relation), answers to open teacher questions, and new questions for the teacher spotted in the notes.
 - **Review screen:** accept per section, edit before accepting, discard, or regenerate with an optional instruction.
 - **"Mejorar tema":** drafts a better description, practice points and success criteria for one topic.
 - **Draft lessons:** a quick capture path ("Guardar y completar con Claude") that saves the lesson as `draft` until its review is accepted.
@@ -34,21 +34,22 @@ After a lesson Carlos has rough notes and a handful of files from the teacher. T
 - **AC-4** Claude's output is parsed with a shared Zod schema. Output that fails validation is retried once; if it fails again the draft ends as `failed` with "No se pudo generar el borrador. Inténtalo de nuevo." and a "Reintentar" button.
 
 **Review**
-- **AC-5** When the draft is ready, the lesson page shows the review with sections: Título, Resumen, Puntos de práctica, Tarea, Temas sugeridos, Respuestas a preguntas. Each section shows the proposal and, when the lesson already has a value, the current value, with "Aceptar" and "Descartar". Proposals are editable before accepting.
+- **AC-5** When the draft is ready, the lesson page shows the review with sections: Título, Resumen, Puntos de práctica, Tarea, Temas sugeridos, Respuestas a preguntas, Preguntas sugeridas. Each section shows the proposal and, when the lesson already has a value, the current value, with "Aceptar" and "Descartar". Proposals are editable before accepting.
 - **AC-6** Suggested topics are a list. Each item is either an existing topic (title, proposed relation) or a new topic (title, category, optional parent, description, practice points, success criteria, target BPM, relation). Each item can be edited, checked or unchecked. Accepting creates the checked new topics and links all checked topics to the lesson with their relation. Suggested ids that don't belong to an existing topic of Carlos's are dropped before review.
 - **AC-7** Suggested answers are only for questions that were open when the draft was made. Accepting an answer marks the question `answered` with that text and this lesson. A question answered or dismissed in the meantime is shown as already resolved and can't be accepted.
-- **AC-8** "Aceptar todo" accepts every section still pending. When no section is pending, the draft becomes `accepted` (or `discarded` if nothing was accepted) and a `draft` lesson becomes `final`.
-- **AC-9** "Regenerar" takes an optional instruction ("más breve", "enfócate en el ritmo"), discards the pending draft and starts a new one. Sections already accepted stay accepted.
-- **AC-10** Nothing Claude writes reaches the lesson, topics or questions until Carlos accepts it. Discarding a draft leaves the lesson exactly as it was.
+- **AC-8** "Preguntas sugeridas" lists questions for the teacher that Claude spotted in the notes (doubts, "preguntar al profe…"), each optionally tied to a topic from the draft. Each can be edited, checked or unchecked. Accepting creates the checked ones as open questions, linked to their topic when it exists or was created from this draft. A suggestion that duplicates an open question (case-insensitive) is dropped.
+- **AC-9** "Aceptar todo" accepts every section still pending. When no section is pending, the draft becomes `accepted` (or `discarded` if nothing was accepted) and a `draft` lesson becomes `final`.
+- **AC-10** "Regenerar" takes an optional instruction ("más breve", "enfócate en el ritmo"), discards the pending draft and starts a new one. Sections already accepted stay accepted.
+- **AC-11** Nothing Claude writes reaches the lesson, topics or questions until Carlos accepts it. Discarding a draft leaves the lesson exactly as it was.
 
 **Mejorar tema**
-- **AC-11** The topic page has "Mejorar con Claude". It drafts description, practice points and success criteria from the topic, its parent and children, the lessons linked to it (summary and practice points) and its recent practice (last clean BPM, ratings, notes). The review accepts each field separately, with the same editing as AC-5.
+- **AC-12** The topic page has "Mejorar con Claude". It drafts description, practice points and success criteria from the topic, its parent and children, the lessons linked to it (summary and practice points) and its recent practice (last clean BPM, ratings, notes). The review accepts each field separately, with the same editing as AC-5.
 
 **Cost**
-- **AC-12** Every call is logged in `llm_runs` with feature, model, input, output and cache-read tokens, cost in USD, latency, status and error code. Prompts, responses and file contents are never logged.
-- **AC-13** Ajustes shows "Claude este mes: $X.XX de $Y" (calendar month in Lima) and the number of calls.
-- **AC-14** When this month's spend has reached `LLM_MONTHLY_BUDGET_USD`, starting a draft answers with "Se alcanzó el presupuesto de Claude de este mes." and no call is made.
-- **AC-15** When `ANTHROPIC_API_KEY` isn't set, the app runs normally, Claude buttons are hidden, and Ajustes says "Claude no está configurado".
+- **AC-13** Every call is logged in `llm_runs` with feature, model, input, output and cache-read tokens, cost in USD, latency, status and error code. Prompts, responses and file contents are never logged.
+- **AC-14** Ajustes shows "Claude este mes: $X.XX de $Y" (calendar month in Lima) and the number of calls.
+- **AC-15** When this month's spend has reached `LLM_MONTHLY_BUDGET_USD`, starting a draft answers with "Se alcanzó el presupuesto de Claude de este mes." and no call is made.
+- **AC-16** When `ANTHROPIC_API_KEY` isn't set, the app runs normally, Claude buttons are hidden, and Ajustes says "Claude no está configurado".
 
 ## UX notes
 
@@ -91,9 +92,9 @@ See `docs/domain.md` → LLM run and draft.
 - The lesson is deleted while its draft runs: the job finds no lesson and ends the draft as `discarded`.
 - Month boundary: spend resets on the 1st in America/Lima.
 
-## Open questions
+## Decisions (Carlos, 2026-10-01)
 
-- **Draft lessons from the web (AC-2):** keep this quick-capture path, or should enrichment only be a button on existing lessons until 007?
-- **Monthly budget:** default `LLM_MONTHLY_BUDGET_USD`? Proposal: $5, on top of the spend limit set on the Anthropic API key.
-- **Models:** Sonnet 5.5 for both lesson enrichment and "Mejorar tema" (per D-10), or Haiku 4.5 for "Mejorar tema" to save cost?
-- **Teacher questions:** besides answering open questions, should Claude also propose new questions it spots in the notes ("preguntar al profe…")?
+- **Draft lessons from the web:** keep the quick-capture path (AC-2).
+- **Monthly budget:** `LLM_MONTHLY_BUDGET_USD` defaults to 10, on top of the spend limit on the Anthropic API key.
+- **Models:** Sonnet 5.5 for lesson enrichment and "Mejorar tema" (D-10). Both configurable through `LLM_MODEL_DEFAULT`.
+- **Suggested questions:** Claude also proposes new teacher questions (AC-8).

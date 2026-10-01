@@ -7,7 +7,7 @@
 | 002 | Lessons, topics and files | In progress (T17 manual checks left) | 001 |
 | 003 | Practice sessions | In progress (T16 iPhone checks left) | 002 |
 | 004 | Telegram: reminders and quick log | Outline | 003 |
-| 005 | Lesson enrichment with Claude | Outline | 002 |
+| 005 | Lesson enrichment with Claude | Approved | 002 |
 | 006 | Weekly planner | Outline | 003, 005 |
 | 007 | Telegram lesson inbox | Outline | 004, 005 |
 | 008 | Stats and weekly review | Outline | 003 |
