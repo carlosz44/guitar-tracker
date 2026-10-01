@@ -6,10 +6,12 @@ import type { Clock } from "./clock";
 import type { Database } from "./db/client";
 import { requestLogger } from "./http/request-logger";
 import { mountStatic } from "./http/static";
+import type { JobQueue } from "./jobs/boss";
 import type { Logger } from "./logger";
 import { createHealthRoutes } from "./routes/health";
 import { createMeRoutes } from "./routes/me";
 import { createSettingsRoutes } from "./routes/settings";
+import type { ObjectStorage } from "./storage/r2";
 
 export interface AppDeps {
   db: Database;
@@ -18,6 +20,9 @@ export interface AppDeps {
   auth: Auth;
   allowlist: Allowlist;
   defaultTimezone: string;
+  storage: ObjectStorage;
+  queue: JobQueue;
+  storageOrigin: string;
   staticRoot?: string;
 }
 
@@ -40,11 +45,17 @@ export function createApp(deps: AppDeps) {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https://avatars.githubusercontent.com"],
-        connectSrc: ["'self'"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://avatars.githubusercontent.com",
+          deps.storageOrigin,
+        ],
+        connectSrc: ["'self'", deps.storageOrigin],
         fontSrc: ["'self'"],
         manifestSrc: ["'self'"],
-        workerSrc: ["'self'"],
+        workerSrc: ["'self'", "blob:"],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],

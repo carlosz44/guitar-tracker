@@ -1,4 +1,4 @@
-import type { Readable } from "node:stream";
+import { Readable } from "node:stream";
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -27,6 +27,7 @@ export interface ObjectStorage {
   ): Promise<string>;
   head(key: string): Promise<{ size: number } | null>;
   list(prefix: string): Promise<StoredObject[]>;
+  getStream(key: string): Promise<Readable>;
   delete(key: string): Promise<void>;
   uploadStream(key: string, body: Readable, contentType: string): Promise<void>;
 }
@@ -39,10 +40,14 @@ export interface R2Config {
   endpoint?: string;
 }
 
+export function r2Origin(accountId: string) {
+  return `https://${accountId}.r2.cloudflarestorage.com`;
+}
+
 export function createR2Client(config: R2Config) {
   return new S3Client({
     region: "auto",
-    endpoint: config.endpoint ?? `https://${config.accountId}.r2.cloudflarestorage.com`,
+    endpoint: config.endpoint ?? r2Origin(config.accountId),
     forcePathStyle: true,
     credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey },
     // R2 rejects the SDK's default CRC32 checksum headers on presigned uploads.
@@ -113,6 +118,12 @@ export function createR2Storage(config: R2Config, client = createR2Client(config
         ContinuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
       } while (ContinuationToken);
       return objects;
+    },
+
+    async getStream(key) {
+      const result = await client.send(new GetObjectCommand({ Bucket, Key: key }));
+      if (!(result.Body instanceof Readable)) throw new Error("R2 returned no body");
+      return result.Body;
     },
 
     async delete(key) {

@@ -78,6 +78,16 @@ describe("object operations", () => {
     ]);
   });
 
+  it("streams an object's bytes", async () => {
+    server.use(
+      http.get(`${BASE}/lesson-files/l/f-a.gp`, () => new HttpResponse(new Uint8Array([1, 2, 3]))),
+    );
+    const chunks: Buffer[] = [];
+    for await (const chunk of await storage.getStream("lesson-files/l/f-a.gp"))
+      chunks.push(Buffer.from(chunk));
+    expect([...Buffer.concat(chunks)]).toEqual([1, 2, 3]);
+  });
+
   it("deletes an object", async () => {
     let deleted = "";
     server.use(

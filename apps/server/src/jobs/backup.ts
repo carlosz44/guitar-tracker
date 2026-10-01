@@ -12,18 +12,11 @@ import { backupRuns } from "../db/schema";
 import type { Logger } from "../logger";
 import { backupKey, backupKeyDate, backupPrefix } from "../storage/keys";
 import type { ObjectStorage } from "../storage/r2";
-import { type Boss, QUEUES } from "./boss";
+import { type Boss, ensureQueue, QUEUES } from "./boss";
 
 export const BACKUP_CRON = "30 3 * * *";
 export const BACKUP_TIMEZONE = "America/Lima";
 export const BACKUP_RETENTION_DAYS = 30;
-export const BACKUP_QUEUE_OPTIONS = {
-  retryLimit: 3,
-  retryBackoff: true,
-  retryDelay: 60,
-  expireInSeconds: 30 * 60,
-} as const;
-
 export interface DumpProcess {
   stdout: Readable;
   exited: Promise<void>;
@@ -153,7 +146,7 @@ export async function pruneBackups(deps: Pick<BackupDeps, "storage" | "logger">,
 }
 
 export async function registerBackup(boss: Boss, deps: BackupDeps) {
-  await boss.createQueue(QUEUES.backup, BACKUP_QUEUE_OPTIONS);
+  await ensureQueue(boss, QUEUES.backup);
   await boss.schedule(QUEUES.backup, BACKUP_CRON, null, { tz: BACKUP_TIMEZONE, missed: "once" });
   await boss.work(QUEUES.backup, { includeMetadata: true }, ([job]) =>
     job ? handleBackupJob(deps, job) : Promise.resolve(),

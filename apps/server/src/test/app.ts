@@ -4,12 +4,16 @@ import { createAuth } from "../auth/auth";
 import { type Clock, systemClock } from "../clock";
 import type { Database } from "../db/client";
 import type { Logger } from "../logger";
+import type { ObjectStorage } from "../storage/r2";
 import { validEnv } from "./env";
 import { silentLogger } from "./logger";
+import { memoryQueue } from "./memory-queue";
+import { memoryStorage } from "./memory-storage";
 
 export const TEST_APP_URL = validEnv.APP_URL;
 export const ALLOWED_GITHUB_ID = "1001";
 export const STRANGER_GITHUB_ID = "9999";
+export const TEST_STORAGE_ORIGIN = "https://storage.test";
 
 export function createTestApp(deps: {
   db: Database;
@@ -17,7 +21,10 @@ export function createTestApp(deps: {
   logger?: Logger;
   staticRoot?: string;
   allowedGithubIds?: string[];
+  storage?: ObjectStorage;
 }) {
+  const memory = memoryStorage();
+  const jobs = memoryQueue();
   const logger = deps.logger ?? silentLogger;
   const allowlist = new Set(deps.allowedGithubIds ?? [ALLOWED_GITHUB_ID]);
   const auth = createAuth({
@@ -36,7 +43,10 @@ export function createTestApp(deps: {
     auth,
     allowlist,
     defaultTimezone: DEFAULT_TIMEZONE,
+    storage: deps.storage ?? memory.storage,
+    queue: jobs.queue,
+    storageOrigin: TEST_STORAGE_ORIGIN,
     staticRoot: deps.staticRoot,
   });
-  return { app, auth, allowlist };
+  return { app, auth, allowlist, storage: memory, jobs };
 }

@@ -26,6 +26,13 @@ describe("createApp", () => {
     expect(response.headers.get("strict-transport-security")).toBeTruthy();
   });
 
+  it("lets the browser upload to, download from and show images from file storage", async () => {
+    const csp = (await app.request("/index.html")).headers.get("content-security-policy") ?? "";
+    expect(csp).toMatch(/connect-src 'self' https:\/\/storage\.test/);
+    expect(csp).toMatch(/img-src [^;]*https:\/\/storage\.test/);
+    expect(csp).toMatch(/worker-src 'self' blob:/);
+  });
+
   it("answers unknown /api routes with JSON, never the SPA", async () => {
     const response = await app.request("/api/nope");
     expect(response.status).toBe(401);

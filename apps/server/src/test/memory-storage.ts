@@ -1,9 +1,9 @@
-import type { Readable } from "node:stream";
+import { Readable } from "node:stream";
 import type { ObjectStorage } from "../storage/r2";
 
 export function memoryStorage() {
   const objects = new Map<string, Buffer>();
-  const state = { failUploads: false };
+  const state = { failUploads: false, failDeletes: false };
 
   const storage: ObjectStorage = {
     async presignPut(key) {
@@ -21,7 +21,13 @@ export function memoryStorage() {
         .filter(([key]) => key.startsWith(prefix))
         .map(([key, body]) => ({ key, size: body.length }));
     },
+    async getStream(key) {
+      const object = objects.get(key);
+      if (!object) throw Object.assign(new Error("NoSuchKey"), { name: "NoSuchKey" });
+      return Readable.from([object]);
+    },
     async delete(key) {
+      if (state.failDeletes) throw new Error("delete denied");
       objects.delete(key);
     },
     async uploadStream(key, body: Readable) {
