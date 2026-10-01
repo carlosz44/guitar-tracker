@@ -5,7 +5,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T1 Schema and migration `0002_practice_sessions` (sessions, blocks, practice_days, one in-progress session per user); shared session schemas.
 - [x] T2 Rules: practice date, cycle start, days met, streak, suggestions with the new-topic fallback, manual split. (covers AC-2, AC-17 split, AC-20)
 - [x] T3 `GET /api/today`. (covers AC-1, AC-2, AC-4)
-- [ ] T4 Sessions API: start (409 when active), pause and resume, extend, complete, skip with clamped client timestamps, finish, abandon; new→active topics; practice_days snapshot; last activity. (covers AC-5, AC-6, AC-8, AC-9, AC-11, AC-13, AC-14)
+- [x] T4 Sessions API: start (409 when active), pause and resume, extend, complete, skip with clamped client timestamps, finish, abandon; new→active topics; practice_days snapshot; last activity. (covers AC-5, AC-6, AC-8, AC-9, AC-11, AC-13, AC-14)
 - [ ] T5 Manual log, history by cycle, session detail, edit, delete. (covers AC-17, AC-18, AC-19)
 - [ ] T6 Topic stats in topic responses, and the delete rule for topics used in blocks.
 - [ ] T7 Worker `session.close-stale`, hourly. (covers AC-16)
