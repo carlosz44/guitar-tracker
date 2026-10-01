@@ -2,6 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { es } from "@/i18n/es";
+import { formatUsd } from "@/lib/format";
 import { carlos, fakeApi, json, renderApp } from "@/test/render-app";
 
 function patchHandler() {
@@ -62,6 +63,29 @@ describe("Ajustes", () => {
     const text = (await screen.findByTestId("last-backup")).textContent ?? "";
     expect(text).toContain("1 de octubre de 2026");
     expect(text).toMatch(/3:31/);
+  });
+
+  it("005 AC-14: shows this month's Claude spend against the budget", async () => {
+    fakeApi({
+      me: carlos,
+      handlers: [
+        ({ path }) =>
+          path === "/api/llm/usage"
+            ? json({ enabled: true, monthSpendUsd: 0.4234, monthCalls: 3, budgetUsd: 10 })
+            : undefined,
+      ],
+    });
+    renderApp("/settings");
+    expect((await screen.findByTestId("llm-usage")).textContent).toBe(
+      es.settings.claudeSpend(formatUsd(0.4234), formatUsd(10), 3),
+    );
+    expect(formatUsd(0.4234)).toContain("0.42");
+  });
+
+  it("005 AC-16: says Claude isn't configured", async () => {
+    fakeApi({ me: { ...carlos, llm: { enabled: false } } });
+    renderApp("/settings");
+    expect(await screen.findByText(es.validation["llm.disabled"])).toBeTruthy();
   });
 
   it("AC-4: “Cerrar sesión” signs me out and returns to the login page", async () => {

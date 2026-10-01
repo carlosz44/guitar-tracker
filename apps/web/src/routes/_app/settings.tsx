@@ -1,6 +1,6 @@
 import { type MeResponse, type UpdateSettings, updateSettingsSchema } from "@ds/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -14,7 +14,8 @@ import { Input } from "@/components/ui/input";
 import { es, validationMessage } from "@/i18n/es";
 import { api, ensureOk, meQuery } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, formatUsd } from "@/lib/format";
+import { llmUsageQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_app/settings")({ component: SettingsPage });
 
@@ -27,6 +28,7 @@ function SettingsPage() {
         <AccountCard me={me} />
         <PracticeCard me={me} />
         <BackupCard me={me} />
+        <ClaudeCard enabled={me.llm.enabled} />
         <SignOutButton />
       </div>
     </>
@@ -144,6 +146,33 @@ function BackupCard({ me }: { me: MeResponse }) {
             ? formatDateTime(me.lastBackupAt, me.settings.timezone)
             : es.settings.noBackups}
         </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ClaudeCard({ enabled }: { enabled: boolean }) {
+  const { data } = useQuery({ ...llmUsageQuery, enabled });
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{es.settings.claude}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {!enabled ? (
+          <p className="text-muted-foreground">{es.validation["llm.disabled"]}</p>
+        ) : data ? (
+          <>
+            <p className="text-sm text-muted-foreground">{es.settings.claudeMonth}</p>
+            <p className="font-medium" data-testid="llm-usage">
+              {es.settings.claudeSpend(
+                formatUsd(data.monthSpendUsd),
+                formatUsd(data.budgetUsd),
+                data.monthCalls,
+              )}
+            </p>
+          </>
+        ) : null}
       </CardContent>
     </Card>
   );

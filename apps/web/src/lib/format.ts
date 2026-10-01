@@ -45,3 +45,11 @@ export function formatDayMonth(date: string) {
     timeZone: "UTC",
   }).format(new Date(`${date}T00:00:00Z`));
 }
+
+export function formatUsd(amount: number) {
+  return new Intl.NumberFormat("es-PE", {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "narrowSymbol",
+  }).format(amount);
+}

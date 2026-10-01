@@ -207,6 +207,10 @@ export const es = {
     backups: "Respaldos",
     lastBackup: "Último respaldo",
     noBackups: "Sin respaldos todavía",
+    claude: "Claude",
+    claudeMonth: "Este mes",
+    claudeSpend: (spend: string, budget: string, calls: number) =>
+      `${spend} de ${budget} · ${calls} ${calls === 1 ? "llamada" : "llamadas"}`,
     signOut: "Cerrar sesión",
   },
   validation: {
