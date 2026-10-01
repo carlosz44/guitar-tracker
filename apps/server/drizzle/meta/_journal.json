@@ -15,6 +15,13 @@
       "when": 1790819482487,
       "tag": "0001_lessons_topics_files",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790826035202,
+      "tag": "0002_practice_sessions",
+      "breakpoints": true
     }
   ]
 }

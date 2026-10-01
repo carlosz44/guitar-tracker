@@ -6,5 +6,6 @@ export * from "./health.ts";
 export * from "./lessons.ts";
 export * from "./me.ts";
 export * from "./questions.ts";
+export * from "./sessions.ts";
 export * from "./settings.ts";
 export * from "./topics.ts";
