@@ -51,7 +51,7 @@ export function runParser(
     );
     worker.once("exit", () => settle({ status: "failed", error: "parse_error" }));
 
-    const bytes = input.bytes.slice();
+    const bytes = new Uint8Array(input.bytes);
     worker.postMessage({ ...input, bytes }, [bytes.buffer]);
   });
 }

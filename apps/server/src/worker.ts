@@ -3,6 +3,7 @@ import { loadConfig, workerConfigSchema } from "./config";
 import { createDatabase } from "./db/client";
 import { pgDumpSpawner, registerBackup } from "./jobs/backup";
 import { createBoss } from "./jobs/boss";
+import { registerFileJobs } from "./jobs/file-jobs";
 import { recordHeartbeat, registerHeartbeat } from "./jobs/heartbeat";
 import { createLogger } from "./logger";
 import { createR2Storage } from "./storage/r2";
@@ -16,19 +17,21 @@ const clock = systemClock;
 boss.on("error", (error) => logger.error({ err: error }, "pg-boss error"));
 
 await boss.start();
+const storage = createR2Storage({
+  accountId: config.R2_ACCOUNT_ID,
+  accessKeyId: config.R2_ACCESS_KEY_ID,
+  secretAccessKey: config.R2_SECRET_ACCESS_KEY,
+  bucket: config.R2_BUCKET,
+});
 await registerHeartbeat(boss, { db, clock });
 await registerBackup(boss, {
   db,
   clock,
   logger,
-  storage: createR2Storage({
-    accountId: config.R2_ACCOUNT_ID,
-    accessKeyId: config.R2_ACCESS_KEY_ID,
-    secretAccessKey: config.R2_SECRET_ACCESS_KEY,
-    bucket: config.R2_BUCKET,
-  }),
+  storage,
   dump: pgDumpSpawner(config.DATABASE_URL),
 });
+await registerFileJobs(boss, { db, clock, logger, storage });
 await recordHeartbeat(db, clock);
 logger.info("worker started");
 

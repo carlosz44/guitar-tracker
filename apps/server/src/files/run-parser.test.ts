@@ -37,6 +37,15 @@ describe("runParser", () => {
     expect(result).toEqual({ status: "failed", error: "out_of_memory" });
   }, 30_000);
 
+  it("accepts Node Buffers, whose memory may be pooled", async () => {
+    const result = await runParser({
+      kind: "guitar_pro",
+      fileName: "a.gp",
+      bytes: Buffer.from(guitarProFixture()),
+    });
+    expect(result.status).toBe("done");
+  }, 30_000);
+
   it("leaves the caller's bytes usable after transferring a copy", async () => {
     const bytes = guitarProFixture();
     await runParser({ kind: "guitar_pro", fileName: "a.gp", bytes });
