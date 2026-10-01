@@ -131,39 +131,42 @@ function SessionEditPage() {
       </p>
       <div className="flex flex-col gap-4">
         {blocks.map((block, index) => (
-          <fieldset key={block.id} className="flex flex-col gap-3 rounded-xl border p-3">
+          <fieldset key={block.id} className="flex min-w-0 flex-col gap-3 rounded-xl border p-3">
             <legend className="px-1 font-medium">{block.title}</legend>
             <div className="grid grid-cols-3 gap-3">
-              <Field>
-                <FieldLabel htmlFor={`edit-minutes-${index}`} className="sr-only">
-                  {es.sessionEdit.minutes(block.title)}
+              <Field className="min-w-0">
+                <FieldLabel htmlFor={`edit-minutes-${index}`} className="text-muted-foreground">
+                  {es.sessionEdit.minutesLabel}
                 </FieldLabel>
                 <Input
                   id={`edit-minutes-${index}`}
+                  aria-label={es.sessionEdit.minutes(block.title)}
                   type="number"
                   inputMode="numeric"
                   value={block.minutes}
                   onChange={(event) => update(index, { minutes: event.target.value })}
                 />
               </Field>
-              <Field>
-                <FieldLabel htmlFor={`edit-bpm-${index}`} className="sr-only">
-                  {es.sessionEdit.bpm(block.title)}
+              <Field className="min-w-0">
+                <FieldLabel htmlFor={`edit-bpm-${index}`} className="text-muted-foreground">
+                  {es.sessionEdit.bpmLabel}
                 </FieldLabel>
                 <Input
                   id={`edit-bpm-${index}`}
+                  aria-label={es.sessionEdit.bpm(block.title)}
                   type="number"
                   inputMode="numeric"
                   value={block.cleanBpm}
                   onChange={(event) => update(index, { cleanBpm: event.target.value })}
                 />
               </Field>
-              <Field>
-                <FieldLabel htmlFor={`edit-rating-${index}`} className="sr-only">
-                  {es.sessionEdit.rating(block.title)}
+              <Field className="min-w-0">
+                <FieldLabel htmlFor={`edit-rating-${index}`} className="text-muted-foreground">
+                  {es.sessionEdit.ratingLabel}
                 </FieldLabel>
                 <NativeSelect
                   id={`edit-rating-${index}`}
+                  aria-label={es.sessionEdit.rating(block.title)}
                   value={block.rating}
                   onChange={(event) => update(index, { rating: event.target.value })}
                 >
@@ -176,19 +179,20 @@ function SessionEditPage() {
                 </NativeSelect>
               </Field>
             </div>
-            <Field>
-              <FieldLabel htmlFor={`edit-notes-${index}`} className="sr-only">
-                {es.sessionEdit.notes(block.title)}
+            <Field className="min-w-0">
+              <FieldLabel htmlFor={`edit-notes-${index}`} className="text-muted-foreground">
+                {es.sessionEdit.notesLabel}
               </FieldLabel>
               <Input
                 id={`edit-notes-${index}`}
+                aria-label={es.sessionEdit.notes(block.title)}
                 value={block.notes}
                 onChange={(event) => update(index, { notes: event.target.value })}
               />
             </Field>
           </fieldset>
         ))}
-        <Field>
+        <Field className="min-w-0">
           <FieldLabel htmlFor="edit-session-notes">{es.sessionEdit.sessionNotes}</FieldLabel>
           <Textarea
             id="edit-session-notes"

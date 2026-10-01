@@ -22,7 +22,7 @@ import { ApiError, api, ensureOk } from "@/lib/api";
 import { errorMessage } from "@/lib/errors";
 import { formatDate } from "@/lib/format";
 import { isLaunching, markLaunched } from "@/lib/launch";
-import { practiceStore } from "@/lib/practice";
+import { finishedLocally, practiceStore } from "@/lib/practice";
 import { syncClock } from "@/lib/practice/clock";
 import { todayQuery } from "@/lib/queries";
 
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_app/today")({
     const data = await context.queryClient.ensureQueryData(todayQuery);
     const launching = isLaunching();
     markLaunched();
-    if (launching && data.activeSession) {
+    if (launching && data.activeSession && !finishedLocally(data.activeSession.id)) {
       throw redirect({ to: "/practice/$sessionId", params: { sessionId: data.activeSession.id } });
     }
   },
@@ -62,6 +62,8 @@ function initialBlocks(today: Today): DraftBlock[] {
 function TodayPage() {
   const { data } = useSuspenseQuery(todayQuery);
   const [blocks, setBlocks] = useState(() => initialBlocks(data));
+  const activeSession =
+    data.activeSession && !finishedLocally(data.activeSession.id) ? data.activeSession : null;
 
   return (
     <>
@@ -110,11 +112,11 @@ function TodayPage() {
           </div>
         </div>
 
-        {data.activeSession ? (
+        {activeSession ? (
           <section className="flex flex-col gap-3 rounded-xl border border-brand p-4">
             <h2 className="text-lg font-semibold">{es.today.activeTitle}</h2>
             <Button asChild size="lg" className="self-start">
-              <Link to="/practice/$sessionId" params={{ sessionId: data.activeSession.id }}>
+              <Link to="/practice/$sessionId" params={{ sessionId: activeSession.id }}>
                 <Play aria-hidden />
                 {es.today.continue}
               </Link>

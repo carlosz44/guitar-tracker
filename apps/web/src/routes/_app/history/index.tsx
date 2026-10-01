@@ -102,20 +102,22 @@ function HistoryPage() {
                   <table className="hidden w-full text-left lg:table" data-testid="history-table">
                     <thead className="text-sm text-muted-foreground">
                       <tr>
-                        <th className="py-2 font-normal">{es.history.columns.date}</th>
-                        <th className="py-2 font-normal">{es.history.columns.minutes}</th>
-                        <th className="py-2 font-normal">{es.history.columns.topics}</th>
-                        <th className="py-2 font-normal">{es.history.columns.rating}</th>
+                        <th className="py-2 pr-4 font-normal">{es.history.columns.date}</th>
+                        <th className="py-2 pr-4 font-normal">{es.history.columns.minutes}</th>
+                        <th className="py-2 pr-4 font-normal">{es.history.columns.topics}</th>
+                        <th className="py-2 pr-4 font-normal">{es.history.columns.rating}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {cycle.days.flatMap((day) =>
                         day.sessions.map((session, index) => (
                           <tr key={session.id} className="border-t">
-                            <td className="py-2">
+                            <td className="py-2 pr-4">
                               {index === 0 && (
-                                <span className="flex items-center gap-2 first-letter:uppercase">
-                                  {formatDate(day.date)}
+                                <span className="flex items-center gap-2">
+                                  <span className="first-letter:uppercase">
+                                    {formatDate(day.date)}
+                                  </span>
                                   {day.met && (
                                     <CircleCheck
                                       aria-label={es.history.met}
@@ -125,7 +127,7 @@ function HistoryPage() {
                                 </span>
                               )}
                             </td>
-                            <td className="py-2 tabular-nums">
+                            <td className="py-2 pr-4 tabular-nums">
                               <Link
                                 to="/history/$sessionId"
                                 params={{ sessionId: session.id }}
@@ -134,8 +136,8 @@ function HistoryPage() {
                                 {es.history.dayMinutes(minutes(session.seconds))}
                               </Link>
                             </td>
-                            <td className="py-2">{session.topics.join(", ")}</td>
-                            <td className="py-2 tabular-nums">
+                            <td className="py-2 pr-4">{session.topics.join(", ")}</td>
+                            <td className="py-2 pr-4 tabular-nums">
                               {session.averageRating === null
                                 ? "—"
                                 : es.history.rating(session.averageRating)}

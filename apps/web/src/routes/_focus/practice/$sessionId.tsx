@@ -10,12 +10,14 @@ import { QuestionDialog } from "@/components/questions/question-dialog";
 import { Button } from "@/components/ui/button";
 import { es } from "@/i18n/es";
 import { formatClock } from "@/lib/format";
-import { fetchSession, practiceStore, usePractice } from "@/lib/practice";
+import { fetchSession, practiceStore, settle, usePractice } from "@/lib/practice";
 import { serverTime } from "@/lib/practice/clock";
 import { progress } from "@/lib/practice/model";
 import { cn } from "@/lib/utils";
 
 const TIP_KEY = "ds.wakeTipDismissed";
+
+const CONTROL = "h-auto min-h-16 min-w-0 flex-col gap-1 px-1 py-2 leading-tight whitespace-normal";
 
 export const Route = createFileRoute("/_focus/practice/$sessionId")({
   loader: async ({ params }) => {
@@ -54,6 +56,7 @@ function PracticePage() {
 
   const finish = async (notes: string) => {
     practiceStore.dispatch({ kind: "finish", notes });
+    await settle();
     await queryClient.invalidateQueries({ queryKey: ["today"] });
     await navigate({ to: "/today" });
   };
@@ -159,7 +162,7 @@ function PracticePage() {
       <nav className="grid grid-cols-4 gap-2 px-4">
         <Button
           variant="outline"
-          className="h-16 flex-col gap-1"
+          className={CONTROL}
           onClick={() =>
             practiceStore.dispatch(
               state.paused
@@ -173,20 +176,20 @@ function PracticePage() {
         </Button>
         <Button
           variant="outline"
-          className="h-16 flex-col gap-1"
+          className={CONTROL}
           onClick={() => practiceStore.dispatch({ kind: "extend", blockId: block.id })}
         >
           <Plus aria-hidden />
           {es.practice.extend}
         </Button>
-        <Button variant="outline" className="h-16 flex-col gap-1" onClick={() => openLog("skip")}>
+        <Button variant="outline" className={CONTROL} onClick={() => openLog("skip")}>
           <SkipForward aria-hidden />
           {es.practice.skip}
         </Button>
         <QuestionDialog
           topicId={block.topicId ?? undefined}
           trigger={
-            <Button variant="outline" className="h-16 flex-col gap-1">
+            <Button variant="outline" className={CONTROL}>
               <MessageCirclePlus aria-hidden />
               {es.practice.question}
             </Button>

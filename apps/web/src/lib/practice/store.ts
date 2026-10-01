@@ -45,7 +45,7 @@ export function createPracticeStore(deps: StoreDeps) {
     offline: false,
   };
   const listeners = new Set<() => void>();
-  let flushing = false;
+  let running: Promise<void> | null = null;
   let failures = 0;
   let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -75,35 +75,36 @@ export function createPracticeStore(deps: StoreDeps) {
     retryTimer = setTimeout(() => void flush(), delay);
   };
 
-  async function flush() {
-    if (flushing) return;
-    flushing = true;
-    try {
-      while (outbox.length > 0) {
-        const queued = outbox[0] as QueuedOp;
-        let result: SendResult;
-        try {
-          result = await deps.send(queued);
-        } catch {
-          result = { ok: false, retry: true };
-        }
-        if (!result.ok && result.retry) {
-          set({ offline: true });
-          scheduleRetry();
-          return;
-        }
-        outbox = outbox.slice(1);
-        failures = 0;
-        if (result.ok) {
-          if (outbox.length === 0) set({ session: result.session, offline: false });
-          else set({ offline: false });
-        } else {
-          const fresh = await deps.fetchSession(queued.sessionId).catch(() => null);
-          set({ session: fresh ? withPending(fresh) : state.session, offline: false });
-        }
+  function flush() {
+    running ??= drain().finally(() => {
+      running = null;
+    });
+    return running;
+  }
+
+  async function drain() {
+    while (outbox.length > 0) {
+      const queued = outbox[0] as QueuedOp;
+      let result: SendResult;
+      try {
+        result = await deps.send(queued);
+      } catch {
+        result = { ok: false, retry: true };
       }
-    } finally {
-      flushing = false;
+      if (!result.ok && result.retry) {
+        set({ offline: true });
+        scheduleRetry();
+        return;
+      }
+      outbox = outbox.slice(1);
+      failures = 0;
+      if (result.ok) {
+        if (outbox.length === 0) set({ session: result.session, offline: false });
+        else set({ offline: false });
+      } else {
+        const fresh = await deps.fetchSession(queued.sessionId).catch(() => null);
+        set({ session: fresh ? withPending(fresh) : state.session, offline: false });
+      }
     }
   }
 

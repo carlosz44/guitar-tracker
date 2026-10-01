@@ -58,6 +58,8 @@ test("003: a full session from Hoy to Historial", async ({ page }) => {
     await page.getByLabel(es.summary.note).fill("Buen día");
     await page.getByRole("button", { name: es.summary.finish }).click();
     await expect(page).toHaveURL(/\/today$/);
+    await expect(page.getByRole("button", { name: es.today.start })).toBeVisible();
+    await expect(page.getByRole("link", { name: es.today.continue })).toBeHidden();
   });
 
   await test.step("AC-18: Historial lists the session under today", async () => {

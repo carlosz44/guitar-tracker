@@ -19,7 +19,12 @@ let failWrites = false;
 
 function sessionApi({ method, path, body }: RecordedRequest) {
   const b = body as Record<string, unknown> | undefined;
-  if (path === "/api/today") return json(emptyToday);
+  if (path === "/api/today") {
+    return json({
+      ...emptyToday,
+      activeSession: server.status === "in_progress" || failWrites ? { id: "s1" } : null,
+    });
+  }
   if (!path.startsWith("/api/sessions/s1")) return undefined;
   if (method !== "GET" && failWrites) throw new TypeError("Failed to fetch");
   if (method === "POST" && path.endsWith("/pause"))
@@ -237,6 +242,20 @@ describe("practice screen", () => {
         notes: "Buen día",
       }),
     );
+  });
+
+  it("AC-13: Terminar while offline returns to Hoy without offering to continue the finished session", async () => {
+    await open();
+    setTime(300);
+    await logCurrentBlock();
+    await logCurrentBlock();
+    await screen.findByRole("heading", { name: es.summary.title });
+    failWrites = true;
+    server = { ...server, id: "s1" };
+    await user().click(screen.getByRole("button", { name: es.summary.finish }));
+    expect(await screen.findByRole("button", { name: es.today.start })).toBeTruthy();
+    expect(screen.queryByRole("link", { name: es.today.continue })).toBeNull();
+    failWrites = false;
   });
 
   it("AC-15: when a save fails it says so, keeps the entry and still moves on", async () => {

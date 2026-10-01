@@ -77,3 +77,15 @@ export function usePractice() {
 }
 
 export { fetchSession };
+
+export function finishedLocally(sessionId: string) {
+  const session = practiceStore.getState().session;
+  return session?.id === sessionId && session.status !== "in_progress";
+}
+
+export function settle(timeoutMs = 3_000) {
+  return Promise.race([
+    practiceStore.flush(),
+    new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
+  ]);
+}

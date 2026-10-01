@@ -49,31 +49,40 @@ export function BlockPlanner({
     <div className="flex flex-col gap-3">
       <ul className="flex flex-col gap-2">
         {blocks.map((block, index) => (
-          <li key={block.key} className="flex items-center gap-2 rounded-xl border p-2 pl-4">
-            <span className="min-w-0 flex-1 truncate font-medium">{block.title}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={es.today.lessMinutes(block.title)}
-              disabled={block.minutes <= 5}
-              onClick={() => update(index, { minutes: block.minutes - 5 })}
-            >
-              <Minus aria-hidden />
-            </Button>
-            <span className="w-14 text-center tabular-nums">{es.today.minutes(block.minutes)}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={es.today.moreMinutes(block.title)}
-              disabled={block.minutes >= 240}
-              onClick={() => update(index, { minutes: block.minutes + 5 })}
-            >
-              <Plus aria-hidden />
-            </Button>
-            <div className="flex flex-col">
+          <li
+            key={block.key}
+            className="flex flex-wrap items-center gap-x-2 rounded-xl border p-2 pl-4"
+          >
+            <span className="min-w-0 basis-full truncate pt-1 font-medium sm:basis-0 sm:flex-1 sm:pt-0">
+              {block.title}
+            </span>
+            <div className="-ml-2 flex items-center gap-2 sm:ml-0">
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="icon"
+                aria-label={es.today.lessMinutes(block.title)}
+                disabled={block.minutes <= 5}
+                onClick={() => update(index, { minutes: block.minutes - 5 })}
+              >
+                <Minus aria-hidden />
+              </Button>
+              <span className="w-14 text-center tabular-nums">
+                {es.today.minutes(block.minutes)}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={es.today.moreMinutes(block.title)}
+                disabled={block.minutes >= 240}
+                onClick={() => update(index, { minutes: block.minutes + 5 })}
+              >
+                <Plus aria-hidden />
+              </Button>
+            </div>
+            <div className="ml-auto flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label={es.today.moveUp(block.title)}
                 disabled={index === 0}
                 onClick={() => move(index, -1)}
@@ -82,22 +91,22 @@ export function BlockPlanner({
               </Button>
               <Button
                 variant="ghost"
-                size="icon-sm"
+                size="icon"
                 aria-label={es.today.moveDown(block.title)}
                 disabled={index === blocks.length - 1}
                 onClick={() => move(index, 1)}
               >
                 <ArrowDown aria-hidden />
               </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={es.today.remove(block.title)}
+                onClick={() => onChange(blocks.filter((_, i) => i !== index))}
+              >
+                <X aria-hidden />
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={es.today.remove(block.title)}
-              onClick={() => onChange(blocks.filter((_, i) => i !== index))}
-            >
-              <X aria-hidden />
-            </Button>
           </li>
         ))}
       </ul>
