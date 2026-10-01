@@ -7,7 +7,7 @@
 - [x] T5 Claude job `llm.weekly-plan`: prompt, validation, apply or keep, notes, scoped dates, skipped reasons. (covers AC-4, AC-5)
 - [x] T6 Today and sessions: plan day in `/api/today`, `planDayId` on start, lesson `cyclePlan`. (covers AC-12, AC-14 server)
 - [x] T7 Web Ajustes: daily target per weekday. (covers AC-1)
-- [ ] T8 Web `/plan`: day cards and grid, editing with "Mover a…", regenerate, accept, replan, Claude waiting state, progress. (covers AC-6 to AC-11, AC-13)
+- [x] T8 Web `/plan`: day cards and grid, editing with "Mover a…", regenerate, accept, replan, Claude waiting state, progress. (covers AC-6 to AC-11, AC-13)
 - [ ] T9 Web Hoy and lesson page: plan blocks and focus note, "Semana" card, "Planificar la semana" card. (covers AC-12, AC-14)
 - [ ] T10 Docs and manual checks:
   - D-19 and domain.md

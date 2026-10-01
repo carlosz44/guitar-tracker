@@ -30,6 +30,18 @@ export const draftQuery = (id: string) =>
         : false,
   });
 
+export const planQuery = (cycle?: string) =>
+  queryOptions({
+    queryKey: ["plans", "current", cycle ?? "now"],
+    queryFn: async () =>
+      (await ensureOk(await api.plans.current.$get({ query: cycle ? { cycle } : {} }))).json(),
+    refetchInterval: (query) =>
+      query.state.data?.plan?.llmStatus === "queued" ||
+      query.state.data?.plan?.llmStatus === "running"
+        ? 2_000
+        : false,
+  });
+
 export const llmUsageQuery = queryOptions({
   queryKey: ["llm", "usage"],
   queryFn: async () => (await ensureOk(await api.llm.usage.$get())).json(),

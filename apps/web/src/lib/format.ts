@@ -53,3 +53,12 @@ export function formatUsd(amount: number) {
     currencyDisplay: "narrowSymbol",
   }).format(amount);
 }
+
+export function formatPlanDay(date: string) {
+  return new Intl.DateTimeFormat("es-PE", {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
+}

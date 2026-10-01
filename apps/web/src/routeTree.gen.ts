@@ -16,6 +16,7 @@ import { Route as AccessDeniedRouteImport } from './routes/access-denied'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppSplatRouteImport } from './routes/_app/$'
 import { Route as AppLogRouteImport } from './routes/_app/log'
+import { Route as AppPlanRouteImport } from './routes/_app/plan'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppTodayRouteImport } from './routes/_app/today'
 import { Route as AppHistoryIndexRouteImport } from './routes/_app/history/index'
@@ -62,6 +63,11 @@ const AppSplatRoute = AppSplatRouteImport.update({
 const AppLogRoute = AppLogRouteImport.update({
   id: '/log',
   path: '/log',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlanRoute = AppPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
@@ -142,6 +148,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
   '/log': typeof AppLogRoute
+  '/plan': typeof AppPlanRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
   '/history/$sessionId': typeof AppHistorySessionIdRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/$': typeof AppSplatRoute
   '/log': typeof AppLogRoute
+  '/plan': typeof AppPlanRoute
   '/settings': typeof AppSettingsRoute
   '/today': typeof AppTodayRoute
   '/history/$sessionId': typeof AppHistorySessionIdRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_app/$': typeof AppSplatRoute
   '/_app/log': typeof AppLogRoute
+  '/_app/plan': typeof AppPlanRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/today': typeof AppTodayRoute
   '/_app/history/$sessionId': typeof AppHistorySessionIdRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/$'
     | '/log'
+    | '/plan'
     | '/settings'
     | '/today'
     | '/history/$sessionId'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/$'
     | '/log'
+    | '/plan'
     | '/settings'
     | '/today'
     | '/history/$sessionId'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_app/$'
     | '/_app/log'
+    | '/_app/plan'
     | '/_app/settings'
     | '/_app/today'
     | '/_app/history/$sessionId'
@@ -327,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/log'
       fullPath: '/log'
       preLoaderRoute: typeof AppLogRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/plan': {
+      id: '/_app/plan'
+      path: '/plan'
+      fullPath: '/plan'
+      preLoaderRoute: typeof AppPlanRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/settings': {
@@ -433,6 +452,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppSplatRoute: typeof AppSplatRoute
   AppLogRoute: typeof AppLogRoute
+  AppPlanRoute: typeof AppPlanRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTodayRoute: typeof AppTodayRoute
   AppHistorySessionIdRoute: typeof AppHistorySessionIdRoute
@@ -451,6 +471,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppSplatRoute: AppSplatRoute,
   AppLogRoute: AppLogRoute,
+  AppPlanRoute: AppPlanRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTodayRoute: AppTodayRoute,
   AppHistorySessionIdRoute: AppHistorySessionIdRoute,
