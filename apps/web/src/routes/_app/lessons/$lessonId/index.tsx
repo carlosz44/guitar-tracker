@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { MessageCircleQuestion, Pencil, Trash2 } from "lucide-react";
+import { CalendarRange, MessageCircleQuestion, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { LessonFiles } from "@/components/files/lesson-files";
 import { LessonTopics } from "@/components/lessons/lesson-topics";
@@ -43,7 +43,8 @@ function LessonPage() {
   const { lessonId } = Route.useParams();
   const { data } = useSuspenseQuery(lessonQuery(lessonId));
   const { data: list } = useSuspenseQuery(lessonsQuery);
-  const { lesson, draft, files, topics, openQuestionsCount, isLatest, openQuestions } = data;
+  const { lesson, draft, cyclePlan, files, topics, openQuestionsCount, isLatest, openQuestions } =
+    data;
   const start = useStartDraft({ type: "lesson", id: lessonId });
   const latestId = list.lessons[0]?.id;
 
@@ -85,6 +86,24 @@ function LessonPage() {
       </header>
 
       {draft && <LessonDraft lessonId={lessonId} draft={draft} />}
+
+      {!draft && lesson.status === "final" && !cyclePlan.ended && !cyclePlan.plan && (
+        <section
+          className="flex flex-col gap-3 rounded-xl border border-brand/50 p-4"
+          data-testid="plan-prompt"
+        >
+          <div>
+            <p className="font-medium">{es.plan.lessonPrompt}</p>
+            <p className="text-sm text-muted-foreground">{es.plan.lessonPromptHint}</p>
+          </div>
+          <Button asChild className="self-start">
+            <Link to="/plan" search={{ cycle: cyclePlan.cycleStart }}>
+              <CalendarRange aria-hidden />
+              {es.plan.build}
+            </Link>
+          </Button>
+        </section>
+      )}
 
       {lesson.summary && (
         <Section title={es.lessonPage.summary}>

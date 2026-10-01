@@ -1,6 +1,14 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
-import { BookOpen, Flame, MessageCircleQuestion, NotebookPen, Play } from "lucide-react";
+import {
+  BookOpen,
+  CalendarRange,
+  ChevronRight,
+  Flame,
+  MessageCircleQuestion,
+  NotebookPen,
+  Play,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
@@ -42,6 +50,15 @@ export const Route = createFileRoute("/_app/today")({
 type Today = Awaited<ReturnType<NonNullable<typeof todayQuery.queryFn>>>;
 
 function initialBlocks(today: Today): DraftBlock[] {
+  if (today.plan) {
+    return today.plan.blocks.map((block) => ({
+      key: draftKey(),
+      topicId: block.topicId,
+      label: block.topicId ? null : block.label,
+      title: block.title,
+      minutes: block.minutes,
+    }));
+  }
   return [
     {
       key: draftKey(),
@@ -128,7 +145,12 @@ function TodayPage() {
           </section>
         ) : (
           <Section title={es.today.plan}>
-            {data.suggestion.topics.length === 0 && (
+            {data.plan?.focusNote && (
+              <p className="rounded-lg bg-muted/40 px-3 py-2" data-testid="focus-note">
+                {data.plan.focusNote}
+              </p>
+            )}
+            {!data.plan && data.suggestion.topics.length === 0 && (
               <p className="text-muted-foreground">
                 {es.today.noTopics}{" "}
                 <Link to="/topics/new" className="text-brand underline">
@@ -137,15 +159,32 @@ function TodayPage() {
               </p>
             )}
             <BlockPlanner blocks={blocks} onChange={setBlocks} />
-            <StartButton blocks={blocks} />
+            <StartButton blocks={blocks} planDayId={data.plan?.dayId} />
           </Section>
         )}
+
+        <Link
+          to="/plan"
+          className="flex items-center justify-between gap-3 rounded-xl border p-4 hover:bg-muted"
+          data-testid="week-card"
+        >
+          <span className="flex items-center gap-3">
+            <CalendarRange aria-hidden className="size-5 text-muted-foreground" />
+            <span className="flex flex-col">
+              <span className="font-medium">{es.today.week}</span>
+              <span className="text-sm text-muted-foreground">
+                {data.plan ? es.today.weekPlanned : es.today.weekNoPlan}
+              </span>
+            </span>
+          </span>
+          <ChevronRight aria-hidden className="size-5 text-muted-foreground" />
+        </Link>
       </div>
     </>
   );
 }
 
-function StartButton({ blocks }: { blocks: DraftBlock[] }) {
+function StartButton({ blocks, planDayId }: { blocks: DraftBlock[]; planDayId?: string }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -159,7 +198,7 @@ function StartButton({ blocks }: { blocks: DraftBlock[] }) {
     mutationFn: async () => {
       const startedAt = Date.now();
       const { session } = await (
-        await ensureOk(await api.sessions.$post({ json: { blocks: payload } }))
+        await ensureOk(await api.sessions.$post({ json: { blocks: payload, planDayId } }))
       ).json();
       syncClock(session.serverNow, startedAt);
       return session;

@@ -50,6 +50,9 @@ export const es = {
     back: "Ir a Hoy",
   },
   today: {
+    week: "Semana",
+    weekPlanned: "Ver el plan de la semana",
+    weekNoPlan: "Sin plan · Planificar la semana",
     title: "Hoy",
     progress: (minutes: number, target: number) => `${minutes} de ${target} min`,
     targetMet: "Meta cumplida",
@@ -227,6 +230,8 @@ export const es = {
     addTopic: (day: string) => `Agregar tema el ${day}`,
     addOption: "Agregar tema…",
     dayLabel: (day: string) => `Día: ${day}`,
+    lessonPrompt: "¿Repartimos esta clase en la semana?",
+    lessonPromptHint: "Arma el plan de práctica hasta la próxima clase.",
   },
   settings: {
     title: "Ajustes",

@@ -233,3 +233,36 @@ describe("quick capture", () => {
     expect(await screen.findByText(es.llm.draftBadge)).toBeTruthy();
   });
 });
+
+describe("planning after a lesson", () => {
+  it("006 AC-14: a final lesson whose cycle has no plan offers 'Planificar la semana'", async () => {
+    fakeApi({ me: carlos, handlers: [lessonApi({ draft: null })] });
+    renderApp(`/lessons/${LESSON_ID}`);
+    const prompt = await screen.findByTestId("plan-prompt");
+    expect(prompt.querySelector("a")?.getAttribute("href")).toBe("/plan?cycle=2026-10-01");
+  });
+
+  it("006 AC-14: hidden while a draft is under review or once the cycle has a plan", async () => {
+    fakeApi({
+      me: carlos,
+      handlers: [
+        ({ method, path }) =>
+          method === "GET" && path === `/api/lessons/${LESSON_ID}`
+            ? json(
+                lessonDetail({
+                  cyclePlan: {
+                    cycleStart: "2026-10-01",
+                    ended: false,
+                    plan: { id: "p", status: "draft" },
+                  },
+                }),
+              )
+            : undefined,
+        lessonApi({ draft: null }),
+      ],
+    });
+    renderApp(`/lessons/${LESSON_ID}`);
+    await screen.findByRole("heading", { name: "Modo dórico" });
+    expect(screen.queryByTestId("plan-prompt")).toBeNull();
+  });
+});

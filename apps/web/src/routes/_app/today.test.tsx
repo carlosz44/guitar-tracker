@@ -108,6 +108,64 @@ describe("Hoy", () => {
     });
   });
 
+  it("006 AC-12: with an active plan, Hoy shows today's plan blocks and focus note and starts from them", async () => {
+    const { requests } = fakeApi({
+      me: carlos,
+      handlers: [
+        api({
+          targetMinutes: 40,
+          plan: {
+            id: "plan-1",
+            dayId: "day-2",
+            focusNote: "Tríadas limpias a 80",
+            blocks: [
+              {
+                topicId: null,
+                label: "Calentamiento",
+                title: "Calentamiento",
+                minutes: 5,
+                targetBpm: null,
+                lastCleanBpm: null,
+              },
+              {
+                topicId: "t2",
+                label: null,
+                title: "Modo dórico",
+                minutes: 35,
+                targetBpm: null,
+                lastCleanBpm: null,
+              },
+            ],
+          },
+        }),
+      ],
+    });
+    const { router } = renderApp("/today");
+    expect((await screen.findByTestId("focus-note")).textContent).toBe("Tríadas limpias a 80");
+    expect(rows().map((row) => row.textContent)).toEqual([
+      expect.stringContaining("Calentamiento"),
+      expect.stringContaining("Modo dórico"),
+    ]);
+    expect(screen.getByTestId("plan-total").textContent).toBe(es.today.total(40));
+    expect(screen.getByTestId("week-card").getAttribute("href")).toBe("/plan");
+    expect(screen.getByTestId("week-card").textContent).toContain(es.today.weekPlanned);
+    await userEvent.click(screen.getByRole("button", { name: es.today.start }));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/practice/new-session"));
+    expect(requests.find((r) => r.method === "POST" && r.path === "/api/sessions")?.body).toEqual({
+      blocks: [
+        { topicId: null, label: "Calentamiento", plannedSeconds: 300 },
+        { topicId: "t2", plannedSeconds: 2100 },
+      ],
+      planDayId: "day-2",
+    });
+  });
+
+  it("006 AC-12: without a plan the week card offers to plan", async () => {
+    fakeApi({ me: carlos, handlers: [api()] });
+    renderApp("/today");
+    expect((await screen.findByTestId("week-card")).textContent).toContain(es.today.weekNoPlan);
+  });
+
   it("AC-2: with no topics, offers only the warm-up and a prompt to create topics", async () => {
     fakeApi({ me: carlos, handlers: [api({ suggestion: { warmUpMinutes: 5, topics: [] } })] });
     renderApp("/today");
