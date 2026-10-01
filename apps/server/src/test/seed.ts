@@ -1,6 +1,15 @@
 import { uuidv7 } from "uuidv7";
 import type { Database } from "../db/client";
-import { lessonFiles, lessons, lessonTopics, teacherQuestions, topics } from "../db/schema";
+import {
+  lessonFiles,
+  lessons,
+  lessonTopics,
+  practiceDays,
+  practiceSessions,
+  sessionBlocks,
+  teacherQuestions,
+  topics,
+} from "../db/schema";
 
 export async function seedLesson(
   db: Database,
@@ -76,4 +85,69 @@ export async function seedQuestion(
     .returning();
   if (!row) throw new Error("seed question failed");
   return row;
+}
+
+export interface SeedBlock {
+  topicId?: string | null;
+  label?: string | null;
+  plannedSeconds?: number;
+  actualSeconds?: number | null;
+  startedAt?: Date | null;
+  endedAt?: Date | null;
+  cleanBpm?: number | null;
+  rating?: number | null;
+}
+
+export async function seedSession(
+  db: Database,
+  userId: string,
+  values: Partial<typeof practiceSessions.$inferInsert> & {
+    blocks?: SeedBlock[];
+    targetMinutes?: number;
+  } = {},
+) {
+  const { blocks = [], targetMinutes, ...session } = values;
+  const startedAt = session.startedAt ?? new Date("2026-10-01T16:00:00Z");
+  const [row] = await db
+    .insert(practiceSessions)
+    .values({
+      id: uuidv7(),
+      userId,
+      startedAt,
+      lastActivityAt: startedAt,
+      practiceDate: "2026-10-01",
+      status: "completed",
+      ...session,
+    })
+    .returning();
+  if (!row) throw new Error("seed session failed");
+  if (targetMinutes !== undefined) {
+    await db
+      .insert(practiceDays)
+      .values({ userId, date: row.practiceDate, targetMinutes })
+      .onConflictDoNothing();
+  }
+  const blockRows = [];
+  for (const [position, block] of blocks.entries()) {
+    const [created] = await db
+      .insert(sessionBlocks)
+      .values({
+        id: uuidv7(),
+        userId,
+        sessionId: row.id,
+        position,
+        topicId: block.topicId ?? null,
+        label: block.label ?? (block.topicId ? null : "Calentamiento"),
+        plannedSeconds: block.plannedSeconds ?? 600,
+        actualSeconds: block.actualSeconds === undefined ? 600 : block.actualSeconds,
+        startedAt: block.startedAt === undefined ? startedAt : block.startedAt,
+        endedAt:
+          block.endedAt === undefined ? new Date(startedAt.getTime() + 600_000) : block.endedAt,
+        cleanBpm: block.cleanBpm ?? null,
+        rating: block.rating ?? null,
+      })
+      .returning();
+    blockRows.push(created);
+  }
+  return { session: row, blocks: blockRows };
 }
