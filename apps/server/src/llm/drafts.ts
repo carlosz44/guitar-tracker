@@ -13,6 +13,8 @@ import { lessons, llmDrafts, teacherQuestions, topics } from "../db/schema";
 import { type JobQueue, QUEUES } from "../jobs/boss";
 import { assertCanCall, type LlmSettings } from "./usage";
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const STALE_DRAFT_MS = 15 * 60 * 1000;
 
 export class DraftConflict extends Error {
@@ -154,9 +156,11 @@ async function currentValues(db: Database, draft: typeof llmDrafts.$inferSelect)
   const questionIds = payload?.answers.map((answer) => answer.questionId) ?? [];
   const topicIds = [
     ...new Set(
-      (payload?.topics ?? []).flatMap((topic) => [topic.topicId, topic.parentRef]).filter(Boolean),
+      (payload?.topics ?? [])
+        .flatMap((topic) => [topic.topicId, topic.parentRef])
+        .filter((id): id is string => id !== null && UUID.test(id)),
     ),
-  ] as string[];
+  ];
   const [questions, linked] = await Promise.all([
     questionIds.length
       ? db

@@ -192,6 +192,7 @@ export const sectionActionSchema = z.strictObject({
 export interface SectionReview {
   state: SectionState;
   value?: unknown;
+  refs?: Record<string, string>;
 }
 export type DraftReview = Partial<Record<DraftSection, SectionReview>>;
 
