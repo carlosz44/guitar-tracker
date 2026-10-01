@@ -40,9 +40,10 @@ const app = createApp({
     accessKeyId: config.R2_ACCESS_KEY_ID,
     secretAccessKey: config.R2_SECRET_ACCESS_KEY,
     bucket: config.R2_BUCKET,
+    endpoint: config.R2_ENDPOINT,
   }),
   queue: bossQueue(boss),
-  storageOrigin: r2Origin(config.R2_ACCOUNT_ID),
+  storageOrigin: r2Origin(config.R2_ACCOUNT_ID, config.R2_ENDPOINT),
   staticRoot:
     config.NODE_ENV === "production"
       ? fileURLToPath(new URL("../../web/dist", import.meta.url))

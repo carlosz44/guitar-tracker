@@ -11,5 +11,9 @@ export function mountStatic(app: Hono, root: string) {
     c.header("Cache-Control", c.req.path.startsWith("/assets/") ? IMMUTABLE : REVALIDATE);
   });
   app.use("*", serveStatic({ root }));
+  app.get("*", async (c, next) => {
+    if (/\.[a-z0-9]+$/i.test(c.req.path)) return c.notFound();
+    return next();
+  });
   app.get("*", serveStatic({ root, path: "index.html" }));
 }

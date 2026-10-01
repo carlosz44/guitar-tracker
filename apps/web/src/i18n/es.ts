@@ -242,7 +242,7 @@ export const es = {
     status: "Estado",
     priority: "Prioridad",
     targetBpm: "BPM objetivo",
-    blockMinutes: (n: number) => `Bloques de ${n} min`,
+    blockMinutes: (n: number) => `${n} min`,
     successCriteria: "Criterio de logro",
     practicePoints: "Puntos de práctica",
     parent: "Tema padre",

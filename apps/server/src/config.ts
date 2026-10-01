@@ -29,6 +29,7 @@ const r2 = {
   R2_ACCESS_KEY_ID: required,
   R2_SECRET_ACCESS_KEY: required,
   R2_BUCKET: required,
+  R2_ENDPOINT: z.url({ protocol: /^https?$/, error: "must be an http(s) URL" }).optional(),
 };
 
 export const apiConfigSchema = z.object({

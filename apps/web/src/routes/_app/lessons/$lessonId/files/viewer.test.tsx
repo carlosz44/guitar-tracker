@@ -6,9 +6,25 @@ import { LESSON_ID, lessonDetail } from "@/test/lesson-fixtures";
 import { carlos, fakeApi, json, type RecordedRequest, renderApp } from "@/test/render-app";
 
 const alphaTab = vi.hoisted(() => {
+  const StaveProfile = { Default: 0, ScoreTab: 1, Score: 2, Tab: 3, TabMixed: 4 } as const;
+  const LayoutMode = { Page: 0, Horizontal: 1 } as const;
+  const NotationElement = { GuitarTuning: 8 } as const;
+
+  class Settings {
+    core = { useWorkers: false, fontDirectory: "" as string | null };
+    player = { enablePlayer: true };
+    notation = { elements: new Map<number, boolean>() };
+    display = {
+      scale: 1,
+      staveProfile: StaveProfile.Default as number,
+      layoutMode: LayoutMode.Horizontal as number,
+      resources: {} as Record<string, unknown>,
+    };
+  }
+
   class FakeAlphaTabApi {
     static instances: FakeAlphaTabApi[] = [];
-    settings: { display: { scale: number; staveProfile: unknown } };
+    initial: { scale: number; staveProfile: number; layoutMode: number };
     loaded: unknown = null;
     updates = 0;
     renders = 0;
@@ -17,12 +33,9 @@ const alphaTab = vi.hoisted(() => {
     renderFinished = { on: (handler: () => void) => setTimeout(handler, 0) };
     constructor(
       readonly element: HTMLElement,
-      readonly options: {
-        display: { scale: number; staveProfile: unknown };
-        player: { enablePlayer: boolean };
-      },
+      readonly settings: Settings,
     ) {
-      this.settings = { display: { ...options.display } };
+      this.initial = { ...settings.display };
       FakeAlphaTabApi.instances.push(this);
     }
     load(data: unknown) {
@@ -39,10 +52,21 @@ const alphaTab = vi.hoisted(() => {
       this.destroyed = true;
     }
   }
-  return { FakeAlphaTabApi };
+
+  return {
+    FakeAlphaTabApi,
+    module: {
+      AlphaTabApi: FakeAlphaTabApi,
+      Settings,
+      StaveProfile,
+      LayoutMode,
+      NotationElement,
+      model: { Color: { fromJson: (value: string) => value } },
+    },
+  };
 });
 
-vi.mock("@coderline/alphatab", () => ({ AlphaTabApi: alphaTab.FakeAlphaTabApi }));
+vi.mock("@coderline/alphatab", () => alphaTab.module);
 
 const [guitarPro, pdf, docx] = lessonDetail().files;
 
@@ -71,10 +95,10 @@ describe("Guitar Pro viewer", () => {
     renderApp(`/lessons/${LESSON_ID}/files/${guitarPro?.id}`);
     await waitFor(() => expect(alphaTab.FakeAlphaTabApi.instances).toHaveLength(1));
     const [tab] = alphaTab.FakeAlphaTabApi.instances;
-    expect(tab?.options).toMatchObject({
-      display: { staveProfile: "Tab", layoutMode: "Page", scale: 1 },
-      player: { enablePlayer: false },
-    });
+    expect(tab?.initial).toMatchObject({ staveProfile: 3, layoutMode: 0, scale: 1 });
+    expect(tab?.settings.player.enablePlayer).toBe(false);
+    expect(tab?.settings.core.fontDirectory).toBe("/font/");
+    expect(tab?.settings.notation.elements.get(8)).toBe(false);
     await waitFor(() => expect(tab?.loaded).toEqual(new Uint8Array([0x50, 0x4b, 3, 4])));
   });
 
@@ -88,10 +112,10 @@ describe("Guitar Pro viewer", () => {
     const tab = alphaTab.FakeAlphaTabApi.instances[0];
 
     await userEvent.click(await screen.findByRole("button", { name: es.viewer.showNotation }));
-    expect(tab?.settings.display.staveProfile).toBe("ScoreTab");
+    expect(tab?.settings.display.staveProfile).toBe(1);
     expect(tab?.renders).toBe(1);
     await userEvent.click(screen.getByRole("button", { name: es.viewer.tabOnly }));
-    expect(tab?.settings.display.staveProfile).toBe("Tab");
+    expect(tab?.settings.display.staveProfile).toBe(3);
   });
 
   it("AC-8: zoom changes the scale and is remembered on this device", async () => {
@@ -113,7 +137,7 @@ describe("Guitar Pro viewer", () => {
     });
     renderApp(`/lessons/${LESSON_ID}/files/${guitarPro?.id}`);
     await waitFor(() => expect(alphaTab.FakeAlphaTabApi.instances).toHaveLength(2));
-    expect(alphaTab.FakeAlphaTabApi.instances[1]?.options.display.scale).toBe(1.2);
+    expect(alphaTab.FakeAlphaTabApi.instances[1]?.initial.scale).toBe(1.2);
   });
 
   it("AC-10: asks the API for a fresh file URL every time it opens", async () => {

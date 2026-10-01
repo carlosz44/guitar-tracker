@@ -48,6 +48,7 @@ function TopicPage() {
   const facts = [
     [es.topicPage.priority, es.priorities[topic.priority]],
     [es.topicPage.targetBpm, topic.targetBpm ? String(topic.targetBpm) : null],
+    [es.topicForm.defaultBlockMinutes, es.topicPage.blockMinutes(topic.defaultBlockMinutes)],
   ].filter((fact): fact is [string, string] => fact[1] !== null);
 
   return (
@@ -95,10 +96,6 @@ function TopicPage() {
             <dd className="font-medium">{value}</dd>
           </div>
         ))}
-        <div>
-          <dt className="sr-only">{es.topicForm.defaultBlockMinutes}</dt>
-          <dd className="font-medium">{es.topicPage.blockMinutes(topic.defaultBlockMinutes)}</dd>
-        </div>
       </dl>
 
       {topic.description && <Markdown>{topic.description}</Markdown>}

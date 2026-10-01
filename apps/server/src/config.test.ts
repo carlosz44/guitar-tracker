@@ -77,6 +77,22 @@ describe("parseConfig", () => {
   });
 });
 
+describe("R2_ENDPOINT", () => {
+  it("is optional and must be a URL when set", () => {
+    expect(parseConfig(workerConfigSchema, validEnv).ok).toBe(true);
+    expect(
+      parseConfig(workerConfigSchema, {
+        ...validEnv,
+        R2_ENDPOINT: "https://a.eu.r2.cloudflarestorage.com",
+      }).ok,
+    ).toBe(true);
+    expect(parseConfig(workerConfigSchema, { ...validEnv, R2_ENDPOINT: "nope" })).toEqual({
+      ok: false,
+      problems: ["invalid R2_ENDPOINT: must be an http(s) URL"],
+    });
+  });
+});
+
 describe("loadConfig", () => {
   it("AC-15: writes the problems to stderr and exits with code 1", () => {
     const stderr = { write: vi.fn() };

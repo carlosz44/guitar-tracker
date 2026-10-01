@@ -27,7 +27,7 @@ export function LessonForm({
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6 lg:grid-cols-2">
-      <Field data-invalid={errors.rawNotes ? true : undefined} className="lg:row-span-5">
+      <Field data-invalid={errors.rawNotes ? true : undefined} className="lg:row-span-6">
         <FieldLabel htmlFor="lesson-notes">{es.lessonForm.notes}</FieldLabel>
         <Textarea
           id="lesson-notes"
@@ -37,22 +37,21 @@ export function LessonForm({
         <FieldDescription>{es.lessonForm.notesHelp}</FieldDescription>
       </Field>
 
-      <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
-        <Field data-invalid={errors.date ? true : undefined}>
-          <FieldLabel htmlFor="lesson-date">{es.lessonForm.date}</FieldLabel>
-          <Input id="lesson-date" type="date" {...form.register("date")} />
-          {errors.date && <FieldError>{validationMessage(errors.date.message)}</FieldError>}
-        </Field>
-        <Field data-invalid={errors.title ? true : undefined}>
-          <FieldLabel htmlFor="lesson-title">{es.lessonForm.title}</FieldLabel>
-          <Input
-            id="lesson-title"
-            aria-invalid={errors.title ? true : undefined}
-            {...form.register("title")}
-          />
-          {errors.title && <FieldError>{validationMessage(errors.title.message)}</FieldError>}
-        </Field>
-      </div>
+      <Field data-invalid={errors.title ? true : undefined}>
+        <FieldLabel htmlFor="lesson-title">{es.lessonForm.title}</FieldLabel>
+        <Input
+          id="lesson-title"
+          aria-invalid={errors.title ? true : undefined}
+          {...form.register("title")}
+        />
+        {errors.title && <FieldError>{validationMessage(errors.title.message)}</FieldError>}
+      </Field>
+
+      <Field data-invalid={errors.date ? true : undefined} className="max-w-48">
+        <FieldLabel htmlFor="lesson-date">{es.lessonForm.date}</FieldLabel>
+        <Input id="lesson-date" type="date" {...form.register("date")} />
+        {errors.date && <FieldError>{validationMessage(errors.date.message)}</FieldError>}
+      </Field>
 
       <Field>
         <FieldLabel htmlFor="lesson-summary">{es.lessonForm.summary}</FieldLabel>

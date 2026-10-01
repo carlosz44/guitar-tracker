@@ -19,6 +19,7 @@ try {
       accessKeyId: config.R2_ACCESS_KEY_ID,
       secretAccessKey: config.R2_SECRET_ACCESS_KEY,
       bucket: config.R2_BUCKET,
+      endpoint: config.R2_ENDPOINT,
     }),
     dump: pgDumpSpawner(config.DATABASE_URL),
   });

@@ -109,6 +109,7 @@ Config is validated with a Zod schema at startup; missing or invalid variables s
 | `BETTER_AUTH_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | api | |
 | `ALLOWED_GITHUB_IDS` | api | Comma-separated numeric GitHub user ids |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | api, worker | Bucket `guitar-tracker` |
+| `R2_ENDPOINT` | api, worker | Optional. Only for an EU-jurisdiction bucket or a local S3-compatible server |
 | `DEFAULT_TIMEZONE` | api | `America/Lima`, used when creating `user_settings` |
 | `TELEGRAM_BOT_TOKEN` | worker | from 004 |
 | `ANTHROPIC_API_KEY`, `LLM_MODEL_DEFAULT`, `LLM_MODEL_FAST` | worker | from 005. Defaults: `claude-sonnet-5-5` and `claude-haiku-4-5-20251001` |

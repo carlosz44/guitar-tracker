@@ -10,15 +10,28 @@ const ZOOM_MAX = 1.6;
 const ZOOM_STEP = 0.1;
 
 type StaveProfile = "Tab" | "ScoreTab";
+type AlphaTabModule = typeof import("@coderline/alphatab");
+type AlphaTabInstance = InstanceType<AlphaTabModule["AlphaTabApi"]>;
 
-interface AlphaTabInstance {
-  settings: { display: { scale: number; staveProfile: unknown } };
-  load(data: unknown): boolean;
-  updateSettings(): void;
-  render(): void;
-  destroy(): void;
-  error: { on(handler: (error: Error) => void): void };
-  renderFinished: { on(handler: () => void): void };
+function buildSettings(alphaTab: AlphaTabModule, zoom: number, profile: StaveProfile) {
+  const settings = new alphaTab.Settings();
+  settings.core.useWorkers = true;
+  settings.core.fontDirectory = "/font/";
+  settings.player.enablePlayer = false;
+  settings.display.layoutMode = alphaTab.LayoutMode.Page;
+  settings.display.staveProfile = alphaTab.StaveProfile[profile];
+  settings.display.scale = zoom;
+  settings.notation.elements.set(alphaTab.NotationElement.GuitarTuning, false);
+  const { resources } = settings.display;
+  resources.mainGlyphColor = alphaTab.model.Color.fromJson("#f5f5f5") ?? resources.mainGlyphColor;
+  resources.secondaryGlyphColor =
+    alphaTab.model.Color.fromJson("#a3a3a3") ?? resources.secondaryGlyphColor;
+  resources.staffLineColor = alphaTab.model.Color.fromJson("#737373") ?? resources.staffLineColor;
+  resources.barSeparatorColor =
+    alphaTab.model.Color.fromJson("#737373") ?? resources.barSeparatorColor;
+  resources.barNumberColor = alphaTab.model.Color.fromJson("#f59e0b") ?? resources.barNumberColor;
+  resources.scoreInfoColor = alphaTab.model.Color.fromJson("#f5f5f5") ?? resources.scoreInfoColor;
+  return settings;
 }
 
 export function readZoom() {
@@ -39,6 +52,7 @@ function storeZoom(zoom: number) {
 export function GuitarProViewer({ fileId }: { fileId: string }) {
   const container = useRef<HTMLDivElement>(null);
   const instance = useRef<AlphaTabInstance | null>(null);
+  const module = useRef<AlphaTabModule | null>(null);
   const [zoom, setZoom] = useState(readZoom);
   const [profile, setProfile] = useState<StaveProfile>("Tab");
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -56,11 +70,11 @@ export function GuitarProViewer({ fileId }: { fileId: string }) {
         ]);
         const bytes = new Uint8Array(await (await fetch(url)).arrayBuffer());
         if (cancelled || !container.current) return;
-        const tab = new alphaTab.AlphaTabApi(container.current, {
-          core: { useWorkers: true },
-          display: { staveProfile: profile, scale: zoom, layoutMode: "Page" },
-          player: { enablePlayer: false },
-        }) as unknown as AlphaTabInstance;
+        module.current = alphaTab;
+        const tab = new alphaTab.AlphaTabApi(
+          container.current,
+          buildSettings(alphaTab, zoom, profile),
+        );
         instance.current = tab;
         tab.error.on(() => setStatus("error"));
         tab.renderFinished.on(() => setStatus("ready"));
@@ -80,7 +94,9 @@ export function GuitarProViewer({ fileId }: { fileId: string }) {
     const tab = instance.current;
     if (!tab) return;
     if (next.zoom !== undefined) tab.settings.display.scale = next.zoom;
-    if (next.profile !== undefined) tab.settings.display.staveProfile = next.profile;
+    if (next.profile !== undefined && module.current) {
+      tab.settings.display.staveProfile = module.current.StaveProfile[next.profile];
+    }
     tab.updateSettings();
     tab.render();
   };
@@ -132,10 +148,7 @@ export function GuitarProViewer({ fileId }: { fileId: string }) {
           {es.viewer.error}
         </p>
       )}
-      <div
-        ref={container}
-        className="-mx-4 overflow-x-hidden bg-white text-black lg:mx-0 lg:rounded-xl"
-      />
+      <div ref={container} className="-mx-4 overflow-x-hidden bg-card lg:mx-0 lg:rounded-xl" />
     </div>
   );
 }

@@ -40,8 +40,8 @@ export interface R2Config {
   endpoint?: string;
 }
 
-export function r2Origin(accountId: string) {
-  return `https://${accountId}.r2.cloudflarestorage.com`;
+export function r2Origin(accountId: string, endpoint?: string) {
+  return endpoint ? new URL(endpoint).origin : `https://${accountId}.r2.cloudflarestorage.com`;
 }
 
 export function createR2Client(config: R2Config) {

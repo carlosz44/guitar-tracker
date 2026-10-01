@@ -153,3 +153,7 @@ The routes and components are listed above. New shadcn components: textarea, sel
 5. `lesson_topics` uses a composite primary key, not a UUID.
 6. Topics can be deleted only without lesson links (Carlos).
 7. Markdown is rendered with `react-markdown` (Carlos).
+8. Native `<select>` elements instead of Radix Select: the iPhone shows its wheel picker, which is quicker one-handed at the stand.
+9. An optional `R2_ENDPOINT` setting, for an EU-jurisdiction bucket or a local S3-compatible server (MinIO was used to check uploads, extraction and the tab viewer end to end in a real browser).
+10. The tab viewer draws in light colours on the dark card and hides the tuning label; alphaTab's "rendered by alphaTab" attribution stays.
+11. Missing files (paths with an extension) now answer 404 instead of the app's `index.html`, so a wrong asset path fails loudly.

@@ -51,6 +51,13 @@ describe("createApp", () => {
     expect(response.headers.get("cache-control")).toBe("no-cache");
   });
 
+  it("answers 404 for missing files instead of serving the app", async () => {
+    for (const path of ["/font/Bravura.woff2", "/assets/missing-abc.js", "/favicon.png"]) {
+      const response = await app.request(path);
+      expect(response.status, path).toBe(404);
+    }
+  });
+
   it("falls back to index.html for app routes", async () => {
     for (const path of ["/", "/today", "/settings", "/lessons/123"]) {
       const response = await app.request(path);
