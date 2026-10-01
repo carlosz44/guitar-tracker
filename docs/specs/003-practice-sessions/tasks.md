@@ -9,7 +9,7 @@ Small, ordered tasks. Each one ends with passing tests and can be committed on i
 - [x] T5 Manual log, history by cycle, session detail, edit, delete. (covers AC-17, AC-18, AC-19)
 - [x] T6 Topic stats in topic responses, and the delete rule for topics used in blocks.
 - [x] T7 Worker `session.close-stale`, hourly. (covers AC-16)
-- [ ] T8 Web: practice store with the corrected clock, and the outbox (ordered, retried, persisted). (covers AC-6, AC-15)
+- [x] T8 Web: practice store with the corrected clock, and the outbox (ordered, retried, persisted). (covers AC-6, AC-15)
 - [ ] T9 Web: Hoy, with progress ring, streak, lesson, questions, editable suggestions, Empezar, active-session card and resume on launch. (covers AC-1, AC-3, AC-4)
 - [ ] T10 Web: practice screen with countdown, next block, elapsed, pause, +5, Saltar, time-up screen, wake lock and tip. (covers AC-5 to AC-10)
 - [ ] T11 Web: block log sheet, Anotar pregunta, summary and Terminar. (covers AC-11 to AC-14)
