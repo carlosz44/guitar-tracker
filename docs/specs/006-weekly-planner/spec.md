@@ -1,6 +1,6 @@
 # 006 Weekly planner
 
-**Status:** Draft
+**Status:** Approved
 **Depends on:** 003, 005
 
 ## Why
