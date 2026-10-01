@@ -44,6 +44,8 @@ describe("migrations", () => {
       "lesson_files",
       "lesson_topics",
       "lessons",
+      "llm_drafts",
+      "llm_runs",
       "practice_days",
       "practice_sessions",
       "session",

@@ -4,6 +4,7 @@ export * from "./errors.ts";
 export * from "./files.ts";
 export * from "./health.ts";
 export * from "./lessons.ts";
+export * from "./llm.ts";
 export * from "./me.ts";
 export * from "./questions.ts";
 export * from "./sessions.ts";

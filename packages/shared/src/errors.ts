@@ -1,5 +1,6 @@
 import type { FileErrorKey } from "./files.ts";
 import type { LessonErrorKey } from "./lessons.ts";
+import type { LlmErrorKey } from "./llm.ts";
 import type { QuestionErrorKey } from "./questions.ts";
 import type { SessionErrorKey } from "./sessions.ts";
 import type { SettingsErrorKey } from "./settings.ts";
@@ -11,4 +12,5 @@ export type ErrorKey =
   | LessonErrorKey
   | TopicErrorKey
   | QuestionErrorKey
-  | SessionErrorKey;
+  | SessionErrorKey
+  | LlmErrorKey;
