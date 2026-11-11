@@ -11,7 +11,7 @@ Before any work, read `guitar-tracker-product.md`, `guitar-tracker-domain.md`, `
 Features follow the workspace flow in `~/Dev/CLAUDE.md`: `/to-spec`, `/to-plan`, `/implement`, then `/spec-review`, `/code-review` and `/close-feature`. On top of it:
 
 1. Every acceptance criterion (`AC-n`) gets at least one test that names it, for example `it('AC-3: rejects GitHub accounts outside the allowlist')`.
-2. A spec's UX section covers the iPhone at the music stand and the laptop. A plan names the Drizzle migration, the request and response schemas from `packages/shared`, and the shadcn/ui components it uses.
+2. A spec's UX section covers the laptop first. The phone is a nice-to-have (D-22). A plan names the Drizzle migration, the request and response schemas from `packages/shared`, and the shadcn/ui components it uses.
 3. When a spec is finished, set its `status` to `done` and update the roadmap.
 
 If a spec conflicts with `guitar-tracker-decisions.md` or looks wrong, stop and ask instead of quietly deviating. New decisions get a new D-NN entry there.
@@ -43,7 +43,7 @@ Setup: Node 24 (`nvm use`), pnpm via corepack (`corepack enable`), Docker runnin
 
 ## Guardrails
 
-- The memory budget is real: a 2 GB VPS shared with another app. Container limits are api 256 MiB, worker 384 MiB, db 256 MiB. Stream files instead of loading them whole where possible. Parse untrusted files in a worker thread with `resourceLimits` and a timeout.
+- The memory budget is real. Container limits are api 256 MiB, worker 384 MiB, db 256 MiB. Stream files instead of loading them whole where possible. Parse untrusted files in a worker thread with `resourceLimits` and a timeout.
 - Never log secrets, tokens, file contents or full LLM prompts. Log ids, sizes and durations.
 - Never commit `.env` files. Production config comes from GitHub Secrets.
 - **This repo is public.** No real domains, IPs, GitHub ids or keys in code, docs or tests. Use `<domain>`-style placeholders. Deploy workflows run only on push to `main` or manual dispatch, never on `pull_request_target`.
