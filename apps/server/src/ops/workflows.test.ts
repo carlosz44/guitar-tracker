@@ -14,6 +14,7 @@ interface Step {
 }
 interface Job {
   needs?: string | string[];
+  if?: string;
   uses?: string;
   permissions?: Record<string, string>;
   services?: Record<string, { image: string }>;
@@ -71,6 +72,10 @@ describe("workflows", () => {
     expect(job(deploy, "deploy").needs).toBe("build");
   });
 
+  it("deploys only once the DEPLOY_ENABLED repo variable is true", () => {
+    expect(job(deploy, "deploy").if).toBe("vars.DEPLOY_ENABLED == 'true'");
+  });
+
   it("AC-9: pushes the image to GHCR tagged with the commit SHA and latest", () => {
     const push = job(deploy, "build").steps?.find((step) =>
       step.uses?.startsWith("docker/build-push-action"),
@@ -113,10 +118,10 @@ describe("workflows", () => {
     expect(job(deploy, "deploy").permissions).toEqual({ contents: "read", packages: "read" });
   });
 
-  it("pins the VPS host key instead of trusting it on first use", () => {
+  it("pins the host key instead of trusting it on first use", () => {
     const ssh = runOf(job(deploy, "deploy").steps, "Configure SSH (pinned host key)");
     expect(ssh).toContain("StrictHostKeyChecking yes");
-    expect(ssh).toContain('"$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts');
+    expect(ssh).toContain('"$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts');
     expect(ssh).not.toContain("ssh-keyscan");
   });
 

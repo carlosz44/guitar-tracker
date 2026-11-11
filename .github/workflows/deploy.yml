@@ -51,6 +51,7 @@ jobs:
 
   deploy:
     needs: build
+    if: vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
@@ -61,17 +62,17 @@ jobs:
 
       - name: Configure SSH (pinned host key)
         env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           install -m 700 -d ~/.ssh
-          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
-          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
           cat > ~/.ssh/config <<CONFIG
-          Host vps
-            HostName $VPS_HOST
+          Host server
+            HostName $DEPLOY_HOST
             User deploy
             IdentityFile ~/.ssh/deploy_key
             IdentitiesOnly yes
@@ -80,7 +81,7 @@ jobs:
           CONFIG
 
       - name: Copy compose file
-        run: scp deploy/compose.prod.yml "vps:$APP_DIR/compose.prod.yml"
+        run: scp deploy/compose.prod.yml "server:$APP_DIR/compose.prod.yml"
 
       - name: Write .env from secrets
         env:
@@ -115,14 +116,14 @@ jobs:
             printf 'R2_BUCKET=%s\n' "$R2_BUCKET"
             printf 'ANTHROPIC_API_KEY=%s\n' "$ANTHROPIC_API_KEY"
             printf 'LLM_MONTHLY_BUDGET_USD=%s\n' "$LLM_MONTHLY_BUDGET_USD"
-          } | ssh vps "umask 077 && cat > $APP_DIR/.env"
+          } | ssh server "umask 077 && cat > $APP_DIR/.env"
 
       - name: Pull, migrate and start
         env:
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # shellcheck disable=SC2029
-          printf '%s' "$GHCR_TOKEN" | ssh vps "set -euo pipefail
+          printf '%s' "$GHCR_TOKEN" | ssh server "set -euo pipefail
             cd $APP_DIR
             docker login ghcr.io -u '$GITHUB_ACTOR' --password-stdin
             trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
