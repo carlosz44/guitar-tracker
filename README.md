@@ -4,11 +4,7 @@ A personal guitar practice app: a lesson log with the teacher's files, practice 
 
 It runs at `ds.<domain>` as an installable PWA. The UI is in Spanish.
 
-- Product and scope: `docs/product.md`
-- Domain model: `docs/domain.md`
-- Architecture and deployment: `docs/architecture.md`
-- Decisions: `docs/decisions.md`
-- Specs and roadmap: `docs/specs/`
+Product, domain model, architecture, decisions and specs are kept outside this repo.
 
 ## Local setup
 

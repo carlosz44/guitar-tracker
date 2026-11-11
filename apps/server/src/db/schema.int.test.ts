@@ -62,7 +62,7 @@ describe("migrations", () => {
     ]);
   });
 
-  it("gives user_settings the defaults from docs/domain.md", async () => {
+  it("gives user_settings the defaults from the domain model", async () => {
     const userId = await insertUser();
     await db.insert(userSettings).values({ userId });
     const [row] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
